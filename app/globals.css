@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* 温暖柔和主题色变量 */
+:root {
+  --background: #fffaf7;
+  --foreground: #3d2c2c;
+  --primary: #e8836a;
+  --primary-light: #f4b8a0;
+  --accent: #f9e4da;
+  --card-bg: #ffffff;
+  --border: #f0ddd5;
+  --text-muted: #9d7b72;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+}
