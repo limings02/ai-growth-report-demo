@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppState, GrowthReportFormData, InterviewQuestion, ReportData } from "@/lib/types";
+import { generateMockReport } from "@/lib/mockReportGenerator";
 import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
@@ -43,7 +44,7 @@ type Props = {
 export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [appState, setAppState] = useState<AppState>("input");
   const [formData, setFormData] = useState<GrowthReportFormData>(defaultFormData);
-  const [_report, setReport] = useState<ReportData | null>(null);
+  const [report, setReport] = useState<ReportData | null>(null);
 
   function handleFormChange(patch: Partial<GrowthReportFormData>) {
     setFormData((prev) => ({ ...prev, ...patch }));
@@ -52,8 +53,8 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   function handleGenerate() {
     setAppState("generating");
     setTimeout(() => {
-      // 阶段3会在这里调用 generateMockReport(formData)
-      setReport(null);
+      const result = generateMockReport(formData);
+      setReport(result);
       setAppState("result");
     }, 2000);
   }
@@ -71,23 +72,84 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     return <GeneratingScreen />;
   }
 
-  if (appState === "result") {
+  if (appState === "result" && report) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4"
-        style={{ background: "var(--background)" }}>
-        <p className="text-2xl mb-4">🎉</p>
-        <p className="text-lg font-semibold mb-2" style={{ color: "var(--foreground)" }}>
-          成长礼物生成成功！
-        </p>
-        <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
-          阶段4将在这里展示完整年报
-        </p>
-        <button
-          onClick={() => setAppState("input")}
-          className="px-6 py-3 rounded-full text-white cursor-pointer"
-          style={{ background: "var(--primary)" }}>
-          返回重新填写
-        </button>
+      <div className="min-h-screen px-4 py-10" style={{ background: "var(--background)" }}>
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <button
+              onClick={() => setAppState("input")}
+              className="text-sm cursor-pointer hover:underline"
+              style={{ color: "var(--text-muted)" }}>
+              ← 返回修改
+            </button>
+          </div>
+
+          {/* 标题 */}
+          <h2 className="text-2xl font-bold mb-6" style={{ color: "var(--foreground)" }}>
+            🎉 {report.title}
+          </h2>
+
+          {/* 关键词 */}
+          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
+            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>✨ 年度关键词</p>
+            <div className="flex flex-wrap gap-2">
+              {report.keywords.map((kw) => (
+                <span key={kw} className="px-3 py-1 rounded-full text-sm"
+                  style={{ background: "#fde8dc", color: "#c0674a" }}>{kw}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* 成长总结 */}
+          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
+            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>💛 年度成长总结</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--foreground)" }}>
+              {report.yearlySummary}
+            </p>
+          </div>
+
+          {/* 时间线 */}
+          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
+            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>⏱ 重要瞬间</p>
+            <div className="space-y-3">
+              {report.timeline.map((item, i) => (
+                <div key={i} className="flex gap-3">
+                  <span className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-bold h-fit"
+                    style={{ background: "#f4b8a0", color: "#8b4a38" }}>{item.time}</span>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{item.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 信件 */}
+          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
+            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>✉️ 给孩子的信</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--foreground)" }}>
+              {report.letter}
+            </p>
+          </div>
+
+          {/* 朋友圈 */}
+          <div className="rounded-2xl p-5 mb-10" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
+            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>📱 朋友圈文案</p>
+            <div className="space-y-4">
+              {report.socialPosts.map((post) => (
+                <div key={post.title}>
+                  <p className="text-xs font-medium mb-1.5" style={{ color: "#c0674a" }}>— {post.title}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-line p-3 rounded-xl"
+                    style={{ background: "white", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+                    {post.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

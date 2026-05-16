@@ -160,7 +160,7 @@ export default function InterviewForm({ formData, onChange }: Props) {
           📓 其他想说的话（选填）
         </label>
         <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
-          可以粘贴日记、育儿备忘录，或者任何你想保存进年报的内容
+          可以粘贴日记、育儿备忘录，或者任何你想对宝贝说的话
         </p>
         <textarea
           rows={5}
