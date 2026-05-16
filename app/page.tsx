@@ -1,24 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import LandingHero from "@/components/LandingHero";
 import FutureScene from "@/components/FutureScene";
 import ValueCards from "@/components/ValueCards";
 import HowItWorks from "@/components/HowItWorks";
+import GrowthReportApp from "@/components/GrowthReportApp";
 
-// 页面入口：当前展示 Landing Page
-// 阶段2起会引入 GrowthReportApp，把状态机嵌入这里
 export default function Home() {
-  // 占位：阶段2接入状态机后，这里改为切换到 input 状态
-  function handleStart() {
-    alert("表单功能即将上线，敬请期待！");
+  // showApp 控制 Landing Page 和表单/结果页的切换
+  const [showApp, setShowApp] = useState(false);
+
+  if (showApp) {
+    return <GrowthReportApp onBackToLanding={() => setShowApp(false)} />;
   }
 
   return (
     <main className="flex-1 flex flex-col">
-      <LandingHero onStart={handleStart} />
+      <LandingHero onStart={() => setShowApp(true)} />
       <FutureScene />
       <ValueCards />
-      <HowItWorks onStart={handleStart} />
+      <HowItWorks onStart={() => setShowApp(true)} />
     </main>
   );
 }

@@ -51,7 +51,7 @@ export default function HowItWorks({ onStart }: { onStart: () => void }) {
 
         {/* AI 轻描述 */}
         <p className="text-center text-sm mb-10" style={{ color: "#b08878" }}>
-          🤍 AI 只是帮你整理，真正珍贵的是你记得的那些瞬间。
+          🤍 珍贵的温暖瞬间不该被遗忘
         </p>
 
         {/* 底部 CTA */}

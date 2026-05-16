@@ -21,7 +21,7 @@ export default function LandingHero({ onStart }: { onStart: () => void }) {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8"
             style={{ background: "#fde8dc", color: "#c0674a" }}>
             <span>🎁</span>
-            <span>给未来的你 · AI 成长礼物</span>
+            <span>给孩子的成长礼物</span>
           </div>
 
           {/* 主标题 */}
