@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { AppState, GrowthReportFormData, InterviewQuestion, ReportData } from "@/lib/types";
-import { generateMockReport } from "@/lib/mockReportGenerator";
+import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial, ReportData } from "@/lib/types";
+import { extractRawMaterial } from "@/lib/extractRawMaterial";
+import { mockGenerator } from "@/lib/mockReportGenerator";
+// TODO[ai-api]: 接入真实 AI 时，替换为：
+// import { aiGenerator } from "@/lib/aiReportGenerator";
+// const generator = aiGenerator;
+const generator = mockGenerator;
+
 import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
+import ReportPreview from "./ReportPreview";
 
-// 默认问题列表（仅作引导示例，用户可全部删改）
 function makeDefaultQuestions(): InterviewQuestion[] {
   const labels = [
     "今年孩子最大的变化是什么？",
@@ -19,11 +25,7 @@ function makeDefaultQuestions(): InterviewQuestion[] {
     "今年你作为父母最感动的一刻是什么？",
     "你想对 18 岁的孩子说什么？",
   ];
-  return labels.map((label, i) => ({
-    id: `default-${i}`,
-    label,
-    answer: "",
-  }));
+  return labels.map((label, i) => ({ id: `default-${i}`, label, answer: "" }));
 }
 
 const defaultFormData: GrowthReportFormData = {
@@ -44,22 +46,35 @@ type Props = {
 export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [appState, setAppState] = useState<AppState>("input");
   const [formData, setFormData] = useState<GrowthReportFormData>(defaultFormData);
+
+  // 原始材料与生成结果分开存储
+  const [rawMaterial, setRawMaterial] = useState<RawMaterial | null>(null);
   const [report, setReport] = useState<ReportData | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
 
   function handleFormChange(patch: Partial<GrowthReportFormData>) {
     setFormData((prev) => ({ ...prev, ...patch }));
   }
 
-  function handleGenerate() {
+  async function handleGenerate() {
+    setGenerateError(null);
     setAppState("generating");
-    setTimeout(() => {
-      const result = generateMockReport(formData);
+
+    // 提取原始材料（和 File 对象解耦，可序列化/传给 AI）
+    const material = extractRawMaterial(formData);
+    setRawMaterial(material);
+
+    try {
+      // TODO[ai-api]: 这里切换 generator 即可接入真实 AI，其余代码不变
+      const result = await generator.generate(material);
       setReport(result);
       setAppState("result");
-    }, 2000);
+    } catch (err) {
+      setGenerateError(err instanceof Error ? err.message : "生成失败，请重试");
+      setAppState("input");
+    }
   }
 
-  // 校验：只要填了昵称、年龄、称呼就可以生成
   function isFormValid(): boolean {
     return (
       formData.childName.trim() !== "" &&
@@ -72,97 +87,24 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     return <GeneratingScreen />;
   }
 
-  if (appState === "result" && report) {
+  if (appState === "result" && report && rawMaterial) {
     return (
-      <div className="min-h-screen px-4 py-10" style={{ background: "var(--background)" }}>
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <button
-              onClick={() => setAppState("input")}
-              className="text-sm cursor-pointer hover:underline"
-              style={{ color: "var(--text-muted)" }}>
-              ← 返回修改
-            </button>
-          </div>
-
-          {/* 标题 */}
-          <h2 className="text-2xl font-bold mb-6" style={{ color: "var(--foreground)" }}>
-            🎉 {report.title}
-          </h2>
-
-          {/* 关键词 */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>✨ 年度关键词</p>
-            <div className="flex flex-wrap gap-2">
-              {report.keywords.map((kw) => (
-                <span key={kw} className="px-3 py-1 rounded-full text-sm"
-                  style={{ background: "#fde8dc", color: "#c0674a" }}>{kw}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* 成长总结 */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>💛 年度成长总结</p>
-            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--foreground)" }}>
-              {report.yearlySummary}
-            </p>
-          </div>
-
-          {/* 时间线 */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>⏱ 重要瞬间</p>
-            <div className="space-y-3">
-              {report.timeline.map((item, i) => (
-                <div key={i} className="flex gap-3">
-                  <span className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-bold h-fit"
-                    style={{ background: "#f4b8a0", color: "#8b4a38" }}>{item.time}</span>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{item.title}</p>
-                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 信件 */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>✉️ 给孩子的信</p>
-            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--foreground)" }}>
-              {report.letter}
-            </p>
-          </div>
-
-          {/* 朋友圈 */}
-          <div className="rounded-2xl p-5 mb-10" style={{ background: "#fffaf7", border: "1px solid var(--border)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "var(--text-muted)" }}>📱 朋友圈文案</p>
-            <div className="space-y-4">
-              {report.socialPosts.map((post) => (
-                <div key={post.title}>
-                  <p className="text-xs font-medium mb-1.5" style={{ color: "#c0674a" }}>— {post.title}</p>
-                  <p className="text-sm leading-relaxed whitespace-pre-line p-3 rounded-xl"
-                    style={{ background: "white", color: "var(--foreground)", border: "1px solid var(--border)" }}>
-                    {post.content}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ReportPreview
+        report={report}
+        rawMaterial={rawMaterial}
+        photos={formData.photos}
+        onBack={() => setAppState("input")}
+      />
     );
   }
 
+  // input 状态
   return (
     <div className="min-h-screen px-4 py-10" style={{ background: "var(--background)" }}>
       <div className="max-w-2xl mx-auto">
 
-        {/* 顶部导航 */}
         <div className="flex items-center gap-3 mb-8">
-          <button
-            onClick={onBackToLanding}
-            className="text-sm cursor-pointer hover:underline"
+          <button onClick={onBackToLanding} className="text-sm cursor-pointer hover:underline"
             style={{ color: "var(--text-muted)" }}>
             ← 返回首页
           </button>
@@ -179,8 +121,14 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
           随心填写，AI 会为你生成一份独一无二的成长礼物
         </p>
 
-        <ChildInfoForm formData={formData} onChange={handleFormChange} />
+        {generateError && (
+          <div className="mb-6 px-4 py-3 rounded-xl text-sm"
+            style={{ background: "#fff0ee", color: "#c0674a", border: "1px solid #fcd5c0" }}>
+            ⚠️ {generateError}
+          </div>
+        )}
 
+        <ChildInfoForm formData={formData} onChange={handleFormChange} />
         <PhotoUploader
           photos={formData.photos}
           onAdd={(items) => handleFormChange({ photos: [...formData.photos, ...items] })}
@@ -190,10 +138,8 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             handleFormChange({ photos: formData.photos.filter((p) => p.id !== id) });
           }}
         />
-
         <InterviewForm formData={formData} onChange={handleFormChange} />
 
-        {/* 生成按钮 */}
         <div className="mt-10 mb-16">
           <button
             onClick={handleGenerate}
