@@ -1,12 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { AppState, GrowthReportFormData, ReportData } from "@/lib/types";
+import { AppState, GrowthReportFormData, InterviewQuestion, ReportData } from "@/lib/types";
 import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
 
-// 表单初始值
+// 默认问题列表（仅作引导示例，用户可全部删改）
+function makeDefaultQuestions(): InterviewQuestion[] {
+  const labels = [
+    "今年孩子最大的变化是什么？",
+    "今年最让你印象深刻的一件事是什么？",
+    "今年孩子学会了什么新能力？",
+    "今年孩子说过哪句话让你印象很深？",
+    "今年有没有一次重要旅行、生日、入学或家庭事件？",
+    "今年孩子最喜欢什么？",
+    "今年你作为父母最感动的一刻是什么？",
+    "你想对 18 岁的孩子说什么？",
+  ];
+  return labels.map((label, i) => ({
+    id: `default-${i}`,
+    label,
+    answer: "",
+  }));
+}
+
 const defaultFormData: GrowthReportFormData = {
   childName: "",
   childAge: "",
@@ -14,13 +32,12 @@ const defaultFormData: GrowthReportFormData = {
   parentName: "",
   style: "warm",
   photos: [],
-  q1: "", q2: "", q3: "", q4: "",
-  q5: "", q6: "", q7: "", q8: "",
+  questions: makeDefaultQuestions(),
+  freeNote: "",
 };
 
 type Props = {
   onBackToLanding: () => void;
-  // 阶段3接入后，这里会传入生成结果的回调
 };
 
 export default function GrowthReportApp({ onBackToLanding }: Props) {
@@ -33,7 +50,6 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   }
 
   function handleGenerate() {
-    // 阶段3实现：目前先跳到 generating 状态演示流程
     setAppState("generating");
     setTimeout(() => {
       // 阶段3会在这里调用 generateMockReport(formData)
@@ -42,13 +58,12 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     }, 2000);
   }
 
-  // 简单校验：必填项检查
+  // 校验：只要填了昵称、年龄、称呼就可以生成
   function isFormValid(): boolean {
     return (
       formData.childName.trim() !== "" &&
       formData.childAge !== "" &&
-      formData.parentName.trim() !== "" &&
-      formData.q1.trim() !== ""
+      formData.parentName.trim() !== ""
     );
   }
 
@@ -77,7 +92,6 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     );
   }
 
-  // input 状态：展示表单
   return (
     <div className="min-h-screen px-4 py-10" style={{ background: "var(--background)" }}>
       <div className="max-w-2xl mx-auto">
@@ -96,29 +110,25 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
           </span>
         </div>
 
-        {/* 页面标题 */}
         <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
           记录孩子这一年 🌱
         </h2>
         <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
-          认真填写，AI 会为你生成一份独一无二的成长礼物
+          随心填写，AI 会为你生成一份独一无二的成长礼物
         </p>
 
-        {/* 基本信息表单 */}
         <ChildInfoForm formData={formData} onChange={handleFormChange} />
 
-        {/* 照片上传 */}
         <PhotoUploader
           photos={formData.photos}
           onAdd={(items) => handleFormChange({ photos: [...formData.photos, ...items] })}
           onRemove={(id) => {
             const removed = formData.photos.find((p) => p.id === id);
-            if (removed) URL.revokeObjectURL(removed.previewUrl); // 释放内存
+            if (removed) URL.revokeObjectURL(removed.previewUrl);
             handleFormChange({ photos: formData.photos.filter((p) => p.id !== id) });
           }}
         />
 
-        {/* 访谈问题 */}
         <InterviewForm formData={formData} onChange={handleFormChange} />
 
         {/* 生成按钮 */}
@@ -134,7 +144,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
           </button>
           {!isFormValid() && (
             <p className="text-center text-xs mt-3" style={{ color: "var(--text-muted)" }}>
-              请至少填写孩子昵称、年龄、父母称呼和第一个问题
+              请填写孩子昵称、年龄和父母称呼后即可生成
             </p>
           )}
         </div>
@@ -143,7 +153,6 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   );
 }
 
-// 生成中动画界面
 function GeneratingScreen() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4"

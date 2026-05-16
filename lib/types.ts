@@ -18,6 +18,13 @@ export type SocialPost = {
   content: string;
 };
 
+// 单条访谈问题（标签可编辑、可删除、可自定义新增）
+export type InterviewQuestion = {
+  id: string;
+  label: string;   // 问题标题，用户可修改
+  answer: string;  // 用户填写的回答
+};
+
 // 表单输入（避免与浏览器原生 FormData 冲突，使用 GrowthReportFormData）
 export type GrowthReportFormData = {
   childName: string;
@@ -26,14 +33,8 @@ export type GrowthReportFormData = {
   parentName: string;
   style: "warm" | "playful" | "documentary" | "literary";
   photos: PhotoItem[];
-  q1: string; // 今年孩子最大的变化是什么？
-  q2: string; // 今年最让你印象深刻的一件事是什么？
-  q3: string; // 今年孩子学会了什么新能力？
-  q4: string; // 今年孩子说过哪句话让你印象很深？
-  q5: string; // 今年有没有一次重要旅行、生日、入学或家庭事件？
-  q6: string; // 今年孩子最喜欢什么？
-  q7: string; // 今年你作为父母最感动的一刻是什么？
-  q8: string; // 你想对 18 岁的孩子说什么？
+  questions: InterviewQuestion[]; // 访谈问题列表（可增删改）
+  freeNote: string;               // 自由文本区：日记、备忘录等
 };
 
 // 年报输出
