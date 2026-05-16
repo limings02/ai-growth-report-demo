@@ -57,10 +57,39 @@ lib/
 
 ## 数据模型
 
-### 表单输入（`FormData`）
+### 照片项（`PhotoItem`）
 
 ```ts
-{
+type PhotoItem = {
+  id: string          // 唯一 ID（用于删除操作）
+  file: File          // 原始文件对象
+  previewUrl: string  // URL.createObjectURL 生成的本地预览地址
+}
+```
+
+### 时间线项（`TimelineItem`）
+
+```ts
+type TimelineItem = {
+  time: string         // 时间描述，如 "3月"、"暑假"
+  title: string        // 事件标题
+  description: string  // 事件描述
+}
+```
+
+### 朋友圈文案（`SocialPost`）
+
+```ts
+type SocialPost = {
+  title: string    // 文案标题/标签
+  content: string  // 文案正文
+}
+```
+
+### 表单输入（`GrowthReportFormData`）
+
+```ts
+type GrowthReportFormData = {
   // 孩子信息
   childName: string        // 孩子昵称
   childAge: number         // 孩子年龄
@@ -68,8 +97,8 @@ lib/
   parentName: string       // 父母称呼
   style: 'warm' | 'playful' | 'documentary' | 'literary'  // 风格
 
-  // 照片（仅本地预览）
-  photos: File[]
+  // 照片（仅本地预览，不上传服务器）
+  photos: PhotoItem[]
 
   // 访谈问题（8道）
   q1: string  // 今年孩子最大的变化是什么？
@@ -86,14 +115,21 @@ lib/
 ### 年报输出（`ReportData`）
 
 ```ts
-{
+type ReportData = {
   title: string              // 年报标题
   keywords: string[]         // 年度关键词（3-5个）
-  summary: string            // 年度成长总结（3-4段）
+  yearlySummary: string      // 年度成长总结（3-4段）
   timeline: TimelineItem[]   // 重要瞬间时间线
   letter: string             // 父母写给孩子的一封信
-  socialPosts: string[]      // 朋友圈文案（3个版本）
+  socialPosts: SocialPost[]  // 朋友圈文案（3个版本）
 }
+```
+
+### mock 生成器签名
+
+```ts
+// 纯函数：不操作 DOM，不读写 localStorage，不发请求
+function generateMockReport(formData: GrowthReportFormData): ReportData
 ```
 
 ## 组件职责
