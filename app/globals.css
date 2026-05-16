@@ -24,3 +24,94 @@ body {
   color: var(--foreground);
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
 }
+
+/* ── 打印样式 ───────────────────────────────────────────────
+   使用方式：调用 window.print()，浏览器弹出打印对话框
+   选择"另存为 PDF"即可保存
+   ─────────────────────────────────────────────────────── */
+@media print {
+  /* 隐藏所有非打印元素 */
+  .no-print {
+    display: none !important;
+  }
+
+  /* 只显示打印内容区 */
+  .print-only {
+    display: block !important;
+  }
+
+  /* 重置页面背景为纯白，节省墨水 */
+  body {
+    background: white !important;
+    color: #2d1f1a !important;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  /* 打印区域铺满 */
+  .print-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* 卡片去掉背景色，保留细边框 */
+  .print-card {
+    background: white !important;
+    border: 1px solid #e0ccc5 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    break-inside: avoid;
+  }
+
+  /* 封面区打印时简化 */
+  .print-cover {
+    background: #fde8dc !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border-radius: 8px !important;
+    padding: 24px !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* 标签颜色保留 */
+  .print-tag {
+    background: #fde8dc !important;
+    color: #c0674a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border-radius: 20px !important;
+    padding: 2px 10px !important;
+    font-size: 10pt;
+  }
+
+  /* 时间线圆点颜色保留 */
+  .print-timeline-dot {
+    background: #e8836a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 手账信件底纹 */
+  .print-letter {
+    background-image: repeating-linear-gradient(
+      transparent, transparent 27px, #f5e8e0 27px, #f5e8e0 28px
+    ) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding: 16px !important;
+    border-radius: 8px !important;
+  }
+
+  /* 分页控制 */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  /* 页边距 */
+  @page {
+    margin: 15mm 12mm;
+    size: A4;
+  }
+}
