@@ -24,7 +24,7 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s 超时
+  const timeoutId = setTimeout(() => controller.abort(), 90_000); // 90s 超时
 
   let res: Response;
   try {

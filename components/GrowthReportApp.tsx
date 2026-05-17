@@ -188,16 +188,60 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   );
 }
 
+// 动态等待提示，按时间段切换文案，让用户感知进度
+const WAIT_STAGES = [
+  { after: 0,  text: "AI 正在读取你写下的故事…" },
+  { after: 8,  text: "正在整理年度关键词和成长总结…" },
+  { after: 20, text: "正在为孩子写一封信…" },
+  { after: 35, text: "正在生成时间线和朋友圈文案…" },
+  { after: 55, text: "快好了，正在做最后的整理…" },
+  { after: 75, text: "生成内容较长，请再耐心等一下…" },
+];
+
 function GeneratingScreen() {
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const currentStage = [...WAIT_STAGES]
+    .reverse()
+    .find((s) => elapsed >= s.after) ?? WAIT_STAGES[0];
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4"
       style={{ background: "var(--background)" }}>
       <div className="text-5xl mb-6 animate-bounce">🌸</div>
-      <p className="text-lg font-semibold mb-2" style={{ color: "var(--foreground)" }}>
+
+      <p className="text-lg font-semibold mb-3" style={{ color: "var(--foreground)" }}>
         正在生成成长礼物…
       </p>
-      <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-        AI 正在认真整理孩子的故事，请稍等片刻
+
+      {/* 动态阶段文案 */}
+      <p className="text-sm mb-6 transition-all" style={{ color: "var(--text-muted)" }}>
+        {currentStage.text}
+      </p>
+
+      {/* 进度条：最长按 90 秒满格 */}
+      <div className="w-48 h-1.5 rounded-full overflow-hidden mb-3"
+        style={{ background: "var(--border)" }}>
+        <div
+          className="h-full rounded-full transition-all duration-1000"
+          style={{
+            background: "linear-gradient(90deg, #f4b8a0, #e8836a)",
+            width: `${Math.min((elapsed / 90) * 100, 95)}%`,
+          }}
+        />
+      </div>
+
+      {/* 经过时间 */}
+      <p className="text-xs" style={{ color: "var(--border)" }}>
+        已等待 {elapsed} 秒
       </p>
     </div>
   );
