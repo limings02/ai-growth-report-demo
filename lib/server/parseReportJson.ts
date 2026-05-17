@@ -18,7 +18,7 @@ const DEFAULT_SOCIAL_POSTS: SocialPost[] = [
 // 从模型返回文本中提取 JSON（兼容偶尔包裹 ```json 的情况）
 function extractJson(raw: string): string {
   const trimmed = raw.trim();
-  const codeBlockMatch = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
+  const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
   if (codeBlockMatch) return codeBlockMatch[1];
   return trimmed;
 }
@@ -36,13 +36,20 @@ export function parseReportJson(raw: string, childName: string, reportYear: numb
     typeof v === "string" && v.trim() !== "" ? v : fallback;
 
   const strArr = (v: unknown, fallback: string[]): string[] => {
-    if (Array.isArray(v) && v.length > 0) return (v as unknown[]).map(String);
+    if (Array.isArray(v) && v.length > 0) {
+      return (v as unknown[])
+        .filter((item) => typeof item === "string" && (item as string).trim() !== "")
+        .map(String);
+    }
     return fallback;
   };
 
   // keywords：至少 3 个
   let keywords = strArr(parsed.keywords, DEFAULT_KEYWORDS);
-  if (keywords.length < 3) keywords = [...keywords, ...DEFAULT_KEYWORDS].slice(0, 5);
+  if (keywords.length < 3) {
+    const extra = DEFAULT_KEYWORDS.filter((k) => !keywords.includes(k));
+    keywords = [...keywords, ...extra].slice(0, 5);
+  }
 
   // timeline：至少 3 条
   let timeline: TimelineItem[] = DEFAULT_TIMELINE;
