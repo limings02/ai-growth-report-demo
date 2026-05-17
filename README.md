@@ -83,6 +83,8 @@ DEEPSEEK_MODEL=deepseek-chat
 
 ### 第二步：切换到 AI 生成器
 
+> 注意：`lib/aiReportGenerator.ts` 将在接入 DeepSeek 时一起创建，完成后再做此步骤。
+
 `components/GrowthReportApp.tsx` 开头：
 
 ```typescript
