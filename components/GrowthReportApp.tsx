@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial, ReportData } from "@/lib/types";
 import { extractRawMaterial } from "@/lib/extractRawMaterial";
 import { mockGenerator } from "@/lib/mockReportGenerator";
@@ -52,6 +52,12 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [report, setReport] = useState<ReportData | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
+  // 始终持有最新 photos 引用，供卸载清理使用
+  const photosRef = useRef(formData.photos);
+  useEffect(() => {
+    photosRef.current = formData.photos;
+  }, [formData.photos]);
+
   function handleFormChange(patch: Partial<GrowthReportFormData>) {
     setFormData((prev) => ({ ...prev, ...patch }));
   }
@@ -87,14 +93,12 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     );
   }
 
-  // 组件卸载时释放所有照片的 objectURL，防止内存泄漏
+  // 组件卸载时释放所有照片 objectURL，防止内存泄漏
   useEffect(() => {
     return () => {
-      formData.photos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+      photosRef.current.forEach((p) => URL.revokeObjectURL(p.previewUrl));
     };
-    // 只在卸载时执行，无需追踪 formData.photos 变化
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // 空依赖：只在卸载时执行，通过 ref 拿到最新列表
 
   if (appState === "generating") {
     return <GeneratingScreen />;
