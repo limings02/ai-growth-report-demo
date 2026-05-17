@@ -1,10 +1,14 @@
 // lib/memory-core/types.ts
-// 跨 mode 的通用输入类型定义。
+// Memory Engine 的跨 mode 核心类型定义。
 //
-// 设计目的：
-// 1. 避免底层 runtime 继续依赖 childName / parentName / reportYear 等 family-only 字段。
-// 2. 让 couple / personal / memorial 未来可以走同一套 skill runtime。
-// 3. 当前阶段只做类型定义和 domain adapter，不替换现有 RawMaterial 和旧链路。
+// 包含两层：
+// 1. 输入层：MemoryRawMaterial
+// 2. 输出层：MemoryArtifact
+//
+// 设计目标：
+// - 让 family / couple / personal / memorial 共享同一套 memory-core 抽象
+// - 避免底层 runtime 依赖 childName / parentName / reportYear 等 family-only 字段
+// - 保留 domainPayload / extensions，支持各 mode 的专属字段渐进迁移
 
 import type { MemoryMode } from "./modes";
 

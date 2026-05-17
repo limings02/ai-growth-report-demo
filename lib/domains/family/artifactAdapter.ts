@@ -46,9 +46,9 @@ const EMPTY_QUALITY_REVIEW: QualityReview = {
 };
 
 const EMPTY_AI_GRAPH_HINTS: AiGraphHints = {
-  title: "",
-  subtitle: "",
-  centerDescription: "",
+  title: "记忆星图",
+  subtitle: "每一个节点，都是被认真保存的片段。",
+  centerDescription: "一段被整理的记忆",
   nodes: [],
 };
 
