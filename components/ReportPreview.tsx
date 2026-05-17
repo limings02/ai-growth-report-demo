@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ReportData, RawMaterial, PhotoItem } from "@/lib/types";
 import PrintButton from "./PrintButton";
+import LifeGraphPreview from "./LifeGraphPreview";
 
 type Props = {
   report: ReportData;
@@ -45,7 +46,7 @@ export default function ReportPreview({ report, rawMaterial, photos, onBack }: P
       {/* ── 屏幕内容区 ──────────────────────────────────────── */}
       <div className="no-print px-4 pb-20">
         <div className="max-w-2xl mx-auto">
-          {tab === "generated" && <GeneratedContent report={report} photos={photos} />}
+          {tab === "generated" && <GeneratedContent report={report} rawMaterial={rawMaterial} photos={photos} />}
           {tab === "raw" && <RawContent rawMaterial={rawMaterial} photos={photos} />}
         </div>
       </div>
@@ -140,10 +141,12 @@ function PrintContent({ report, photos }: { report: ReportData; photos: PhotoIte
 // ─────────────────────────────────────────────────────────────
 // 屏幕显示：生成内容
 // ─────────────────────────────────────────────────────────────
-function GeneratedContent({ report, photos }: { report: ReportData; photos: PhotoItem[] }) {
+function GeneratedContent({ report, rawMaterial, photos }: { report: ReportData; rawMaterial: RawMaterial; photos: PhotoItem[] }) {
   return (
     <div>
       <CoverSection report={report} photos={photos} />
+      {/* 成长星图：仅屏幕显示，打印时跳过（在 no-print 父容器内） */}
+      <LifeGraphPreview rawMaterial={rawMaterial} report={report} />
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
         <div className="sm:col-span-2"><KeywordsCard keywords={report.keywords} /></div>
         <div className="sm:col-span-3"><SummaryCard summary={report.yearlySummary} /></div>
