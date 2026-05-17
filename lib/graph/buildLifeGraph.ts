@@ -12,13 +12,23 @@ export function buildLifeGraph(input: {
   const { rawMaterial, report } = input;
   const nodes: LifeGraphNode[] = [];
   const edges: LifeGraphEdge[] = [];
+  // 用于去重：已存在的边 id 集合
+  const edgeIds = new Set<string>();
+
+  function addEdge(edge: LifeGraphEdge) {
+    if (!edgeIds.has(edge.id)) {
+      edgeIds.add(edge.id);
+      edges.push(edge);
+    }
+  }
 
   // ── 中心节点：孩子 ───────────────────────────────────────────
+  const agePrefix = rawMaterial.childAge !== "" ? `${rawMaterial.childAge} 岁 · ` : "";
   nodes.push({
     id: "child",
     type: "child",
     label: rawMaterial.childName || "宝贝",
-    description: `${rawMaterial.childAge !== "" ? rawMaterial.childAge + " 岁" : ""}${rawMaterial.childAge !== "" ? " · " : ""}${rawMaterial.reportYear} 年`,
+    description: `${agePrefix}${rawMaterial.reportYear} 年｜这一年，被认真记住了`,
     source: "raw",
   });
 
@@ -31,33 +41,55 @@ export function buildLifeGraph(input: {
     description: "这一年的成长记录",
     source: "raw",
   });
-  edges.push({ id: `edge-child-year`, source: "child", target: yearId });
+  addEdge({ id: "edge-child-year", source: "child", target: yearId });
 
   // ── 关键词节点（最多 5 个）───────────────────────────────────
+  const keywordNodes: LifeGraphNode[] = [];
   report.keywords.slice(0, 5).forEach((kw, i) => {
     const nodeId = `keyword-${i}`;
-    nodes.push({
+    const node: LifeGraphNode = {
       id: nodeId,
       type: "keyword",
       label: kw,
       description: "年度关键词",
       source: "generated",
-    });
-    edges.push({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
+    };
+    nodes.push(node);
+    keywordNodes.push(node);
+    addEdge({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
   });
 
   // ── 时间线事件节点（最多 5 个）──────────────────────────────
+  const eventNodes: LifeGraphNode[] = [];
   report.timeline.slice(0, 5).forEach((item, i) => {
     const nodeId = `event-${i}`;
-    nodes.push({
+    const node: LifeGraphNode = {
       id: nodeId,
       type: "event",
       label: item.title,
       description: `${item.time}｜${item.description}`,
       source: "generated",
+    };
+    nodes.push(node);
+    eventNodes.push(node);
+    addEdge({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
+    addEdge({ id: `edge-year-${nodeId}`, source: yearId, target: nodeId });
+  });
+
+  // ── keyword → event 弱关联（简单字符串 includes 匹配）───────
+  keywordNodes.forEach((kwNode) => {
+    eventNodes.forEach((evNode) => {
+      const kw = kwNode.label;
+      const evText = evNode.label + (evNode.description ?? "");
+      if (evText.includes(kw)) {
+        addEdge({
+          id: `edge-kw-ev-${kwNode.id}-${evNode.id}`,
+          source: kwNode.id,
+          target: evNode.id,
+          label: "相关",
+        });
+      }
     });
-    edges.push({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
-    edges.push({ id: `edge-year-${nodeId}`, source: yearId, target: nodeId });
   });
 
   // ── 信件节点 ─────────────────────────────────────────────────
@@ -68,7 +100,7 @@ export function buildLifeGraph(input: {
     description: report.letter.slice(0, 80) + (report.letter.length > 80 ? "……" : ""),
     source: "generated",
   });
-  edges.push({ id: "edge-child-letter", source: "child", target: "letter" });
+  addEdge({ id: "edge-child-letter", source: "child", target: "letter" });
 
   // ── 自由记录节点（有内容才生成）─────────────────────────────
   if (rawMaterial.freeNote.trim()) {
@@ -79,7 +111,7 @@ export function buildLifeGraph(input: {
       description: rawMaterial.freeNote.slice(0, 80) + (rawMaterial.freeNote.length > 80 ? "……" : ""),
       source: "raw",
     });
-    edges.push({ id: "edge-child-memory", source: "child", target: "memory" });
+    addEdge({ id: "edge-child-memory", source: "child", target: "memory" });
   }
 
   return { nodes, edges };
