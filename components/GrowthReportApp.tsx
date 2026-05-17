@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial, ReportData } from "@/lib/types";
 import { extractRawMaterial } from "@/lib/extractRawMaterial";
-import { mockGenerator } from "@/lib/mockReportGenerator";
-// TODO[ai-api]: 接入真实 AI 时，替换为：
-// import { aiGenerator } from "@/lib/aiReportGenerator";
-// const generator = aiGenerator;
-const generator = mockGenerator;
+import { aiGenerator } from "@/lib/aiReportGenerator";
+// 本地无 API Key 时可切换回 mock：
+// import { mockGenerator } from "@/lib/mockReportGenerator";
+// const generator = mockGenerator;
+const generator = aiGenerator;
 
 import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
