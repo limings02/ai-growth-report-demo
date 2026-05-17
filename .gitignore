@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files（不提交任何 key，.env.local.example 除外）
+.env
+.env.local
+.env.*.local
 
 # vercel
 .vercel
