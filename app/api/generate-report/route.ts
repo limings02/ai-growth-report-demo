@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   if (!material.childName?.trim()) {
     return NextResponse.json({ error: "缺少孩子昵称" }, { status: 400 });
   }
-  if (material.childAge === "" || material.childAge === undefined) {
+  if (material.childAge === "" || material.childAge == null) {
     return NextResponse.json({ error: "缺少孩子年龄" }, { status: 400 });
   }
   if (!material.parentName?.trim()) {
@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
   }
   if (!material.qaList || material.qaList.length < 2) {
     return NextResponse.json({ error: "至少需要回答 2 个问题" }, { status: 400 });
+  }
+  if (!material.reportYear || typeof material.reportYear !== "number") {
+    return NextResponse.json({ error: "缺少报告年份" }, { status: 400 });
   }
 
   try {
