@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { ReportData, RawMaterial, PhotoItem } from "@/lib/types";
+import type { GrowthMemoryArtifact, AiGraphHints } from "@/lib/skill-runtime/types";
 import PrintButton from "./PrintButton";
 import LifeGraphPreview from "./LifeGraphPreview";
 
 type Props = {
-  report: ReportData;
+  artifact: GrowthMemoryArtifact;
   rawMaterial: RawMaterial;
   photos: PhotoItem[];
   onBack: () => void;
@@ -14,8 +15,9 @@ type Props = {
 
 type Tab = "generated" | "raw";
 
-export default function ReportPreview({ report, rawMaterial, photos, onBack }: Props) {
+export default function ReportPreview({ artifact, rawMaterial, photos, onBack }: Props) {
   const [tab, setTab] = useState<Tab>("generated");
+  const report = artifact.report;
 
   return (
     <div className="min-h-screen" style={{ background: "var(--background)" }}>
@@ -46,7 +48,14 @@ export default function ReportPreview({ report, rawMaterial, photos, onBack }: P
       {/* ── 屏幕内容区 ──────────────────────────────────────── */}
       <div className="no-print px-4 pb-20">
         <div className="max-w-2xl mx-auto">
-          {tab === "generated" && <GeneratedContent report={report} rawMaterial={rawMaterial} photos={photos} />}
+          {tab === "generated" && (
+            <GeneratedContent
+              report={report}
+              rawMaterial={rawMaterial}
+              photos={photos}
+              graphHints={artifact.graph}
+            />
+          )}
           {tab === "raw" && <RawContent rawMaterial={rawMaterial} photos={photos} />}
         </div>
       </div>
@@ -141,12 +150,12 @@ function PrintContent({ report, photos }: { report: ReportData; photos: PhotoIte
 // ─────────────────────────────────────────────────────────────
 // 屏幕显示：生成内容
 // ─────────────────────────────────────────────────────────────
-function GeneratedContent({ report, rawMaterial, photos }: { report: ReportData; rawMaterial: RawMaterial; photos: PhotoItem[] }) {
+function GeneratedContent({ report, rawMaterial, photos, graphHints }: { report: ReportData; rawMaterial: RawMaterial; photos: PhotoItem[]; graphHints?: AiGraphHints }) {
   return (
     <div>
       <CoverSection report={report} photos={photos} />
       {/* 成长星图：仅屏幕显示，打印时跳过（在 no-print 父容器内） */}
-      <LifeGraphPreview rawMaterial={rawMaterial} report={report} />
+      <LifeGraphPreview rawMaterial={rawMaterial} report={report} graphHints={graphHints} />
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
         <div className="sm:col-span-2"><KeywordsCard keywords={report.keywords} /></div>
         <div className="sm:col-span-3"><SummaryCard summary={report.yearlySummary} /></div>

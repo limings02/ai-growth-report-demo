@@ -1,11 +1,11 @@
 // lib/aiReportGenerator.ts
-// 前端 ReportGeneratorI 实现
+// 前端调用层，v0.4：返回 GrowthMemoryArtifact
 // 只调用 /api/generate-report，不读取任何环境变量
-// 照片 previewUrl 是 blob:// URL，对服务端无意义，发送前移除
-import { ReportGeneratorI, RawMaterial, ReportData } from "./types";
+import type { RawMaterial } from "./types";
+import type { GrowthMemoryArtifact } from "./skill-runtime/types";
 
-class AiReportGenerator implements ReportGeneratorI {
-  async generate(material: RawMaterial): Promise<ReportData> {
+class AiReportGenerator {
+  async generate(material: RawMaterial): Promise<GrowthMemoryArtifact> {
     // 网络错误处理：DNS 失败、连接超时等
     let res: Response;
     try {
@@ -20,9 +20,9 @@ class AiReportGenerator implements ReportGeneratorI {
     }
 
     // JSON 解析失败处理：如 502 的 HTML 响应、空响应等
-    let data: ReportData & { error?: string };
+    let data: GrowthMemoryArtifact & { error?: string };
     try {
-      data = (await res.json()) as ReportData & { error?: string };
+      data = (await res.json()) as GrowthMemoryArtifact & { error?: string };
     } catch {
       throw new Error(`服务器返回非 JSON 响应 (HTTP ${res.status})，请稍后重试`);
     }

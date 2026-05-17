@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial, ReportData } from "@/lib/types";
+import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial } from "@/lib/types";
 import { extractRawMaterial } from "@/lib/extractRawMaterial";
+import type { GrowthMemoryArtifact } from "@/lib/skill-runtime/types";
 import { aiGenerator } from "@/lib/aiReportGenerator";
-// 本地无 API Key 时可切换回 mock：
+// 本地无 API Key 时可切换回 mock（mock 仍返回 ReportData，需临时适配）：
 // import { mockGenerator } from "@/lib/mockReportGenerator";
 // const generator = mockGenerator;
 const generator = aiGenerator;
@@ -49,7 +50,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
 
   // 原始材料与生成结果分开存储
   const [rawMaterial, setRawMaterial] = useState<RawMaterial | null>(null);
-  const [report, setReport] = useState<ReportData | null>(null);
+  const [artifact, setArtifact] = useState<GrowthMemoryArtifact | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
   // 始终持有最新 photos 引用，供卸载清理使用
@@ -71,9 +72,8 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     setRawMaterial(material);
 
     try {
-      // TODO[ai-api]: 这里切换 generator 即可接入真实 AI，其余代码不变
       const result = await generator.generate(material);
-      setReport(result);
+      setArtifact(result as GrowthMemoryArtifact);
       setAppState("result");
     } catch (err) {
       setGenerateError(err instanceof Error ? err.message : "生成失败，请重试");
@@ -104,10 +104,10 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     return <GeneratingScreen />;
   }
 
-  if (appState === "result" && report && rawMaterial) {
+  if (appState === "result" && artifact && rawMaterial) {
     return (
       <ReportPreview
-        report={report}
+        artifact={artifact}
         rawMaterial={rawMaterial}
         photos={formData.photos}
         onBack={() => setAppState("input")}

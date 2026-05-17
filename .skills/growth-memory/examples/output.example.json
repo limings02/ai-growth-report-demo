@@ -1,0 +1,81 @@
+{
+  "artifactVersion": "0.1",
+  "report": {
+    "title": "小橙的 2026 成长礼物",
+    "keywords": ["好奇宝宝", "第一次", "自己走路", "妈妈我爱你", "问不完的为什么"],
+    "yearlySummary": "2026 年，小橙 3 岁。这一年，她开始用一百个「为什么」探索世界，每一个问题背后都是她对这个世界越来越强烈的好奇心。\n\n她学会了穿鞋，学会了骑平衡车，学会了用筷子夹菜。那些看起来微不足道的小事，在妈妈眼里都是了不起的成就。\n\n她第一次独立走进幼儿园的那个早晨，没有哭，只是回头看了妈妈一眼，笑了笑。妈妈站在门口，眼眶红了很久。\n\n这一年有辛苦，有惊喜，有心疼，有感动。但每当她说出「妈妈辛苦了」的时候，一切都值得了。",
+    "timeline": [
+      { "time": "春天", "title": "第一次独立走进幼儿园", "description": "那个回头的眼神，妈妈永远记得" },
+      { "time": "夏天", "title": "学会骑平衡车", "description": "摔了好几次，爬起来又骑，一次比一次稳" },
+      { "time": "秋天", "title": "「妈妈辛苦了」", "description": "生病那段时间，退烧第一件事是来找妈妈要抱抱" },
+      { "time": "年末", "title": "问不完的为什么", "description": "每天一百个问题，是她认真在理解这个世界" }
+    ],
+    "letter": "亲爱的小橙：\n\n2026 年，你 3 岁。这一年，你问了妈妈一百个问题。每次妈妈回答不上来，你就歪着头说「那为什么呢」，那个样子把妈妈逗笑了好多次。\n\n你生病的那三天，妈妈陪了你三个夜晚。退烧那天早上，你第一件事是爬过来找我要抱抱。妈妈抱着你，突然觉得，这份辛苦是世界上最值得的事。\n\n你第一次独立走进幼儿园那天，回头朝妈妈笑了一下，就头也不回地进去了。妈妈站在门口，眼睛有点酸。你不知道，那一刻妈妈既骄傲又有点舍不得。\n\n希望你长大以后，还记得自己小时候有多被爱。那些「为什么」，那些抱抱，那些小小的第一次，妈妈都认真记着呢。\n\n爱你的妈妈\n2026 年",
+    "socialPosts": [
+      { "title": "温暖版", "content": "小橙 3 岁，2026 年的成长礼物做好了。\n\n这一年她学会了骑车、穿鞋、用筷子，还学会了说「妈妈辛苦了」。\n\n每一年都舍不得让它就这么过去。\n\n#成长记录 #小橙3岁 #给孩子的礼物" },
+      { "title": "走心版", "content": "写给 3 岁的小橙，也写给 2026 年的我们。\n\n「妈妈辛苦了，我长大了要保护你。」\n\n有一天你会长大，但我们会一直记得你现在这个样子。\n\n#致未来的小橙 #2026成长礼物" },
+      { "title": "简洁版", "content": "小橙，3 岁，2026。\n妈妈认真记录了你这一年。\n这是给你的成长礼物 🎁\n\n#成长礼物 #小橙的2026" }
+    ],
+    "skillStatus": {
+      "keywords": "done",
+      "yearlySummary": "done",
+      "timeline": "done",
+      "letter": "done",
+      "socialPosts": "done"
+    }
+  },
+  "graph": {
+    "title": "被爱点亮的这一年",
+    "subtitle": "每一颗星，都是你认真记住过的瞬间。",
+    "centerDescription": "3 岁 · 问不完的为什么",
+    "nodes": [
+      { "type": "keyword", "label": "好奇心", "description": "那些问不完的为什么，是她认真在理解世界", "emotion": "惊喜", "relatedTo": [] },
+      { "type": "keyword", "label": "第一次", "description": "每一个第一次都是小小的勇敢", "emotion": "骄傲", "relatedTo": ["幼儿园"] },
+      { "type": "event", "label": "幼儿园", "description": "那个回头的眼神，妈妈站在门口眼眶红了", "emotion": "心疼", "relatedTo": ["第一次"] },
+      { "type": "event", "label": "生病抱抱", "description": "退烧那天早上，第一件事是来找妈妈要抱抱", "emotion": "温柔", "relatedTo": [] },
+      { "type": "keyword", "label": "保护你", "description": "「我长大了要保护你」——她认真说的", "emotion": "感动", "relatedTo": [] },
+      { "type": "letter", "label": "写给你", "description": "妈妈留给未来小橙的一封信", "emotion": "珍惜", "relatedTo": [] },
+      { "type": "memory", "label": "三个夜晚", "description": "生病那三天，妈妈陪了三个夜晚", "emotion": "心疼", "relatedTo": ["生病抱抱"] }
+    ]
+  },
+  "videoScript": {
+    "title": "小橙的 2026 · 被爱记住的这一年",
+    "duration": "60s",
+    "scenes": [
+      { "order": 1, "visualSuggestion": "孩子独立走进幼儿园的背影照片", "narration": "这一年，她第一次独立走进幼儿园。", "subtitle": "第一次，自己走进去", "emotion": "骄傲" },
+      { "order": 2, "visualSuggestion": "孩子骑平衡车或玩耍的照片", "narration": "她学会了骑车，学会了穿鞋，学会了用筷子夹菜。", "subtitle": "每一个小小的第一次", "emotion": "温暖" },
+      { "order": 3, "visualSuggestion": "孩子问问题时歪头的样子", "narration": "她每天问一百个问题，对这个世界充满好奇。", "subtitle": "为什么呢？为什么呢？", "emotion": "惊喜" },
+      { "order": 4, "visualSuggestion": "母子依偎的温馨照片", "narration": "退烧那天早上，她第一件事是来找妈妈要抱抱。", "subtitle": "妈妈辛苦了", "emotion": "感动" },
+      { "order": 5, "visualSuggestion": "孩子和妈妈的合影或孩子笑脸", "narration": "这一年，被认真记住了。", "subtitle": "2026，小橙 3 岁", "emotion": "珍惜" }
+    ],
+    "musicMood": "轻柔钢琴曲，带一点温暖的弦乐",
+    "endingLine": "有一天，你会看见自己是如何被爱着长大的。"
+  },
+  "sourceTrace": {
+    "usedQuestions": [
+      "今年孩子最大的变化是什么？",
+      "今年最让你印象深刻的一件事是什么？",
+      "今年孩子学会了什么新能力？",
+      "今年孩子说过哪句话让你印象很深？",
+      "今年孩子最喜欢什么？"
+    ],
+    "usedFreeNote": true,
+    "missingContext": ["没有回答「今年有没有重要旅行或家庭事件」", "没有回答「你想对18岁孩子说什么」"],
+    "groundingNotes": [
+      "「第一次独立走进幼儿园没有哭」来自用户直接回答",
+      "「生病三天退烧找妈妈要抱抱」来自用户 freeNote",
+      "「妈妈辛苦了，我长大了要保护你」是用户原话直接引用",
+      "timeline 第四条「年末·问不完的为什么」是对用户回答的总结性表达"
+    ]
+  },
+  "qualityReview": {
+    "riskOfFabrication": "low",
+    "emotionalTone": "温暖克制，有具体细节支撑，不依赖空洞形容词",
+    "weaknesses": ["没有重要旅行或家庭事件的信息，时间线偏少", "视频脚本建议的画面仅供参考，需要父母对应实际照片"],
+    "suggestionsForBetterInput": [
+      "可以补充今年有没有印象深刻的旅行或家庭聚会",
+      "可以补充一句你想对18岁孩子说的话，会让信件更有力量",
+      "可以描述孩子最喜欢的一个玩具或书，让内容更具体"
+    ]
+  }
+}

@@ -4,10 +4,12 @@ import { useState, useMemo } from "react";
 import type { RawMaterial, ReportData } from "@/lib/types";
 import { buildLifeGraph } from "@/lib/graph/buildLifeGraph";
 import type { LifeGraphNode, LifeGraphNodeType } from "@/lib/graph/types";
+import type { AiGraphHints } from "@/lib/skill-runtime/types";
 
 type Props = {
   rawMaterial: RawMaterial;
   report: ReportData;
+  graphHints?: AiGraphHints; // AI 生成的星图语义节点，优先使用；缺失时 fallback 到前端派生
 };
 
 // 节点类型对应的视觉配置
@@ -80,11 +82,42 @@ function toSvg(v: number, size: number, padding: number): number {
   return Math.max(padding, Math.min(size - padding, v * size));
 }
 
-export default function LifeGraphPreview({ rawMaterial, report }: Props) {
-  const graph = useMemo(
+export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Props) {
+  // 优先使用 AI 生成的 graphHints，fallback 到前端派生
+  const useAiHints = graphHints && graphHints.nodes.length > 0;
+
+  // 前端派生图谱（fallback 或与 AI 图谱合并用于布局/边）
+  const derivedGraph = useMemo(
     () => buildLifeGraph({ rawMaterial, report }),
     [rawMaterial, report]
   );
+
+  // 若有 AI 节点，把它们映射成 LifeGraphNode 格式，注入到 derivedGraph
+  const graph = useMemo(() => {
+    if (!useAiHints) return derivedGraph;
+    // 替换 keyword/event/letter/memory 类型的节点为 AI 生成的节点
+    const aiNodes: LifeGraphNode[] = graphHints.nodes.map((n, i) => ({
+      id: `${n.type}-ai-${i}`,
+      type: n.type,
+      label: n.label,
+      description: n.description,
+      source: "generated" as const,
+    }));
+    // 保留 child 和 year 节点，覆盖其余节点
+    // child 节点的 description 用 AI 的 centerDescription
+    const childNode = derivedGraph.nodes.find((n) => n.type === "child");
+    const yearNode = derivedGraph.nodes.find((n) => n.type === "year");
+    const baseNodes: LifeGraphNode[] = [
+      childNode ? { ...childNode, description: graphHints.centerDescription } : childNode!,
+      ...(yearNode ? [yearNode] : []),
+      ...aiNodes,
+    ].filter(Boolean);
+    return { nodes: baseNodes, edges: derivedGraph.edges };
+  }, [useAiHints, graphHints, derivedGraph]);
+
+  // 标题和副标题：优先使用 AI 版本
+  const graphTitle = useAiHints ? graphHints.title : "被爱点亮的这一年";
+  const graphSubtitle = useAiHints ? graphHints.subtitle : "每一颗星，都是你认真记住过的瞬间。";
 
   const [selectedId, setSelectedId] = useState<string>("child");
   const layout = useMemo(() => computeLayout(graph.nodes), [graph.nodes]);
@@ -106,10 +139,10 @@ export default function LifeGraphPreview({ rawMaterial, report }: Props) {
       {/* 标题区 */}
       <div className="px-6 pt-6 pb-3">
         <p className="text-sm font-bold mb-1" style={{ color: "#f4b8a0", letterSpacing: "0.08em" }}>
-          ✦ 被爱点亮的这一年
+          ✦ {graphTitle}
         </p>
         <p className="text-xs leading-relaxed" style={{ color: "rgba(244,184,160,0.6)" }}>
-          每一颗星，都是你认真记住过的瞬间。
+          {graphSubtitle}
         </p>
       </div>
 

@@ -1,0 +1,14 @@
+{
+  "_description": "稀疏输入：只回答了 2 个问题，没有 freeNote，测试 low-info fallback",
+  "childName": "小花",
+  "childAge": "",
+  "reportYear": 2026,
+  "parentName": "妈妈",
+  "style": "warm",
+  "photoCount": 3,
+  "qaList": [
+    { "question": "今年孩子最大的变化是什么？", "answer": "长高了很多，也变懂事了" },
+    { "question": "你想对 18 岁的孩子说什么？", "answer": "希望你永远快乐" }
+  ],
+  "freeNote": ""
+}

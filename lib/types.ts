@@ -95,11 +95,14 @@ export type ReportData = {
 
 // ─────────────────────────────────────────────────────────────
 // 生成器接口（Generator Interface）
-// mock 和真实 AI 都实现这个接口，切换时只需替换实现
+// v0.4 起生成器返回 GrowthMemoryArtifact，旧 ReportData 包含在 artifact.report 中
 // ─────────────────────────────────────────────────────────────
 
+// 避免循环引用：GrowthMemoryArtifact 定义在 lib/skill-runtime/types.ts
+// 这里用动态 import 方式在接口中引用
 export interface ReportGeneratorI {
-  generate(material: RawMaterial): Promise<ReportData>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  generate(material: RawMaterial): Promise<any>; // 实际返回 GrowthMemoryArtifact
 }
 
 // ─────────────────────────────────────────────────────────────

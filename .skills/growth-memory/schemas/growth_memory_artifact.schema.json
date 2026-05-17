@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GrowthMemoryArtifact",
+  "type": "object",
+  "required": ["artifactVersion", "report", "graph", "videoScript", "sourceTrace", "qualityReview"],
+  "properties": {
+    "artifactVersion": { "type": "string", "const": "0.1" },
+    "report": {
+      "type": "object",
+      "required": ["title", "keywords", "yearlySummary", "timeline", "letter", "socialPosts", "skillStatus"],
+      "properties": {
+        "title": { "type": "string" },
+        "keywords": { "type": "array", "items": { "type": "string" }, "minItems": 3, "maxItems": 5 },
+        "yearlySummary": { "type": "string", "minLength": 50 },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["time", "title", "description"],
+            "properties": {
+              "time": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          },
+          "minItems": 3
+        },
+        "letter": { "type": "string", "minLength": 50 },
+        "socialPosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "content"],
+            "properties": {
+              "title": { "type": "string" },
+              "content": { "type": "string" }
+            }
+          },
+          "minItems": 3
+        },
+        "skillStatus": {
+          "type": "object",
+          "properties": {
+            "keywords": { "type": "string" },
+            "yearlySummary": { "type": "string" },
+            "timeline": { "type": "string" },
+            "letter": { "type": "string" },
+            "socialPosts": { "type": "string" }
+          }
+        }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "required": ["title", "subtitle", "centerDescription", "nodes"],
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "centerDescription": { "type": "string" },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "label", "description", "emotion", "relatedTo"],
+            "properties": {
+              "type": { "type": "string", "enum": ["keyword", "event", "letter", "memory"] },
+              "label": { "type": "string" },
+              "description": { "type": "string" },
+              "emotion": { "type": "string" },
+              "relatedTo": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "videoScript": {
+      "type": "object",
+      "required": ["title", "duration", "scenes", "musicMood", "endingLine"],
+      "properties": {
+        "title": { "type": "string" },
+        "duration": { "type": "string", "enum": ["30s", "60s", "90s"] },
+        "scenes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["order", "visualSuggestion", "narration", "subtitle", "emotion"],
+            "properties": {
+              "order": { "type": "integer" },
+              "visualSuggestion": { "type": "string" },
+              "narration": { "type": "string" },
+              "subtitle": { "type": "string" },
+              "emotion": { "type": "string" }
+            }
+          }
+        },
+        "musicMood": { "type": "string" },
+        "endingLine": { "type": "string" }
+      }
+    },
+    "sourceTrace": {
+      "type": "object",
+      "required": ["usedQuestions", "usedFreeNote", "missingContext", "groundingNotes"],
+      "properties": {
+        "usedQuestions": { "type": "array", "items": { "type": "string" } },
+        "usedFreeNote": { "type": "boolean" },
+        "missingContext": { "type": "array", "items": { "type": "string" } },
+        "groundingNotes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "qualityReview": {
+      "type": "object",
+      "required": ["riskOfFabrication", "emotionalTone", "weaknesses", "suggestionsForBetterInput"],
+      "properties": {
+        "riskOfFabrication": { "type": "string", "enum": ["low", "medium", "high"] },
+        "emotionalTone": { "type": "string" },
+        "weaknesses": { "type": "array", "items": { "type": "string" } },
+        "suggestionsForBetterInput": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

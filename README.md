@@ -128,12 +128,39 @@ npm run dev
 
 生成成长礼物后，系统会在网页内**自动生成一张成长星图**，呈现在封面下方。
 
-- 星图基于本次生成结果在**前端即时构建**，不调用 AI，不做额外网络请求
-- 包含：孩子中心节点、年份节点、年度关键词、重要瞬间、给孩子的信、父母补充记录
+- v0.4 起：星图节点由 AI 直接生成（带情绪标签、诗意描述），比前端派生更有深度
+- 若 AI 未返回星图数据，自动 fallback 到前端从报告内容派生
 - **不依赖 Obsidian**，不需要用户学习任何知识管理工具
-- 点击任意节点可查看详情
-- 关键词与事件之间如有词语关联，会自动生成弱关联连线
+- 点击任意节点可查看详情和情绪关键词
 - 成长星图当前是基于单次生成结果即时构建，后续可以把多次生成串联成长期人生星图
+
+---
+
+## Growth Memory Skill Pack
+
+`.skills/growth-memory/` 是项目级 skill pack，借鉴 llm-wiki-agent 的思想：
+
+- 原始材料（RawMaterial）进入 skill → skill 输出结构化 artifact（GrowthMemoryArtifact）
+- prompt、schema、examples、tests 全部独立封装在 `.skills/growth-memory/` 目录
+- 运行时通过 `fs.readFileSync` 读取 prompt 文件，**修改 prompt 不需要重新 build**
+- 当前仍是一次 DeepSeek 调用，输出：report + graph + videoScript + sourceTrace + qualityReview
+- 后续可以把各模块拆成多阶段 agent workflow（见 `lib/skills/reportSkillPlan.ts`）
+
+```
+.skills/growth-memory/
+  SKILL.md           # Skill 定义（输入、输出、原则、工作流）
+  prompts/           # 分层 prompt（运行时加载）
+  schemas/           # JSON Schema（输入/输出验证）
+  examples/          # 完整示例
+  tests/             # 测试用例（minimal/rich/sparse）
+
+lib/skill-runtime/   # Skill 运行时
+  runGrowthMemorySkill.ts  # 入口
+  buildGrowthMemoryPrompt.ts
+  parseGrowthMemoryArtifact.ts
+  loadSkillPrompt.ts
+  types.ts           # GrowthMemoryArtifact 类型定义
+```
 
 ---
 
