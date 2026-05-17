@@ -252,9 +252,17 @@ function SocialCard({ posts }: { posts: { title: string; content: string }[] }) 
   const [copied, setCopied] = useState<string | null>(null);
 
   function handleCopy(content: string, title: string) {
+    if (!navigator.clipboard) {
+      setCopied(`${title}__fail`);
+      setTimeout(() => setCopied(null), 3000);
+      return;
+    }
     navigator.clipboard.writeText(content).then(() => {
       setCopied(title);
       setTimeout(() => setCopied(null), 2000);
+    }).catch(() => {
+      setCopied(`${title}__fail`);
+      setTimeout(() => setCopied(null), 3000);
     });
   }
 
@@ -267,8 +275,11 @@ function SocialCard({ posts }: { posts: { title: string; content: string }[] }) 
               <span className="text-xs font-semibold" style={{ color: "#c0674a" }}>{post.title}</span>
               <button onClick={() => handleCopy(post.content, post.title)}
                 className="no-print text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all"
-                style={{ background: copied === post.title ? "#e8836a" : "white", color: copied === post.title ? "white" : "#c0674a" }}>
-                {copied === post.title ? "✓ 已复制" : "复制"}
+                style={{
+                  background: copied === post.title ? "#e8836a" : copied === `${post.title}__fail` ? "#fff0ee" : "white",
+                  color: copied === post.title ? "white" : copied === `${post.title}__fail` ? "#c0674a" : "#c0674a",
+                }}>
+                {copied === post.title ? "✓ 已复制" : copied === `${post.title}__fail` ? "复制失败，请手动复制" : "复制"}
               </button>
             </div>
             <p className="text-xs leading-relaxed p-3 whitespace-pre-line"

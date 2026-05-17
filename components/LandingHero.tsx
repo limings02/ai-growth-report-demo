@@ -143,7 +143,7 @@ function PreviewCard() {
       <div className="rounded-xl p-3" style={{ background: "#fdf5f2" }}>
         <p className="text-xs font-semibold mb-1.5" style={{ color: "#b08878" }}>💌 写给 18 岁的你</p>
         <p className="text-xs leading-relaxed italic" style={{ color: "#7a5a52" }}>
-          "那时候你还那么小，却已经对世界充满好奇。妈妈希望你永远保留这份热情……"
+          &ldquo;那时候你还那么小，却已经对世界充满好奇。妈妈希望你永远保留这份热情……&rdquo;
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial, ReportData } from "@/lib/types";
 import { extractRawMaterial } from "@/lib/extractRawMaterial";
 import { mockGenerator } from "@/lib/mockReportGenerator";
@@ -75,13 +75,26 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     }
   }
 
+  // 至少回答 2 道访谈问题
+  const answeredCount = formData.questions.filter((q) => q.answer.trim() !== "").length;
+
   function isFormValid(): boolean {
     return (
       formData.childName.trim() !== "" &&
       formData.childAge !== "" &&
-      formData.parentName.trim() !== ""
+      formData.parentName.trim() !== "" &&
+      answeredCount >= 2
     );
   }
+
+  // 组件卸载时释放所有照片的 objectURL，防止内存泄漏
+  useEffect(() => {
+    return () => {
+      formData.photos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    };
+    // 只在卸载时执行，无需追踪 formData.photos 变化
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (appState === "generating") {
     return <GeneratingScreen />;
@@ -141,6 +154,13 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
         <InterviewForm formData={formData} onChange={handleFormChange} />
 
         <div className="mt-10 mb-16">
+          {/* 无照片温和提示 */}
+          {formData.photos.length === 0 && (
+            <p className="text-center text-xs mb-4" style={{ color: "var(--text-muted)" }}>
+              📷 也可以先不上传照片，但加入照片会让这份礼物更完整
+            </p>
+          )}
+
           <button
             onClick={handleGenerate}
             disabled={!isFormValid()}
@@ -150,9 +170,12 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             style={{ background: "linear-gradient(135deg, #e8836a, #e07a5f)" }}>
             生成成长礼物 ✨
           </button>
+
           {!isFormValid() && (
             <p className="text-center text-xs mt-3" style={{ color: "var(--text-muted)" }}>
-              请填写孩子昵称、年龄和父母称呼后即可生成
+              {formData.childName.trim() === "" || formData.childAge === "" || formData.parentName.trim() === ""
+                ? "请填写孩子昵称、年龄和父母称呼"
+                : `还需要至少回答 2 个问题（已回答 ${answeredCount} 个）`}
             </p>
           )}
         </div>
