@@ -24,7 +24,12 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 90_000); // 90s 超时
+  // 标记是否是我们主动 abort 的（用于区分超时 vs 其他网络错误）
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, 120_000); // 120s 超时
 
   let res: Response;
   try {
@@ -47,15 +52,24 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
       signal: controller.signal,
     });
   } catch (err) {
-    if ((err as Error).name === "AbortError") {
-      throw new Error("请求超时（90秒），请稍后重试");
+    if ((err as Error).name === "AbortError" || timedOut) {
+      throw new Error("请求超时（120秒），DeepSeek 生成时间过长，请稍后重试");
     }
     throw new Error(`网络请求失败：${(err as Error).message}`);
   } finally {
     clearTimeout(timeoutId);
   }
 
+  // 读取响应体文本
   const rawText = await res.text().catch(() => "");
+
+  // abort 后 res.text() 有时静默返回空字符串，需要在这里再次检查
+  if (timedOut || rawText === "") {
+    if (timedOut || controller.signal.aborted) {
+      throw new Error("请求超时（120秒），DeepSeek 生成时间过长，请稍后重试");
+    }
+    throw new Error("DeepSeek 返回了空响应，请稍后重试");
+  }
 
   if (!res.ok) {
     throw new Error(`DeepSeek API 返回错误 ${res.status}：${rawText.slice(0, 200)}`);

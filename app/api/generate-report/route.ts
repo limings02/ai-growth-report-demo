@@ -2,6 +2,9 @@
 // 服务端 API Route，Next.js App Router
 // 只允许 POST，API Key 只在服务端读取，前端不可见
 
+// 允许最长 150 秒响应时间（DeepSeek 生成长文案可能需要 90-120 秒）
+export const maxDuration = 150;
+
 import { NextRequest, NextResponse } from "next/server";
 import { RawMaterial } from "@/lib/types";
 import { callDeepSeek } from "@/lib/server/deepseekClient";

@@ -190,12 +190,13 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
 
 // 动态等待提示，按时间段切换文案，让用户感知进度
 const WAIT_STAGES = [
-  { after: 0,  text: "AI 正在读取你写下的故事…" },
-  { after: 8,  text: "正在整理年度关键词和成长总结…" },
-  { after: 20, text: "正在为孩子写一封信…" },
-  { after: 35, text: "正在生成时间线和朋友圈文案…" },
-  { after: 55, text: "快好了，正在做最后的整理…" },
-  { after: 75, text: "生成内容较长，请再耐心等一下…" },
+  { after: 0,   text: "AI 正在读取你写下的故事…" },
+  { after: 8,   text: "正在整理年度关键词和成长总结…" },
+  { after: 20,  text: "正在为孩子写一封信…" },
+  { after: 35,  text: "正在生成时间线和朋友圈文案…" },
+  { after: 55,  text: "快好了，正在做最后的整理…" },
+  { after: 75,  text: "生成内容较长，请再耐心等一下…" },
+  { after: 100, text: "马上就好，DeepSeek 正在认真写最后几段…" },
 ];
 
 function GeneratingScreen() {
@@ -234,7 +235,7 @@ function GeneratingScreen() {
           className="h-full rounded-full transition-all duration-1000"
           style={{
             background: "linear-gradient(90deg, #f4b8a0, #e8836a)",
-            width: `${Math.min((elapsed / 90) * 100, 95)}%`,
+            width: `${Math.min((elapsed / 120) * 100, 95)}%`,
           }}
         />
       </div>
