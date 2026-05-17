@@ -105,3 +105,172 @@ export type MemoryRawMaterial = {
    */
   domainPayload?: Record<string, unknown>;
 };
+
+// ─────────────────────────────────────────────────────────────────
+// 通用输出类型（Memory Engine 标准输出层）
+// 当前阶段只做类型定义，不替换 GrowthMemoryArtifact 或 ReportPreview
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * 通用时间线条目。
+ *
+ * family mode:  孩子的成长瞬间
+ * couple mode:  恋爱关系中的重要节点
+ * personal mode: 个人阶段中的关键事件
+ * memorial mode: 被纪念者的人生片段或共同回忆
+ */
+export type MemoryTimelineItem = {
+  time: string;
+  title: string;
+  description: string;
+};
+
+/**
+ * 通用社交分享文案。
+ *
+ * 不同 mode 可以生成朋友圈、小红书、纪念页分享语等。
+ */
+export type MemorySocialPost = {
+  title: string;
+  content: string;
+};
+
+/**
+ * 通用长文内容。
+ *
+ * family mode:   给孩子的信
+ * couple mode:   周年信 / 写给对方的信
+ * personal mode: 写给未来自己的信 / 人生阶段回顾
+ * memorial mode: 纪念文 / 家族记忆文
+ */
+export type MemoryLongFormText = {
+  title: string;
+  content: string;
+  /** 文字视角标识，如 "parent-letter"、"self-reflection"、"memorial-tribute" */
+  voice: string;
+};
+
+/**
+ * 通用叙事层。
+ *
+ * 所有 mode 都应该能输出的核心 narrative：
+ * - title：标题
+ * - keywords：关键词
+ * - summary：整体总结
+ * - timeline：时间线
+ * - longFormText：长文（信、纪念文等）
+ * - socialPosts：分享文案
+ */
+export type MemoryNarrative = {
+  title: string;
+  keywords: string[];
+  summary: string;
+  timeline: MemoryTimelineItem[];
+  longFormText: MemoryLongFormText;
+  socialPosts: MemorySocialPost[];
+};
+
+/**
+ * 通用记忆图谱节点类型。
+ *
+ * 设计为超集，能覆盖 family / couple / personal / memorial：
+ * - subject：主角节点
+ * - person：参与者节点
+ * - time：时间节点
+ * - keyword：关键词节点（兼容旧 family mode）
+ * - event：事件节点（兼容旧 family mode）
+ * - place：地点节点
+ * - message：聊天/书信节点（couple mode）
+ * - letter：信件节点（兼容旧 family mode）
+ * - memory：记忆/回忆节点（兼容旧 family mode）
+ * - emotion：情绪节点
+ */
+export type MemoryGraphNodeType =
+  | "subject"
+  | "person"
+  | "time"
+  | "keyword"
+  | "event"
+  | "place"
+  | "message"
+  | "letter"
+  | "memory"
+  | "emotion";
+
+/**
+ * 通用图谱语义节点。
+ *
+ * 注意：这是给 UI 渲染图谱用的语义 hint，不是最终 SVG 布局数据。
+ */
+export type MemoryGraphNodeHint = {
+  type: MemoryGraphNodeType;
+  label: string;
+  description: string;
+  emotion?: string;
+  relatedTo: string[];
+};
+
+/**
+ * 通用图谱提示。
+ *
+ * 后续 Relationship Galaxy / Life Graph / Memorial Graph 都可以复用。
+ */
+export type MemoryGraphHints = {
+  title: string;
+  subtitle: string;
+  centerDescription: string;
+  nodes: MemoryGraphNodeHint[];
+};
+
+/**
+ * 通用输入溯源。
+ *
+ * 用于解释生成内容基于哪些问题、是否使用自由文本、缺失哪些上下文。
+ */
+export type MemorySourceTrace = {
+  usedQuestions: string[];
+  usedFreeNote: boolean;
+  missingContext: string[];
+  groundingNotes: string[];
+};
+
+/**
+ * 通用质量自检。
+ *
+ * 用于评估幻觉风险、情绪基调、当前内容弱点和改进输入建议。
+ */
+export type MemoryQualityReview = {
+  riskOfFabrication: "low" | "medium" | "high";
+  emotionalTone: string;
+  weaknesses: string[];
+  suggestionsForBetterInput: string[];
+};
+
+/**
+ * 跨 mode 的统一生成结果（Memory Engine 标准输出层）。
+ *
+ * 当前阶段：
+ * - 只新增类型，不替换旧 GrowthMemoryArtifact
+ * - 不替换 ReportPreview 的 props
+ *
+ * 后续阶段：
+ * - 通用 runMemorySkill 可以返回 MemoryArtifact
+ * - family mode 通过 artifactAdapter 转回 GrowthMemoryArtifact，兼容旧 UI
+ */
+export type MemoryArtifact = {
+  artifactVersion: string;
+  mode: MemoryMode;
+  narrative: MemoryNarrative;
+  graph: MemoryGraphHints;
+  extensions: {
+    /**
+     * 视频脚本（family mode 当前已支持，其他 mode 预留）。
+     * 使用 unknown 避免强耦合旧 VideoScript 类型。
+     */
+    videoScript?: unknown;
+    sourceTrace?: MemorySourceTrace;
+    qualityReview?: MemoryQualityReview;
+    /** 扩展槽：各 mode 可放入专属字段 */
+    [key: string]: unknown;
+  };
+};
