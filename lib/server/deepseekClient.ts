@@ -52,16 +52,17 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
     clearTimeout(timeoutId);
   }
 
+  const rawText = await res.text().catch(() => "");
+
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`DeepSeek API 返回错误 ${res.status}：${body.slice(0, 200)}`);
+    throw new Error(`DeepSeek API 返回错误 ${res.status}：${rawText.slice(0, 200)}`);
   }
 
   let data: DeepSeekResponse;
   try {
-    data = (await res.json()) as DeepSeekResponse;
+    data = JSON.parse(rawText) as DeepSeekResponse;
   } catch {
-    throw new Error("DeepSeek 返回的响应体不是合法 JSON");
+    throw new Error(`DeepSeek 返回的响应体不是合法 JSON。原始内容：${rawText.slice(0, 300)}`);
   }
   const content = data.choices?.[0]?.message?.content;
   if (!content) {
