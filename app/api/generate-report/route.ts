@@ -2,7 +2,7 @@
 // 服务端 API Route，Next.js App Router
 // 只允许 POST，API Key 只在服务端读取，前端不可见
 
-// 允许最长 150 秒响应时间（DeepSeek 生成长文案可能需要 90-120 秒）
+// maxDuration 在 Vercel 部署时生效；本地依赖 ReadableStream 保持连接
 export const maxDuration = 150;
 
 import { NextRequest, NextResponse } from "next/server";
@@ -36,24 +36,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "缺少报告年份" }, { status: 400 });
   }
 
-  try {
-    const prompt = buildGrowthReportPrompt(material);
-    const raw = await callDeepSeek([
-      { role: "system", content: "你是专业的家庭记忆整理师，输出严格 JSON，不要输出任何其他内容。" },
-      { role: "user", content: prompt },
-    ]);
+  // 用 ReadableStream 保持连接活跃，避免本地 dev server 在 DeepSeek 返回前断开
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      try {
+        const prompt = buildGrowthReportPrompt(material);
+        const raw = await callDeepSeek([
+          { role: "system", content: "你是专业的家庭记忆整理师，输出严格 JSON，不要输出任何其他内容。" },
+          { role: "user", content: prompt },
+        ]);
 
-    const report = parseReportJson(
-      raw,
-      material.childName,
-      material.reportYear
-    );
+        const report = parseReportJson(raw, material.childName, material.reportYear);
+        controller.enqueue(encoder.encode(JSON.stringify(report)));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "生成失败，请重试";
+        controller.enqueue(encoder.encode(JSON.stringify({ error: message })));
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-    return NextResponse.json(report);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "生成失败，请重试";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  return new Response(stream, {
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
 
 // 拒绝非 POST 请求
