@@ -61,64 +61,48 @@ npm run dev
 
 ---
 
-## 如何接入真实 AI
+## 如何接入 DeepSeek
 
-架构已预留好接口，切换时只需两步：
+### 第一步：配置环境变量
 
-### 第一步：新建 AI 生成器
+复制模板文件：
 
-新建 `lib/aiReportGenerator.ts`，实现 `ReportGeneratorI` 接口：
-
-```ts
-import Anthropic from "@anthropic-ai/sdk";
-import { ReportGeneratorI, RawMaterial, ReportData } from "./types";
-
-class AiReportGenerator implements ReportGeneratorI {
-  private client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  private model = process.env.ANTHROPIC_MODEL ?? "claude-opus-4-7";
-
-  async generate(material: RawMaterial): Promise<ReportData> {
-    // 把 material 转为 prompt，调用 Claude API
-    const prompt = buildPrompt(material); // 自行实现
-
-    const response = await this.client.messages.create({
-      model: this.model,
-      max_tokens: 4096,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    // 解析返回内容，映射到 ReportData 结构
-    return parseResponse(response); // 自行实现
-  }
-}
-
-export const aiGenerator = new AiReportGenerator();
+```bash
+cp .env.local.example .env.local
 ```
 
-在 `.env.local` 里配置：
+在 `.env.local` 中填入：
 
 ```
-ANTHROPIC_API_KEY=sk-ant-...
-ANTHROPIC_MODEL=claude-opus-4-7
+DEEPSEEK_API_KEY=你的 DeepSeek API Key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
 ```
 
-### 第二步：替换生成器
+**注意：`.env.local` 不会被提交到 Git，请勿分享给他人。当前版本只传递文本内容给 DeepSeek，照片继续只在本地预览，不上传给 API。**
 
-在 `components/GrowthReportApp.tsx` 第 8 行：
+### 第二步：切换到 AI 生成器
 
-```ts
-// 把注释打开，把下面那行注释掉
+`components/GrowthReportApp.tsx` 开头：
+
+```typescript
+// 把这两行取消注释
 import { aiGenerator } from "@/lib/aiReportGenerator";
 const generator = aiGenerator;
 
-// const generator = mockGenerator; // 注释掉这行
+// 注释掉这行
+// const generator = mockGenerator;
 ```
 
-其他代码**完全不需要改动**。
+### 第三步：启动
+
+```bash
+npm run dev
+```
 
 ### 各模块扩展点
 
-每个内容模块都有 `TODO[skill:xxx]` 注释标记，后续可拆分为独立调用：
+代码中每个生成模块都有 `TODO[skill:xxx]` 标记，后续可拆为独立 AI 调用：
 
 | 标记 | 说明 |
 |------|------|
@@ -129,7 +113,6 @@ const generator = aiGenerator;
 | `TODO[skill:social]` | 朋友圈文案 |
 | `TODO[skill:video]` | 成长视频脚本（未来） |
 | `TODO[skill:illustration]` | 插画提示词（未来） |
-| `TODO[skill:voice]` | 语音信件（未来） |
 
 ---
 
