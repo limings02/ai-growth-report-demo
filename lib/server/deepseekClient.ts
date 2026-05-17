@@ -2,7 +2,7 @@
 // 服务端专用，不要在客户端组件中 import 本文件
 // API Key 只从环境变量读取，永远不打印到日志
 
-type ChatMessage = {
+export type ChatMessage = {
   role: "system" | "user" | "assistant";
   content: string;
 };
@@ -17,7 +17,7 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
     throw new Error("缺少 DEEPSEEK_API_KEY，请在 .env.local 中配置");
   }
 
-  const baseUrl = process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com";
+  const baseUrl = (process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com").replace(/\/$/, "");
   const model = process.env.DEEPSEEK_MODEL;
   if (!model) {
     throw new Error("缺少 DEEPSEEK_MODEL，请在 .env.local 中配置");
@@ -57,7 +57,12 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
     throw new Error(`DeepSeek API 返回错误 ${res.status}：${body.slice(0, 200)}`);
   }
 
-  const data = (await res.json()) as DeepSeekResponse;
+  let data: DeepSeekResponse;
+  try {
+    data = (await res.json()) as DeepSeekResponse;
+  } catch {
+    throw new Error("DeepSeek 返回的响应体不是合法 JSON");
+  }
   const content = data.choices?.[0]?.message?.content;
   if (!content) {
     throw new Error("DeepSeek 返回内容为空");
