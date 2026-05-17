@@ -39,13 +39,16 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
         messages,
         temperature: 0.7,
         max_tokens: 4096,
-        response_format: { type: "json_object" },
+        // DEEPSEEK_JSON_MODE=false 时不传此字段，用于不支持 json_object 的模型
+        ...(process.env.DEEPSEEK_JSON_MODE !== "false" && {
+          response_format: { type: "json_object" },
+        }),
       }),
       signal: controller.signal,
     });
   } catch (err) {
     if ((err as Error).name === "AbortError") {
-      throw new Error("请求超时（60秒），请稍后重试");
+      throw new Error("请求超时（90秒），请稍后重试");
     }
     throw new Error(`网络请求失败：${(err as Error).message}`);
   } finally {

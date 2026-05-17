@@ -45,7 +45,7 @@ npm run dev
 - 照片本地预览（多选、预览缩略图、hover 删除）
 - 访谈问题（8 道示例问题，可编辑标题、删除题目、添加自定义问题）
 - 自由文本区（粘贴日记、备忘录等）
-- 本地内容整理（根据填写内容生成个性化文案，不调用外部 API）
+- DeepSeek 大模型生成（调用 `/api/generate-report` 服务端路由，只传文本，不上传照片）
 - 成长礼物展示（封面、关键词标签、成长总结、竖线时间线、手账信件、朋友圈文案）
 - 朋友圈文案一键复制
 - 原始材料归档展示（与整理内容分开标签页）
@@ -57,7 +57,9 @@ npm run dev
 - 不做数据库
 - 不做云存储
 - 照片不上传服务器
-- 第一版使用本地整理逻辑，未接入 AI API
+- 照片不上传给 AI（只传文字材料）
+- 不做登录/数据库/云存储
+- 不把生成拆成多次 API 调用（降延迟、降成本）
 
 ---
 
@@ -77,9 +79,13 @@ cp .env.local.example .env.local
 DEEPSEEK_API_KEY=你的 DeepSeek API Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_JSON_MODE=true
 ```
 
-**注意：`.env.local` 不会被提交到 Git，请勿分享给他人。当前版本只传递文本内容给 DeepSeek，照片继续只在本地预览，不上传给 API。**
+**注意：**
+- `.env.local` 不会被提交到 Git，请勿分享给他人
+- 当前版本**只传递文本内容**给 DeepSeek，照片继续只在本地预览，不上传给 API
+- 如果遇到 `response_format` 相关报错（模型不支持 JSON mode），将 `DEEPSEEK_JSON_MODE` 改为 `false`
 
 ### 第二步：切换到 AI 生成器
 
