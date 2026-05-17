@@ -5,6 +5,7 @@ import { ReportData, RawMaterial, PhotoItem } from "@/lib/types";
 import type { GrowthMemoryArtifact, AiGraphHints } from "@/lib/skill-runtime/types";
 import PrintButton from "./PrintButton";
 import LifeGraphPreview from "./LifeGraphPreview";
+import SkillReviewPanel from "./SkillReviewPanel";
 
 type Props = {
   artifact: GrowthMemoryArtifact;
@@ -54,6 +55,7 @@ export default function ReportPreview({ artifact, rawMaterial, photos, onBack }:
               rawMaterial={rawMaterial}
               photos={photos}
               graphHints={artifact.graph}
+              artifact={artifact}
             />
           )}
           {tab === "raw" && <RawContent rawMaterial={rawMaterial} photos={photos} />}
@@ -150,7 +152,8 @@ function PrintContent({ report, photos }: { report: ReportData; photos: PhotoIte
 // ─────────────────────────────────────────────────────────────
 // 屏幕显示：生成内容
 // ─────────────────────────────────────────────────────────────
-function GeneratedContent({ report, rawMaterial, photos, graphHints }: { report: ReportData; rawMaterial: RawMaterial; photos: PhotoItem[]; graphHints?: AiGraphHints }) {
+function GeneratedContent({ report, rawMaterial, photos, graphHints, artifact }: { report: ReportData; rawMaterial: RawMaterial; photos: PhotoItem[]; graphHints?: AiGraphHints; artifact: GrowthMemoryArtifact }) {
+  const isDev = process.env.NODE_ENV === "development";
   return (
     <div>
       <CoverSection report={report} photos={photos} />
@@ -166,6 +169,14 @@ function GeneratedContent({ report, rawMaterial, photos, graphHints }: { report:
         <SocialCard posts={report.socialPosts} />
       </div>
       <ComingSoonCard />
+      {/* 开发调试面板：仅 development 环境渲染 */}
+      {isDev && (
+        <SkillReviewPanel
+          sourceTrace={artifact.sourceTrace}
+          qualityReview={artifact.qualityReview}
+          videoScript={artifact.videoScript}
+        />
+      )}
     </div>
   );
 }

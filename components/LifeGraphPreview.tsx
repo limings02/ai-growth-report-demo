@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import type { RawMaterial, ReportData } from "@/lib/types";
 import { buildLifeGraph } from "@/lib/graph/buildLifeGraph";
-import type { LifeGraphNode, LifeGraphNodeType } from "@/lib/graph/types";
+import type { LifeGraphNode, LifeGraphNodeType, LifeGraphEdge } from "@/lib/graph/types";
 import type { AiGraphHints } from "@/lib/skill-runtime/types";
 
 type Props = {
@@ -117,7 +117,7 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
 
     // 为 AI 节点重建边
     const edgeIds = new Set<string>();
-    const edges: import("@/lib/graph/types").LifeGraphEdge[] = [];
+    const edges: LifeGraphEdge[] = [];
     function addEdge(id: string, source: string, target: string, label?: string) {
       if (!edgeIds.has(id)) { edgeIds.add(id); edges.push({ id, source, target, label }); }
     }
