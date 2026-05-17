@@ -43,7 +43,7 @@ export async function callDeepSeek(messages: ChatMessage[]): Promise<string> {
         model,
         messages,
         temperature: 0.7,
-        max_tokens: 4096,
+        max_tokens: 2048,
         // DEEPSEEK_JSON_MODE=false 时不传此字段，用于不支持 json_object 的模型
         ...(process.env.DEEPSEEK_JSON_MODE !== "false" && {
           response_format: { type: "json_object" },
