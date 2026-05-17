@@ -92,27 +92,61 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
     [rawMaterial, report]
   );
 
-  // 若有 AI 节点，把它们映射成 LifeGraphNode 格式，注入到 derivedGraph
+  // 若有 AI 节点，重建节点和边（不复用 derivedGraph.edges，旧 edges 指向旧 id）
   const graph = useMemo(() => {
     if (!useAiHints) return derivedGraph;
-    // 替换 keyword/event/letter/memory 类型的节点为 AI 生成的节点
+
+    // AI 节点 id 用 label 的 slug，避免 id 冲突
     const aiNodes: LifeGraphNode[] = graphHints.nodes.map((n, i) => ({
-      id: `${n.type}-ai-${i}`,
+      id: `ai-${n.type}-${i}`,
       type: n.type,
       label: n.label,
       description: n.description,
       source: "generated" as const,
     }));
-    // 保留 child 和 year 节点，覆盖其余节点
-    // child 节点的 description 用 AI 的 centerDescription
+
     const childNode = derivedGraph.nodes.find((n) => n.type === "child");
     const yearNode = derivedGraph.nodes.find((n) => n.type === "year");
+    const yearId = yearNode?.id ?? "year";
+
     const baseNodes: LifeGraphNode[] = [
       childNode ? { ...childNode, description: graphHints.centerDescription } : childNode!,
       ...(yearNode ? [yearNode] : []),
       ...aiNodes,
     ].filter(Boolean);
-    return { nodes: baseNodes, edges: derivedGraph.edges };
+
+    // 为 AI 节点重建边
+    const edgeIds = new Set<string>();
+    const edges: import("@/lib/graph/types").LifeGraphEdge[] = [];
+    function addEdge(id: string, source: string, target: string, label?: string) {
+      if (!edgeIds.has(id)) { edgeIds.add(id); edges.push({ id, source, target, label }); }
+    }
+
+    // child → year
+    addEdge("e-child-year", "child", yearId);
+
+    aiNodes.forEach((aiNode) => {
+      // child → 每个 AI 节点
+      addEdge(`e-child-${aiNode.id}`, "child", aiNode.id);
+      // year → event 类型的 AI 节点（虚线）
+      if (aiNode.type === "event") {
+        addEdge(`e-year-${aiNode.id}`, yearId, aiNode.id);
+      }
+    });
+
+    // relatedTo 弱关联边：根据 label 查找对应节点 id
+    const labelToId = new Map(aiNodes.map((n) => [n.label, n.id]));
+    graphHints.nodes.forEach((n, i) => {
+      const sourceId = `ai-${n.type}-${i}`;
+      n.relatedTo.forEach((targetLabel) => {
+        const targetId = labelToId.get(targetLabel);
+        if (targetId && targetId !== sourceId) {
+          addEdge(`e-rel-${sourceId}-${targetId}`, sourceId, targetId, "相关");
+        }
+      });
+    });
+
+    return { nodes: baseNodes, edges };
   }, [useAiHints, graphHints, derivedGraph]);
 
   // 标题和副标题：优先使用 AI 版本
@@ -191,8 +225,8 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
             const y1 = toSvg(src.y, H, PAD);
             const x2 = toSvg(tgt.x, W, PAD);
             const y2 = toSvg(tgt.y, H, PAD);
-            // keyword->event 弱关联用更淡的点线；year->event 用虚线；其他用实线
-            const isKwEv = edge.id.startsWith("edge-kw-ev-");
+            // relatedTo 弱关联用更淡的点线；year->event 用虚线；其他用实线
+            const isKwEv = edge.id.startsWith("edge-kw-ev-") || edge.id.startsWith("e-rel-");
             const isYearEv = edge.source.startsWith("year-");
             return (
               <line key={edge.id}

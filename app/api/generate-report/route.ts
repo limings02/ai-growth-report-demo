@@ -2,6 +2,8 @@
 // 服务端 API Route，Next.js App Router
 // v0.4：通过 skill runtime 调用，返回 GrowthMemoryArtifact
 
+// 必须使用 nodejs runtime：skill runtime 依赖 fs 读取 .skills/prompts/*.md
+export const runtime = "nodejs";
 // maxDuration 在 Vercel 等部署平台生效；本地依赖 ReadableStream 保持连接
 export const maxDuration = 150;
 
