@@ -162,7 +162,7 @@ type MemoryArtifact = {
 | 文件 | 职责 |
 |------|------|
 | `lib/domains/family/adapter.ts` | `RawMaterial → MemoryRawMaterial` |
-| `lib/domains/couple/adapter.ts` | `CoupleRawInput → MemoryRawMaterial`（占位）|
+| `lib/domains/couple/adapter.ts` | `CoupleRawInput → MemoryRawMaterial`（当前用于 couple 真实生成链路）|
 | `lib/domains/personal/adapter.ts` | `PersonalRawInput → MemoryRawMaterial`（占位）|
 | `lib/domains/memorial/adapter.ts` | `MemorialRawInput → MemoryRawMaterial`（占位）|
 
@@ -235,8 +235,8 @@ export async function runGrowthMemorySkill(material: RawMaterial): Promise<Growt
 |------|------|------|
 | `.skills/family-memory/` | 当前可用 | 原生理解 MemoryRawMaterial，输出 GrowthMemoryArtifact |
 | `.skills/growth-memory/` | 保留 fallback | 旧 RawMaterial 输入，不删除 |
-| `.skills/couple-memory/` | 占位 | 误调用返回最小 MemoryArtifact JSON |
-| `.skills/personal-memory/` | 占位 | 同上 |
+| `.skills/couple-memory/` | 当前可用 | couple mode 真实 skill pack，输入 MemoryRawMaterial，直接输出 MemoryArtifact |
+| `.skills/personal-memory/` | 占位 | 误调用返回最小 MemoryArtifact JSON |
 | `.skills/memorial-memory/` | 占位 | 同上，文案克制尊重 |
 
 每个 skill pack 包含：
@@ -292,9 +292,10 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
 
 ## 12. 后续迁移方向
 
-1. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
-2. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
-3. `LifeGraphPreview` 改名为 `MemoryGraphPreview`，接收 `MemoryGraphHints`
-4. couple mode 接入真实表单和生成链路
-5. personal / memorial mode 按安全边界逐步开放
-6. 稳定后可删除 `GrowthMemoryArtifact` 兼容层、`buildLifeGraph` wrapper 和 `.skills/growth-memory` fallback
+1. Relationship Galaxy 从轻量星图升级为更完整的视觉图谱
+2. 抽象通用 MemoryArtifactPreview，减少 CoupleArtifactPreview 与未来 personal/memorial 展示层重复
+3. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
+4. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
+5. `LifeGraphPreview` 改名为 `MemoryGraphPreview`，接收 `MemoryGraphHints` / `MemoryGraphData`
+6. personal / memorial mode 按安全边界逐步开放
+7. 稳定后再考虑删除 `GrowthMemoryArtifact` 兼容层、`buildLifeGraph` wrapper 和 `.skills/growth-memory` fallback

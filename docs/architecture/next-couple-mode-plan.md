@@ -58,7 +58,17 @@
 - `CoupleMemoryApp` 新增 chatText 前端长度限制（>12000 字禁用生成按钮）
 - 新增生成前隐私说明文字
 
+**Phase 8.4 已完成：**
+
+- 清理 README / memory-engine.md 中 couple-memory 的过时占位描述
+- 新增 `RelationshipGalaxyPreview`（轻量 SVG 星图，不引入新依赖）
+- `CoupleArtifactPreview` 使用 `RelationshipGalaxyPreview` 替代原节点卡片列表
+- Galaxy 基于 MemoryArtifact.graph.nodes，支持节点点击和详情卡片
+- 不修改 AI runtime / API / prompt
+
 ---
+
+> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；当前继续推进 Step 8：Relationship Galaxy 视觉化（Phase 8.4 已完成）。
 
 ---
 

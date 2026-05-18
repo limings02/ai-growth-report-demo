@@ -8,28 +8,17 @@
 // - 恋爱时间线
 // - 周年信 / 写给未来你们的信
 // - 分享文案
-// - Relationship Galaxy 雏形（节点卡片列表，不做复杂 SVG）
+// - Relationship Galaxy 轻量 SVG 星图（RelationshipGalaxyPreview）
 // - 生成质量说明（sourceTrace / qualityReview）
 
 import { useState } from "react";
 import type { MemoryArtifact, MemorySourceTrace, MemoryQualityReview } from "@/lib/memory-core/types";
+import RelationshipGalaxyPreview from "./RelationshipGalaxyPreview";
 
 type Props = {
   artifact: MemoryArtifact;
   onBackToEdit: () => void;
   onCreateAnother: () => void;
-};
-
-// 图谱节点类型的视觉配置
-const NODE_TYPE_CONFIG: Record<string, { emoji: string; label: string }> = {
-  person:  { emoji: "👤", label: "人物" },
-  time:    { emoji: "📅", label: "时间" },
-  event:   { emoji: "⏱", label: "事件" },
-  emotion: { emoji: "💛", label: "情绪" },
-  message: { emoji: "💬", label: "对话" },
-  keyword: { emoji: "✨", label: "关键词" },
-  place:   { emoji: "📍", label: "地点" },
-  memory:  { emoji: "📓", label: "记忆" },
 };
 
 export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreateAnother }: Props) {
@@ -261,53 +250,8 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
           </SectionCard>
         )}
 
-        {/* ── Relationship Galaxy 雏形 ── */}
-        {graph && graph.nodes.length > 0 ? (
-          <SectionCard title="🌌 Relationship Galaxy">
-            <p className="text-xs mb-1 font-bold" style={{ color: "#2d1f1a" }}>
-              {graph.title}
-            </p>
-            <p className="text-xs mb-4" style={{ color: "#9d7b72" }}>
-              {graph.subtitle}
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {graph.nodes.map((node, i) => {
-                const nodeCfg = NODE_TYPE_CONFIG[node.type] ?? { emoji: "✨", label: node.type };
-                return (
-                  <div
-                    key={i}
-                    className="rounded-xl p-3"
-                    style={{ background: "#f9f5f3", border: "1px solid #ead8d0" }}
-                  >
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-sm">{nodeCfg.emoji}</span>
-                      <span className="text-xs font-semibold" style={{ color: "#2d1f1a" }}>
-                        {node.label}
-                      </span>
-                    </div>
-                    <p className="text-xs leading-relaxed" style={{ color: "#9d7b72" }}>
-                      {node.description}
-                    </p>
-                    {node.emotion && (
-                      <span
-                        className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: "#fde8dc", color: "#c0674a" }}
-                      >
-                        {node.emotion}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </SectionCard>
-        ) : (
-          <SectionCard title="🌌 Relationship Galaxy">
-            <p className="text-xs" style={{ color: "#9d7b72" }}>
-              Relationship Galaxy 还没有足够节点。可以补充地点、昵称、反复出现的对话、共同经历或情绪关键词。
-            </p>
-          </SectionCard>
-        )}
+        {/* ── Relationship Galaxy 轻量 SVG 星图 ── */}
+        <RelationshipGalaxyPreview graph={graph} />
 
         {/* ── 生成质量说明 ── */}
         {qualityReview && (

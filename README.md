@@ -6,7 +6,7 @@
 
 **当前可用模式：**
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
-- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 雏形
+- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 轻量星图
 
 **预留模式（coming soon）：**
 - `personal mode`：个人人生 Wiki / 自我回忆录
@@ -216,7 +216,7 @@ Family form
 - 输出：GrowthMemoryArtifact
 - 当前保留为 fallback，不删除，便于回溯
 
-### couple-memory / personal-memory / memorial-memory
+### personal-memory / memorial-memory
 
 当前只是占位，不接入真实生成。每个 `01_task.md` 如被误调用会返回最小占位 JSON。
 
