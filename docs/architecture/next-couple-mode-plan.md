@@ -119,7 +119,7 @@
 - family `ReportPreview` 暂不迁移
 - 未修改 API / runtime / prompt
 
-> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
+> **历史接入路线说明：** 下方 Step 1-8 是 couple mode 的历史接入路线，当前已完成到 Phase 9.3。
 
 ---
 

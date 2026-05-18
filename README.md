@@ -8,8 +8,10 @@
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
 - `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 轻量星图；结果页支持浏览器打印 / 保存 PDF
 
+**Preview 可体验模式：**
+- `personal mode`：个人人生 Wiki / 自我回忆录（preview 骨架，不调用 AI，展示 mock 结果，验证展示层复用）
+
 **预留模式（coming soon）：**
-- `personal mode`：个人人生 Wiki / 自我回忆录
 - `memorial mode`：纪念馆 / 逝者回忆 / 家族记忆传承
 
 ---
@@ -155,7 +157,7 @@ npm run dev
 |------|------|
 | `family` | available |
 | `couple` | available |
-| `personal` | coming_soon |
+| `personal` | preview（Phase 10.1 骨架，不调用 AI） |
 | `memorial` | coming_soon |
 
 ### 输入层：MemoryRawMaterial
@@ -247,6 +249,10 @@ components/
     RelationshipGalaxyPreview.tsx  # Relationship Galaxy SVG 星图
     CouplePrintButton.tsx          # 打印按钮（MemoryPrintButton wrapper）
     mockArtifact.ts                # 开发环境 mock artifact
+  personal/
+    PersonalLandingPage.tsx        # personal mode landing（preview 体验）
+    PersonalMemoryApp.tsx          # personal 主状态机（preview，展示 mock 结果）
+    PersonalMemoryGraphPreview.tsx # personal 轻量图谱（节点卡片列表）
   memory/
     MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
     MemorySectionCard.tsx          # 通用展示 section 容器
@@ -284,7 +290,9 @@ lib/
       defaultQuestions.ts          # couple 默认访谈问题
       mockArtifact.ts              # couple 结果页开发预览用 mock artifact
     personal/
-      adapter.ts                   # PersonalRawInput → MemoryRawMaterial（占位）
+      adapter.ts                   # PersonalRawInput → MemoryRawMaterial
+      defaultQuestions.ts          # personal 默认访谈问题（Phase 10.1 新增）
+      mockArtifact.ts              # personal preview mock artifact（Phase 10.1 新增）
     memorial/
       adapter.ts                   # MemorialRawInput → MemoryRawMaterial（占位）
 

@@ -85,7 +85,7 @@ GrowthMemoryArtifact（兼容旧前端）
 |------|--------|------|
 | `family` | available | 完整可用，已接入真实生成 |
 | `couple` | available | MVP 可生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
-| `personal` | coming_soon | 占位，仅展示说明 |
+| `personal` | preview | Phase 10.1 preview 骨架：可体验输入页 + mock 结果展示，不调用 AI |
 | `memorial` | coming_soon | 占位，仅展示说明 |
 
 `getMemoryModeConfig(mode)` 按 id 查找配置。

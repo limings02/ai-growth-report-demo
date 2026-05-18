@@ -5,10 +5,8 @@
 // 默认进入 MemoryModeHome（记忆主题选择页），
 // 通过前端状态跳转到各子页面。
 //
-// Phase 8.1.1 变更：
-// - couple mode 增加 couple-landing（CoupleLandingPage）
-// - 进入顺序：mode-select → couple-landing → couple-app
-// - personal / memorial 仍然 coming soon
+// Phase 8.1.1：couple mode 增加 couple-landing
+// Phase 10.1：personal mode 从 coming-soon 改为 personal-landing → personal-app
 
 import { useState } from "react";
 import type { MemoryMode } from "@/lib/memory-core/modes";
@@ -18,6 +16,8 @@ import ComingSoonModePage from "@/components/ComingSoonModePage";
 import GrowthReportApp from "@/components/GrowthReportApp";
 import CoupleLandingPage from "@/components/couple/CoupleLandingPage";
 import CoupleMemoryApp from "@/components/couple/CoupleMemoryApp";
+import PersonalLandingPage from "@/components/personal/PersonalLandingPage";
+import PersonalMemoryApp from "@/components/personal/PersonalMemoryApp";
 
 type HomeScreen =
   | "mode-select"
@@ -25,6 +25,8 @@ type HomeScreen =
   | "family-app"
   | "couple-landing"
   | "couple-app"
+  | "personal-landing"
+  | "personal-app"
   | "coming-soon";
 
 export default function Home() {
@@ -37,6 +39,8 @@ export default function Home() {
       setScreen("family-landing");
     } else if (mode === "couple") {
       setScreen("couple-landing");
+    } else if (mode === "personal") {
+      setScreen("personal-landing");
     } else {
       setScreen("coming-soon");
     }
@@ -90,7 +94,33 @@ export default function Home() {
     );
   }
 
-  // personal / memorial coming soon
+  // personal landing（个人回忆录介绍页）
+  if (screen === "personal-landing") {
+    return (
+      <PersonalLandingPage
+        onStart={() => setScreen("personal-app")}
+        onBackToModes={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
+  // personal app（preview 骨架，mock 结果，不调用 AI）
+  if (screen === "personal-app") {
+    return (
+      <PersonalMemoryApp
+        onBackToLanding={() => setScreen("personal-landing")}
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
+  // memorial coming soon
   if (screen === "coming-soon" && selectedMode) {
     return (
       <ComingSoonModePage
