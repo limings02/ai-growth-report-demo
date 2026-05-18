@@ -80,6 +80,7 @@
   - `emotion`：情绪状态
   - `keyword`：关键词
   - `memory`：记忆片段
+  - `letter`：信件节点（如写给未来/过去自己的信）
 
 ### extensions.sourceTrace
 

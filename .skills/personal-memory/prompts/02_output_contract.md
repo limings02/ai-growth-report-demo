@@ -81,6 +81,7 @@
 - `"emotion"`
 - `"keyword"`
 - `"memory"`
+- `"letter"`
 
 ❌ 错误示例：`"type": "person | time | event"` —— 这是类型声明语法，不是合法值
 ✅ 正确示例：`"type": "event"`

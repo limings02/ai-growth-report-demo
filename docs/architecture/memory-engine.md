@@ -166,7 +166,7 @@ type MemoryArtifact = {
 |------|------|
 | `lib/domains/family/adapter.ts` | `RawMaterial → MemoryRawMaterial` |
 | `lib/domains/couple/adapter.ts` | `CoupleRawInput → MemoryRawMaterial`（当前用于 couple 真实生成链路）|
-| `lib/domains/personal/adapter.ts` | `PersonalRawInput → MemoryRawMaterial`（占位）|
+| `lib/domains/personal/adapter.ts` | `PersonalRawInput → MemoryRawMaterial`（当前用于 personal 真实生成链路）|
 | `lib/domains/memorial/adapter.ts` | `MemorialRawInput → MemoryRawMaterial`（占位）|
 
 ### Artifact adapter（family）
@@ -299,10 +299,10 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
    - Phase 9.1：MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails
    - Phase 9.2：MemoryFallbackNotice / MemoryCoverSection / MemoryTimelineSection / MemoryLongFormSection / MemorySocialPostsSection / MemoryUsageTipsSection
    - Phase 9.3：`MemoryArtifactPreview`（完整页面 shell 容器，含 graphSlot 插槽）；`CoupleArtifactPreview` 已精简为薄 wrapper
-2. **下一步**：personal / memorial mode 结果页可直接复用 `MemoryArtifactPreview`，只需传入 mode-specific 文案和 graphSlot
+2. **下一步**：memorial mode 后续可复用 `MemoryArtifactPreview`，只需传入 memorial-specific 文案和 graphSlot（personal 已完成此步骤）
 3. Relationship Galaxy 继续增强为更完整的可交互图谱
 4. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
 5. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
 6. `LifeGraphPreview` 改名为 `MemoryGraphPreview`，接收 `MemoryGraphHints` / `MemoryGraphData`
-7. personal / memorial mode 按安全边界逐步开放
+7. memorial mode 按安全边界逐步开放（personal 已在 Phase 10.2 完成）
 8. 稳定后再考虑删除 `GrowthMemoryArtifact` 兼容层、`buildLifeGraph` wrapper 和 `.skills/growth-memory` fallback

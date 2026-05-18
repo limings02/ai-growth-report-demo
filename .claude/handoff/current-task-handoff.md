@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-18  
-> 当前阶段：Phase 10.2 已完成  
+> 当前阶段：Phase 10.2.1 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -38,6 +38,12 @@
 - `app/api/generate-personal-memory/route.ts`：新增，参考 couple 结构
 - `.skills/personal-memory/`：所有 4 个 prompt 从占位升级为真实 skill pack
 - `components/personal/PersonalMemoryApp.tsx`：升级为 input/generating/result/error 状态机，接入真实 API，保留 dev mock 按钮
+
+### Phase 10.2.1（文档与输出合约收尾）
+- `README.md`：修正 personal 残留的 preview/mock-only 描述，组件注释更新
+- `docs/architecture/memory-engine.md`：personal adapter 不再写"占位"，后续迁移方向区分 personal/memorial
+- `.skills/personal-memory/prompts/01_task.md`：graph node type 补齐 `letter`
+- `.skills/personal-memory/prompts/02_output_contract.md`：允许 type 列表补齐 `"letter"`
 
 ---
 

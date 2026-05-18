@@ -48,7 +48,7 @@ npm run dev
 11. **切换原始记录** — 点击「📋 原始记录」标签查看你填写的所有原始内容
 12. **打印 / 保存 PDF** — 点击「🖨️ 打印 / 保存 PDF」，在浏览器打印对话框中选择「另存为 PDF」
 
-> couple mode 已支持 AI 生成；personal mode 当前是 preview 体验，进入后可填写个人阶段信息并查看 mock 回忆录；memorial 仍进入 coming soon 页面。
+> couple mode 和 personal mode 均已支持 AI 生成；personal mode 的开发环境仍保留 mock 预览按钮，方便调试结果页；memorial 仍进入 coming soon 页面。
 
 ---
 
@@ -159,7 +159,7 @@ npm run dev
 |------|------|
 | `family` | available |
 | `couple` | available |
-| `personal` | preview（Phase 10.1 骨架，不调用 AI） |
+| `personal` | available |
 | `memorial` | coming_soon |
 
 ### 输入层：MemoryRawMaterial
@@ -264,8 +264,8 @@ components/
     CouplePrintButton.tsx          # 打印按钮（MemoryPrintButton wrapper）
     mockArtifact.ts                # 开发环境 mock artifact
   personal/
-    PersonalLandingPage.tsx        # personal mode landing（preview 体验）
-    PersonalMemoryApp.tsx          # personal 主状态机（preview，展示 mock 结果）
+    PersonalLandingPage.tsx        # personal mode landing
+    PersonalMemoryApp.tsx          # personal 主状态机（AI 生成，dev 环境保留 mock 预览按钮）
     PersonalMemoryGraphPreview.tsx # personal 轻量图谱（节点卡片列表）
   memory/
     MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
@@ -306,7 +306,7 @@ lib/
     personal/
       adapter.ts                   # PersonalRawInput → MemoryRawMaterial
       defaultQuestions.ts          # personal 默认访谈问题（Phase 10.1 新增）
-      mockArtifact.ts              # personal preview mock artifact（Phase 10.1 新增）
+      mockArtifact.ts              # personal 开发预览用 mock artifact
     memorial/
       adapter.ts                   # MemorialRawInput → MemoryRawMaterial（占位）
 
@@ -325,7 +325,7 @@ lib/
   family-memory/                   # 当前可用
   growth-memory/                   # 旧 skill，保留为 fallback
   couple-memory/                   # couple mode 真实 skill pack（Phase 8.2）
-  personal-memory/                 # 占位
+  personal-memory/                 # 当前可用（Phase 10.2）
   memorial-memory/                 # 占位
 
 docs/
