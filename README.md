@@ -6,10 +6,9 @@
 
 **当前可用模式：**
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
-- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 轻量星图；结果页支持浏览器打印 / 保存 PDF
+- `couple mode`：恋爱纪念册 MVP，AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 星图
+- `personal mode`：个人人生 Wiki / 自我回忆录 MVP，AI 生成人生阶段时间线、关键词、写给未来自己的信和个人记忆图谱
 
-**Preview 可体验模式：**
-- `personal mode`：个人人生 Wiki / 自我回忆录（preview 骨架，不调用 AI，展示 mock 结果，验证展示层复用）
 
 **预留模式（coming soon）：**
 - `memorial mode`：纪念馆 / 逝者回忆 / 家族记忆传承
@@ -61,7 +60,7 @@ npm run dev
 - `MemoryModeHome`：记忆主题选择页（默认首屏）
 - `family mode` 可用，点击进入孩子成长 landing
 - `couple mode` 可用，点击进入恋爱纪念册流程（介绍页 → 输入页 → 生成结果）
-- `personal mode` preview，点击进入 PersonalLandingPage → PersonalMemoryApp → mock 结果页
+- `personal mode` available，点击进入 PersonalLandingPage → PersonalMemoryApp → AI 生成结果页
 - `memorial mode` coming soon，点击进入 `ComingSoonModePage`
 
 #### Family mode
@@ -98,7 +97,8 @@ npm run dev
 - PDF 保存依赖浏览器打印功能，不上传服务器，不生成云端文件
 - 开发环境下 couple 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
 - 开发环境 mock 预览不会调用 DeepSeek，也不会发送当前表单内容
-- personal mode 当前只做 preview，不调用 AI，不发送填写内容；展示 mock 结果用于体验展示层
+- personal mode 不上传照片，只处理用户主动填写的文字内容
+- 开发环境下 personal 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
 - memorial mode 暂未开放
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
@@ -224,9 +224,17 @@ Family form
 - 输出：GrowthMemoryArtifact
 - 当前保留为 fallback，不删除，便于回溯
 
-### personal-memory / memorial-memory
+### personal-memory
 
-当前只是占位，不接入真实生成。每个 `01_task.md` 如被误调用会返回最小占位 JSON。
+`.skills/personal-memory/` 是 personal mode 的真实 skill pack（Phase 10.2）。
+
+- 输入：MemoryRawMaterial（mode: "personal"）
+- 输出：标准 MemoryArtifact（不走 GrowthMemoryArtifact 兼容层）
+- 用途：个人人生阶段回忆录，生成时间线、关键词、信件和记忆图谱
+
+### memorial-memory
+
+当前只是占位，不接入真实生成。
 
 ---
 
@@ -237,7 +245,11 @@ app/
   page.tsx                         # 全局状态路由（默认 MemoryModeHome）
   api/
     generate-report/
-      route.ts                     # 生成 API（返回 GrowthMemoryArtifact）
+      route.ts                     # family 生成 API（返回 GrowthMemoryArtifact）
+    generate-couple-memory/
+      route.ts                     # couple 生成 API（返回 MemoryArtifact）
+    generate-personal-memory/
+      route.ts                     # personal 生成 API（返回 MemoryArtifact）
 
 components/
   MemoryModeHome.tsx               # 全局首页（记忆主题选择）

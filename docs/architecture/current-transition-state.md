@@ -104,22 +104,27 @@ family-memory skill pack
 ## 渐进迁移路线建议
 
 ```
-阶段 1（当前）：
+阶段 1（已完成）：
   runtime 泛化（MemoryRawMaterial / MemoryArtifact / runMemorySkill）
   旧前端通过 adapter 兼容
   family-memory skill pack 上线
 
-阶段 2（下一步）：
+阶段 2（已完成）：
   couple mode 接入（直接输出 MemoryArtifact，不走旧兼容）
-  ReportPreview 开始泛化（MemoryArtifactPreview 雏形）
+  MemoryArtifactPreview 通用展示容器建立（Phase 9.3）
 
-阶段 3（后续）：
-  LifeGraphPreview → MemoryGraphPreview
+阶段 3（已完成）：
+  personal mode 接入（直接输出 MemoryArtifact，Phase 10.2）
+  personal-memory skill pack 上线
+
+阶段 4（进行中）：
   family-memory 改为直接输出 MemoryArtifact
+  ReportPreview 泛化为 MemoryArtifactPreview
+  LifeGraphPreview → MemoryGraphPreview
   删除 GrowthMemoryArtifact 兼容层
 
-阶段 4（长期）：
-  personal / memorial 接入
+阶段 5（长期）：
+  memorial 接入
   统一 MemoryArtifactPreview 跨 mode 展示
 ```
 

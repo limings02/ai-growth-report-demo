@@ -2,23 +2,35 @@
 
 ## 定位
 
-这是 **personal mode** 的 skill pack（占位，当前不接入真实生成）。
+这是 **personal mode** 的 skill pack，用于把用户填写的个人阶段记忆材料，整理成一份完整的 MemoryArtifact。
 
 用途：个人人生 Wiki / 自我回忆录 / 人生阶段总结。
 
 ## 当前状态
 
-**⚠ 未开放**：此 skill pack 当前只是占位，不接入任何真实 AI 生成。
+**Phase 10.2 接入**：已升级为真实 prompt，接入 AI 生成链路。
 
-应用层（app/page.tsx）会在用户点击 personal mode 时展示 ComingSoonModePage，不会调用此 skill。
+## 输入
 
-## 未来规划
+`MemoryRawMaterial`（mode: "personal"）
 
-- 输入：`MemoryRawMaterial`（mode: "personal"）
-- 输出：`MemoryArtifact`
+关键字段：
+- `subject.title`：人生阶段标题
+- `subject.primaryName`：用户名字或称呼
+- `subject.timeRange`：时间跨度
+- `participants`：通常只有 self
+- `style`：文案风格（documentary / literary / reflective / warm）
+- `qaList`：用户回答的访谈问题
+- `freeNote`：自由记录
+- `domainPayload.personName`：用户名字
+- `domainPayload.lifeStage`：人生阶段描述
+- `domainPayload.timeRange`：时间跨度
 
-未来功能：
-- 整理某一人生阶段的感悟、经历与转折
-- 生成带时间轴的私人回忆录
-- 写给未来自己的信
-- 可导出和分享的人生 Wiki
+## 输出
+
+标准 `MemoryArtifact`（不走 GrowthMemoryArtifact）
+
+包含：
+- narrative：title / keywords / summary / timeline / longFormText / socialPosts
+- graph：title / subtitle / centerDescription / nodes
+- extensions：sourceTrace / qualityReview

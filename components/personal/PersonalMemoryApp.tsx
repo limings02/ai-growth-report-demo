@@ -1,8 +1,8 @@
 "use client";
 
 // components/personal/PersonalMemoryApp.tsx
-// personal mode 主状态机：输入页 → mock 结果页。
-// Phase 10.1：不调用 DeepSeek，点击生成后直接展示 mock artifact。
+// personal mode 主状态机：input → generating → result / error
+// Phase 10.2：接入 /api/generate-personal-memory，返回真实 MemoryArtifact。
 
 import { useState } from "react";
 import type { MemoryArtifact } from "@/lib/memory-core/types";
@@ -11,8 +11,7 @@ import { MOCK_PERSONAL_ARTIFACT } from "@/lib/domains/personal/mockArtifact";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import PersonalMemoryGraphPreview from "./PersonalMemoryGraphPreview";
 
-type PersonalScreen = "input" | "result";
-
+type PersonalScreen = "input" | "generating" | "result" | "error";
 type QAItem = { question: string; answer: string };
 
 type Props = {
@@ -27,9 +26,12 @@ const STYLE_OPTIONS: { value: string; label: string }[] = [
   { value: "warm", label: "温柔回望" },
 ];
 
+const isDev = process.env.NODE_ENV === "development";
+
 export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Props) {
   const [screen, setScreen] = useState<PersonalScreen>("input");
   const [artifact, setArtifact] = useState<MemoryArtifact | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // 表单状态
   const [personName, setPersonName] = useState("");
@@ -54,25 +56,62 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
     timeRange.trim().length > 0 &&
     hasContent;
 
-  function handleGenerate() {
-    if (!canGenerate) return;
-    setArtifact(MOCK_PERSONAL_ARTIFACT);
-    setScreen("result");
+  function resetForm() {
+    setArtifact(null);
+    setErrorMessage("");
+    setPersonName("");
+    setLifeStage("");
+    setTimeRange("");
+    setStyle("reflective");
+    setQaList(PERSONAL_DEFAULT_QUESTIONS.map((q) => ({ question: q.question, answer: "" })));
+    setFreeNote("");
   }
 
+  async function handleGenerate() {
+    if (!canGenerate) return;
+
+    setScreen("generating");
+    setErrorMessage("");
+
+    const payload = {
+      personName,
+      lifeStage,
+      timeRange,
+      style,
+      photoCount: 0,
+      qaList,
+      freeNote,
+    };
+
+    try {
+      const res = await fetch("/api/generate-personal-memory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = (await res.json()) as { artifact?: MemoryArtifact; error?: string };
+
+      if (!res.ok || !data.artifact) {
+        throw new Error(data?.error || "生成失败，请稍后重试");
+      }
+
+      setArtifact(data.artifact);
+      setScreen("result");
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "生成失败，请稍后重试");
+      setScreen("error");
+    }
+  }
+
+  // ── 结果页 ────────────────────────────────────────────────────
   if (screen === "result" && artifact) {
     return (
       <MemoryArtifactPreview
         artifact={artifact}
         onBackToEdit={() => setScreen("input")}
         onCreateAnother={() => {
-          setArtifact(null);
-          setPersonName("");
-          setLifeStage("");
-          setTimeRange("");
-          setStyle("reflective");
-          setQaList(PERSONAL_DEFAULT_QUESTIONS.map((q) => ({ question: q.question, answer: "" })));
-          setFreeNote("");
+          resetForm();
           setScreen("input");
         }}
         onBackToHome={onBackToHome}
@@ -87,12 +126,90 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
         socialPostsTitle="📱 分享文案"
         emptySocialPostsHint="这次没有生成分享文案。可以补充更具体的场景、情绪或想分享的用途后重新生成。"
         usagePrimaryTip="你可以把这份个人回忆录保存成 PDF，作为阶段总结、生日礼物或未来回看的材料。"
-        usageSecondaryTip="当前是 preview 阶段，这份结果使用 mock 数据展示页面效果；真实 AI 生成会在下一阶段接入。如果想让未来生成更贴近真实经历，可以补充更具体的人、地点、事件、情绪变化和当时说过的话。"
+        usageSecondaryTip="如果想让下一版更贴近真实经历，可以返回修改，补充更具体的人、地点、事件、情绪变化和当时说过的话。"
         graphSlot={<PersonalMemoryGraphPreview graph={artifact.graph} />}
       />
     );
   }
 
+  // ── 生成中 ────────────────────────────────────────────────────
+  if (screen === "generating") {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen px-4"
+        style={{ background: "linear-gradient(160deg, #f5f8ff 0%, #eef2fb 100%)" }}
+      >
+        <div className="text-4xl mb-5 animate-bounce">📖</div>
+        <p className="text-lg font-semibold mb-3" style={{ color: "#1a2340" }}>
+          正在整理这段人生…
+        </p>
+        <p className="text-sm mb-6 text-center max-w-xs" style={{ color: "#6b7db3" }}>
+          AI 正在把你的回答整理成时间线、关键词、信件和记忆图谱。
+        </p>
+        <div className="w-48 h-1.5 rounded-full overflow-hidden mb-3" style={{ background: "#dde3f0" }}>
+          <div
+            className="h-full rounded-full animate-pulse"
+            style={{ background: "linear-gradient(90deg, #8ba4e0, #6b8adc)", width: "70%" }}
+          />
+        </div>
+        <p className="text-xs" style={{ color: "#8090b8" }}>
+          这可能需要几十秒，请不要关闭页面。
+        </p>
+      </div>
+    );
+  }
+
+  // ── 错误页 ────────────────────────────────────────────────────
+  if (screen === "error") {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen px-4"
+        style={{ background: "linear-gradient(160deg, #f5f8ff 0%, #eef2fb 100%)" }}
+      >
+        <div className="max-w-md w-full">
+          <div
+            className="rounded-2xl p-6 mb-6 text-center"
+            style={{ background: "#fff0f0", border: "1px solid #fccfcf" }}
+          >
+            <div className="text-3xl mb-3">😔</div>
+            <p className="text-base font-semibold mb-2" style={{ color: "#c0454a" }}>
+              生成失败了
+            </p>
+            <p className="text-sm" style={{ color: "#6b7db3" }}>
+              {errorMessage}
+            </p>
+          </div>
+          <div className="space-y-3">
+            <button
+              onClick={() => setScreen("input")}
+              className="w-full py-3 rounded-2xl text-sm font-medium cursor-pointer transition-all hover:shadow-md"
+              style={{ background: "#e8edf8", color: "#5568a0" }}
+            >
+              ← 返回修改
+            </button>
+            <button
+              onClick={handleGenerate}
+              className="w-full py-3 rounded-2xl text-white text-sm font-semibold cursor-pointer shadow-md hover:shadow-lg transition-all"
+              style={{ background: "linear-gradient(135deg, #6b8adc, #5568a0)" }}
+            >
+              重新尝试
+            </button>
+            {onBackToHome && (
+              <button
+                onClick={onBackToHome}
+                className="w-full py-2 rounded-2xl text-xs cursor-pointer transition-all hover:underline"
+                style={{ color: "#8090b8" }}
+              >
+                回到首页
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 输入页 ────────────────────────────────────────────────────
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #f5f8ff 0%, #eef2fb 100%)" }}>
       {/* 顶部导航 */}
@@ -112,7 +229,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           ← 返回介绍页
         </button>
         <span className="text-xs" style={{ color: "#8090b8" }}>
-          📖 个人回忆录 · preview
+          📖 个人回忆录
         </span>
       </div>
 
@@ -142,11 +259,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
                 onChange={(e) => setPersonName(e.target.value)}
                 placeholder="例如：小林、阿夏、自己"
                 className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{
-                  background: "#f0f4fc",
-                  border: "1px solid #c8d0e8",
-                  color: "#1a2340",
-                }}
+                style={{ background: "#f0f4fc", border: "1px solid #c8d0e8", color: "#1a2340" }}
               />
             </div>
 
@@ -160,11 +273,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
                 onChange={(e) => setLifeStage(e.target.value)}
                 placeholder="例如：大学四年、第一份工作、移居北京那几年"
                 className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{
-                  background: "#f0f4fc",
-                  border: "1px solid #c8d0e8",
-                  color: "#1a2340",
-                }}
+                style={{ background: "#f0f4fc", border: "1px solid #c8d0e8", color: "#1a2340" }}
               />
             </div>
 
@@ -178,18 +287,12 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
                 onChange={(e) => setTimeRange(e.target.value)}
                 placeholder="例如：2019 - 2023，或 2021.06 - 2022.12"
                 className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{
-                  background: "#f0f4fc",
-                  border: "1px solid #c8d0e8",
-                  color: "#1a2340",
-                }}
+                style={{ background: "#f0f4fc", border: "1px solid #c8d0e8", color: "#1a2340" }}
               />
             </div>
 
             <div>
-              <label className="block text-xs mb-1.5" style={{ color: "#5568a0" }}>
-                文案风格
-              </label>
+              <label className="block text-xs mb-1.5" style={{ color: "#5568a0" }}>文案风格</label>
               <div className="grid grid-cols-2 gap-2">
                 {STYLE_OPTIONS.map((opt) => (
                   <button
@@ -215,9 +318,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           className="rounded-2xl p-5 mb-5"
           style={{ background: "rgba(255,255,255,0.7)", border: "1px solid #dde3f0" }}
         >
-          <p className="text-xs font-semibold mb-1" style={{ color: "#5568a0" }}>
-            回忆问答
-          </p>
+          <p className="text-xs font-semibold mb-1" style={{ color: "#5568a0" }}>回忆问答</p>
           <p className="text-xs mb-4" style={{ color: "#8090b8" }}>
             选择你有话说的问题回答，至少回答 1 题
           </p>
@@ -233,11 +334,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
                   placeholder="在这里写下你的回答……"
                   rows={2}
                   className="w-full rounded-xl px-3 py-2.5 text-sm outline-none resize-none"
-                  style={{
-                    background: "#f0f4fc",
-                    border: "1px solid #c8d0e8",
-                    color: "#1a2340",
-                  }}
+                  style={{ background: "#f0f4fc", border: "1px solid #c8d0e8", color: "#1a2340" }}
                 />
               </div>
             ))}
@@ -246,12 +343,10 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
 
         {/* 自由文本 */}
         <div
-          className="rounded-2xl p-5 mb-8"
+          className="rounded-2xl p-5 mb-6"
           style={{ background: "rgba(255,255,255,0.7)", border: "1px solid #dde3f0" }}
         >
-          <p className="text-xs font-semibold mb-1" style={{ color: "#5568a0" }}>
-            自由记录（可选）
-          </p>
+          <p className="text-xs font-semibold mb-1" style={{ color: "#5568a0" }}>自由记录（可选）</p>
           <p className="text-xs mb-3" style={{ color: "#8090b8" }}>
             日记片段、某句想说的话、某个场景的描述，随便写
           </p>
@@ -261,11 +356,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
             placeholder="把想说的都写在这里……"
             rows={4}
             className="w-full rounded-xl px-3 py-2.5 text-sm outline-none resize-none"
-            style={{
-              background: "#f0f4fc",
-              border: "1px solid #c8d0e8",
-              color: "#1a2340",
-            }}
+            style={{ background: "#f0f4fc", border: "1px solid #c8d0e8", color: "#1a2340" }}
           />
         </div>
 
@@ -278,9 +369,9 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           </p>
         )}
 
-        {/* preview 说明 */}
-        <p className="text-xs text-center mb-4" style={{ color: "#8090b8" }}>
-          当前是 preview 体验，点击后展示 mock 结果，不会调用 AI，不会发送你的内容
+        {/* 隐私说明 */}
+        <p className="text-xs text-center mb-3" style={{ color: "#8090b8" }}>
+          点击生成后，只会发送你填写的文字内容；不会上传照片，不会读取本地文件。
         </p>
 
         {/* 生成按钮 */}
@@ -289,13 +380,32 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           disabled={!canGenerate}
           className="w-full py-4 rounded-2xl text-white font-semibold text-base cursor-pointer transition-all shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
-            background: canGenerate
-              ? "linear-gradient(135deg, #6b8adc, #5568a0)"
-              : "#b0b8d0",
+            background: canGenerate ? "linear-gradient(135deg, #6b8adc, #5568a0)" : "#b0b8d0",
           }}
         >
-          预览个人回忆录 ✨
+          生成个人回忆录 ✨
         </button>
+
+        {/* 开发预览入口：只在 development 环境显示，生产环境不可见 */}
+        {isDev && (
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() => {
+                setArtifact(MOCK_PERSONAL_ARTIFACT);
+                setErrorMessage("");
+                setScreen("result");
+              }}
+              className="w-full py-2 rounded-2xl text-xs font-medium cursor-pointer transition-all hover:shadow-sm"
+              style={{ background: "#eef2fb", color: "#6b7db3", border: "1px dashed #b0b8d0" }}
+            >
+              🔧 开发预览：查看 mock 结果
+            </button>
+            <p className="text-center mt-1" style={{ color: "#8090b8", fontSize: "11px" }}>
+              不会调用 DeepSeek，也不会发送当前表单内容，仅用于调试结果页和打印样式。
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -73,9 +73,9 @@ export const MEMORY_MODES: MemoryModeConfig[] = [
     id: "personal",
     title: "个人人生册",
     subtitle: "个人 · 人生阶段回忆录",
-    description: "记录你人生某个阶段的故事、转折与情绪——大学、第一份工作、搬去新城市、低谷期结束……把它整理成一本你可以反复回看的个人 Wiki。",
+    description: "填写人生阶段、时间跨度、回忆问答和自由记录，AI 为你生成阶段时间线、关键词、写给未来自己的信和个人记忆图谱。",
     emoji: "📖",
-    status: "preview",
+    status: "available",
     primaryUseCase: "把某段人生，整理成一本有时间线、有情绪底色、写给未来自己的个人回忆录",
   },
   {

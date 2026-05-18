@@ -88,7 +88,7 @@ GrowthMemoryArtifact（兼容旧前端）
 |------|--------|------|
 | `family` | available | 完整可用，已接入真实生成 |
 | `couple` | available | MVP 可生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
-| `personal` | preview | Phase 10.1 preview 骨架：可体验输入页 + mock 结果展示，不调用 AI |
+| `personal` | available | Phase 10.2 MVP：真实 AI 生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
 | `memorial` | coming_soon | 占位，仅展示说明 |
 
 `getMemoryModeConfig(mode)` 按 id 查找配置。
@@ -239,7 +239,7 @@ export async function runGrowthMemorySkill(material: RawMaterial): Promise<Growt
 | `.skills/family-memory/` | 当前可用 | 原生理解 MemoryRawMaterial，输出 GrowthMemoryArtifact |
 | `.skills/growth-memory/` | 保留 fallback | 旧 RawMaterial 输入，不删除 |
 | `.skills/couple-memory/` | 当前可用 | couple mode 真实 skill pack，输入 MemoryRawMaterial，直接输出 MemoryArtifact |
-| `.skills/personal-memory/` | 占位 | 误调用返回最小 MemoryArtifact JSON |
+| `.skills/personal-memory/` | 当前可用 | personal mode 真实 skill pack（Phase 10.2），输入 MemoryRawMaterial，直接输出 MemoryArtifact |
 | `.skills/memorial-memory/` | 占位 | 同上，文案克制尊重 |
 
 每个 skill pack 包含：
