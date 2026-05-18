@@ -7,8 +7,10 @@
 **当前可用模式：**
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
 
+**进行中：**
+- `couple mode`：输入页骨架已开放，支持填写情侣信息和手动粘贴聊天文本；AI 生成下一阶段接入
+
 **预留模式（coming soon）：**
-- `couple mode`：情侣恋爱纪念 / 恋爱周年 Wiki
 - `personal mode`：个人人生 Wiki / 自我回忆录
 - `memorial mode`：纪念馆 / 逝者回忆 / 家族记忆传承
 
@@ -88,6 +90,7 @@ npm run dev
 - 不做云存储
 - 照片不上传服务器
 - 照片不上传给 AI（只传文本和照片数量）
+- couple mode 当前只有输入页骨架，不调用 AI 生成
 - couple mode 不读取微信数据库
 - couple mode 不做自动导入微信聊天记录
 - memorial / personal mode 暂不开放真实生成
@@ -286,4 +289,6 @@ docs/
 - Next.js 16 + React + TypeScript
 - Tailwind CSS
 - DeepSeek API
-- 无数据库、无后端、无第三方 UI 库
+- 无数据库
+- 无独立后端服务（使用 Next.js API Route 调用 DeepSeek）
+- 无第三方 UI 库

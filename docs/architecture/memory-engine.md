@@ -111,7 +111,8 @@ type MemoryRawMaterial = {
 
 **重要约束：**
 - `media` 只记录 count / localOnly / description，永远不包含文件路径或 blob URL
-- `domainPayload` 是过渡区，不是长期滥用区。family 的 `childName` 等字段放在这里，后续 family-memory prompt 完全迁移后可以清理
+- `domainPayload` 是 mode-specific 扩展区，长期可以保留少量 domain 专属字段，但不能滥用成「什么都往里塞」的垃圾桶。family 的 `childName` 等字段放在这里是合理的。
+- `legacyFamilyInput` 是过渡兼容字段，未来 family-memory prompt 完全理解 MemoryRawMaterial 后可以删除；但 `domainPayload` 本身不会因此消失
 
 **Family 特有的过渡字段 `legacyFamilyInput`**：
 - 由 `buildMemoryPrompt` 在 `materialForLLM` 中注入

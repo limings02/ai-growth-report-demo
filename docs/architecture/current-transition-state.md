@@ -41,7 +41,7 @@ family-memory skill pack
 | 文件 | 不能删的原因 |
 |------|-------------|
 | `lib/skill-runtime/runGrowthMemorySkill.ts` | `/api/generate-report` 调用它，是当前生产入口 |
-| `lib/skill-runtime/buildGrowthMemoryPrompt.ts` | `parseGrowthMemoryArtifact` 的 fallback 逻辑依赖它 |
+| `lib/skill-runtime/buildGrowthMemoryPrompt.ts` | 暂时保留作旧 growth-memory 链路回溯和应急 fallback 参考；当前主链路不直接调用它 |
 | `lib/skill-runtime/parseGrowthMemoryArtifact.ts` | `parseMemoryArtifact` 中 family fallback 路径调用它 |
 | `lib/skill-runtime/types.ts` | `GrowthMemoryArtifact` 类型，全项目引用 |
 

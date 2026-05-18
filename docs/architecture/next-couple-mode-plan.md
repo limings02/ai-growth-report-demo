@@ -5,6 +5,30 @@
 
 ---
 
+## 当前进度
+
+**Phase 8.1 已完成：**
+
+- couple mode 从 `ComingSoonModePage` 改为进入 `CoupleMemoryApp`（输入骨架）
+- 已支持情侣基本信息（昵称、恋爱时间、纪念日、文案风格）
+- 已支持手动粘贴聊天文本（chatText），不读取微信数据库
+- 已支持 7 道默认访谈问题和自由文本
+- 已支持照片数量记录（本地预览，不上传）
+- 点击"生成"后展示 `MemoryRawMaterial` JSON 预览，**当前不调用 AI**
+- `lib/domains/couple/adapter.ts` 已新增 `chatText` 字段
+- `lib/domains/couple/defaultQuestions.ts` 已创建
+
+**Phase 8.2 待完成：**
+
+- `.skills/couple-memory` 从占位改为真实 prompt
+- 接入 `runMemorySkill`，返回 `MemoryArtifact`
+- 新增结果展示组件（`MemoryArtifactPreview` 或 `CoupleArtifactPreview`）
+- Relationship Galaxy 图谱展示
+
+---
+
+---
+
 ## 1. Couple Mode 定位
 
 **情侣恋爱纪念 / 恋爱周年 Wiki**
