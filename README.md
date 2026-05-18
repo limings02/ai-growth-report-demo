@@ -243,11 +243,12 @@ components/
   couple/
     CoupleLandingPage.tsx          # couple mode landing
     CoupleMemoryApp.tsx            # couple 主状态机
-    CoupleArtifactPreview.tsx      # couple 结果展示
+    CoupleArtifactPreview.tsx      # couple 结果展示（MemoryArtifactPreview 的 couple-specific wrapper）
     RelationshipGalaxyPreview.tsx  # Relationship Galaxy SVG 星图
     CouplePrintButton.tsx          # 打印按钮（MemoryPrintButton wrapper）
     mockArtifact.ts                # 开发环境 mock artifact
   memory/
+    MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
     MemorySectionCard.tsx          # 通用展示 section 容器
     MemoryPrintButton.tsx          # 通用浏览器打印按钮
     MemoryQualityReviewPanel.tsx   # 通用生成质量说明面板

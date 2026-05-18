@@ -292,8 +292,11 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
 
 ## 12. 后续迁移方向
 
-1. 继续完善 `components/memory/` 通用展示小组件（Phase 9.1 已新增 MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails；Phase 9.2 新增 MemoryFallbackNotice / MemoryCoverSection / MemoryTimelineSection / MemoryLongFormSection / MemorySocialPostsSection / MemoryUsageTipsSection，先由 CoupleArtifactPreview 使用）
-2. 可进一步抽象完整 `MemoryArtifactPreview` 容器组件，把顶部操作栏/打印标题/底部按钮等 shell 也泛化，减少未来 personal/memorial 展示层重复
+1. **已完成（Phase 9.1~9.3）**：`components/memory/` 通用展示组件体系已建立
+   - Phase 9.1：MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails
+   - Phase 9.2：MemoryFallbackNotice / MemoryCoverSection / MemoryTimelineSection / MemoryLongFormSection / MemorySocialPostsSection / MemoryUsageTipsSection
+   - Phase 9.3：`MemoryArtifactPreview`（完整页面 shell 容器，含 graphSlot 插槽）；`CoupleArtifactPreview` 已精简为薄 wrapper
+2. **下一步**：personal / memorial mode 结果页可直接复用 `MemoryArtifactPreview`，只需传入 mode-specific 文案和 graphSlot
 3. Relationship Galaxy 继续增强为更完整的可交互图谱
 4. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
 5. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`

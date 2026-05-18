@@ -110,6 +110,15 @@
 - family `ReportPreview` 暂不迁移
 - 未修改 API / runtime / prompt
 
+**Phase 9.3 已完成：**
+
+- 新增 `MemoryArtifactPreview`（完整页面 shell 容器）
+  - 包含：顶部操作栏、打印标题区、fallback/cover/timeline/longForm/socialPosts/qualityReview/usageTips/sourceTrace、底部按钮
+  - 支持 `graphSlot` 插槽，由各 mode 传入对应图谱组件
+- `CoupleArtifactPreview` 已精简为薄 wrapper，只传入 couple-specific 文案和 `<RelationshipGalaxyPreview>`
+- family `ReportPreview` 暂不迁移
+- 未修改 API / runtime / prompt
+
 > **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
 
 ---
