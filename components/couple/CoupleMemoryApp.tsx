@@ -41,6 +41,7 @@ type CoupleFormState = {
 
 type Props = {
   onBackToLanding: () => void;
+  onBackToHome?: () => void;
 };
 
 const STYLE_OPTIONS: { value: CoupleStyle; label: string }[] = [
@@ -50,7 +51,7 @@ const STYLE_OPTIONS: { value: CoupleStyle; label: string }[] = [
   { value: "literary", label: "🍃 文艺清淡" },
 ];
 
-export default function CoupleMemoryApp({ onBackToLanding }: Props) {
+export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props) {
   const [status, setStatus] = useState<CoupleAppStatus>("input");
   const [artifact, setArtifact] = useState<MemoryArtifact | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -148,6 +149,7 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
           setErrorMessage("");
           setStatus("input");
         }}
+        onBackToHome={onBackToHome}
       />
     );
   }
@@ -452,22 +454,27 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
 
           {/* 开发预览入口：只在 development 环境显示，生产环境不可见 */}
           {isDev && (
-            <button
-              type="button"
-              onClick={() => {
-                setArtifact(MOCK_COUPLE_ARTIFACT);
-                setErrorMessage("");
-                setStatus("result");
-              }}
-              className="w-full mt-3 py-2 rounded-full text-xs font-medium cursor-pointer transition-all hover:shadow-sm"
-              style={{
-                background: "#f5f0ee",
-                color: "#9d7b72",
-                border: "1px dashed #c8b8b0",
-              }}
-            >
-              🔧 使用 mock 结果预览（开发用）
-            </button>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setArtifact(MOCK_COUPLE_ARTIFACT);
+                  setErrorMessage("");
+                  setStatus("result");
+                }}
+                className="w-full py-2 rounded-full text-xs font-medium cursor-pointer transition-all hover:shadow-sm"
+                style={{
+                  background: "#f5f0ee",
+                  color: "#9d7b72",
+                  border: "1px dashed #c8b8b0",
+                }}
+              >
+                🔧 使用 mock 结果预览（开发用）
+              </button>
+              <p className="text-center mt-1" style={{ color: "#b08878", fontSize: "11px" }}>
+                不会调用 DeepSeek，也不会发送当前表单内容，仅用于调试结果页、星图和打印样式。
+              </p>
+            </div>
           )}
         </div>
       </div>

@@ -82,6 +82,10 @@ export default function Home() {
     return (
       <CoupleMemoryApp
         onBackToLanding={() => setScreen("couple-landing")}
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
       />
     );
   }

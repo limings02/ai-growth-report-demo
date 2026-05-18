@@ -91,8 +91,10 @@ npm run dev
 - 照片不上传给 AI（只传文本和照片数量）
 - couple mode 不读取微信数据库，不自动导入微信聊天记录，只处理用户主动粘贴的文本
 - couple mode 照片当前只记录数量，不上传服务器，不传给 AI
+- Couple 结果页支持「回到首页」「返回修改」「再做一本」三个本地状态流转，不做账户系统或云端保存
 - PDF 保存依赖浏览器打印功能，不上传服务器，不生成云端文件
 - 开发环境下 couple 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
+- 开发环境 mock 预览不会调用 DeepSeek，也不会发送当前表单内容
 - memorial / personal mode 暂不开放真实生成
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 

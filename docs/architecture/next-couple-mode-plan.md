@@ -77,12 +77,22 @@
 - `RelationshipGalaxyPreview` 已增加打印节点摘要
 - 未修改 runtime / API / prompt
 
-**Phase 8.6 进行中 / 本阶段目标：**
+**Phase 8.6 已完成：**
 
-- 修复 `RelationshipGalaxyPreview` 的 selectedId 同步问题
-- 新增 `MOCK_COUPLE_ARTIFACT`
-- 开发环境下 `CoupleMemoryApp` 可直接进入 mock 结果页，方便调试展示和打印
-- 不修改 API / runtime / prompt
+- 新增 `lib/domains/couple/mockArtifact.ts`
+- `CoupleMemoryApp` 在 development 环境提供 mock 结果预览入口
+- mock 预览不调用 DeepSeek，不调用 `/api/generate-couple-memory`
+- 修复 `RelationshipGalaxyPreview`：`effectiveSelectedId` 替代 `selectedId` 用于 SVG 高亮和详情卡片
+- README 已说明 mock 入口只在开发环境显示
+- 更新浏览器标签页标题为「Memory Wiki｜AI 记忆整理与纪念生成器」
+- 未修改 runtime / API / prompt
+
+**Phase 8.7 进行中 / 本阶段目标：**
+
+- 优化 mock 入口说明文字
+- 给 couple 结果页增加「回到首页」入口
+- 给结果页增加「保存与使用建议」
+- 未修改 runtime / API / prompt
 
 > **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
 

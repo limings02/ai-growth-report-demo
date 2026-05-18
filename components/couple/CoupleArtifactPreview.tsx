@@ -20,9 +20,10 @@ type Props = {
   artifact: MemoryArtifact;
   onBackToEdit: () => void;
   onCreateAnother: () => void;
+  onBackToHome?: () => void; // 可选，存在时在顶部操作栏展示"回到首页"
 };
 
-export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreateAnother }: Props) {
+export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreateAnother, onBackToHome }: Props) {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const { narrative, graph, extensions } = artifact;
 
@@ -53,13 +54,24 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
           borderBottom: "1px solid #f0ddd5",
         }}
       >
-        <button
-          onClick={onBackToEdit}
-          className="text-sm cursor-pointer hover:underline"
-          style={{ color: "#9d7b72" }}
-        >
-          ← 返回修改
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={onBackToEdit}
+            className="text-sm cursor-pointer hover:underline"
+            style={{ color: "#9d7b72" }}
+          >
+            ← 返回修改
+          </button>
+          {onBackToHome && (
+            <button
+              onClick={onBackToHome}
+              className="text-sm cursor-pointer hover:underline"
+              style={{ color: "#b08878" }}
+            >
+              首页
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <CouplePrintButton label="保存 PDF" />
           <button
@@ -324,6 +336,17 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
             </div>
           </div>
         )}
+
+        {/* ── 保存与使用建议 ── */}
+        <SectionCard title="💌 保存与使用建议">
+          <p className="text-xs leading-relaxed" style={{ color: "#7a5a52" }}>
+            你可以把这份纪念册保存成 PDF，作为周年日、生日或某个普通日子的纪念。
+          </p>
+          <p className="text-xs leading-relaxed mt-2" style={{ color: "#9d7b72" }}>
+            如果想让下一版更贴近你们，可以返回修改，补充更具体的聊天片段、地点、称呼、
+            一次争吵与和好，或一段你想对 TA 说的话。
+          </p>
+        </SectionCard>
 
         {/* ── sourceTrace 折叠 ── */}
         {sourceTrace && (
