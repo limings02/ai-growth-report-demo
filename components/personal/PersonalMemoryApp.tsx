@@ -55,6 +55,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
     hasContent;
 
   function handleGenerate() {
+    if (!canGenerate) return;
     setArtifact(MOCK_PERSONAL_ARTIFACT);
     setScreen("result");
   }
@@ -86,7 +87,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
         socialPostsTitle="📱 分享文案"
         emptySocialPostsHint="这次没有生成分享文案。可以补充更具体的场景、情绪或想分享的用途后重新生成。"
         usagePrimaryTip="你可以把这份个人回忆录保存成 PDF，作为阶段总结、生日礼物或未来回看的材料。"
-        usageSecondaryTip="如果想让下一版更贴近真实经历，可以补充更具体的人、地点、事件、情绪变化和当时说过的话。"
+        usageSecondaryTip="当前是 preview 阶段，这份结果使用 mock 数据展示页面效果；真实 AI 生成会在下一阶段接入。如果想让未来生成更贴近真实经历，可以补充更具体的人、地点、事件、情绪变化和当时说过的话。"
         graphSlot={<PersonalMemoryGraphPreview graph={artifact.graph} />}
       />
     );

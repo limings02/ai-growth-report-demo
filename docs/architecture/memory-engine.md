@@ -78,7 +78,10 @@ GrowthMemoryArtifact（兼容旧前端）
 - `id`：唯一标识
 - `title` / `subtitle` / `description`：展示文案
 - `emoji`：卡片图标
-- `status`：`available` 或 `coming_soon`
+- `status`：`available` / `preview` / `coming_soon`
+  - `available`：真实生成链路可用
+  - `preview`：可体验前端流程或 mock 结果，但不代表真实 AI 生成
+  - `coming_soon`：只展示占位说明
 - `primaryUseCase`：核心使用场景说明
 
 | mode | status | 说明 |

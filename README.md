@@ -49,7 +49,7 @@ npm run dev
 11. **切换原始记录** — 点击「📋 原始记录」标签查看你填写的所有原始内容
 12. **打印 / 保存 PDF** — 点击「🖨️ 打印 / 保存 PDF」，在浏览器打印对话框中选择「另存为 PDF」
 
-> couple mode 已支持 AI 生成，可进入恋爱纪念册完整流程。personal / memorial 仍进入 coming soon 页面。
+> couple mode 已支持 AI 生成；personal mode 当前是 preview 体验，进入后可填写个人阶段信息并查看 mock 回忆录；memorial 仍进入 coming soon 页面。
 
 ---
 
@@ -61,7 +61,8 @@ npm run dev
 - `MemoryModeHome`：记忆主题选择页（默认首屏）
 - `family mode` 可用，点击进入孩子成长 landing
 - `couple mode` 可用，点击进入恋爱纪念册流程（介绍页 → 输入页 → 生成结果）
-- `personal / memorial` coming soon，点击进入 `ComingSoonModePage`
+- `personal mode` preview，点击进入 PersonalLandingPage → PersonalMemoryApp → mock 结果页
+- `memorial mode` coming soon，点击进入 `ComingSoonModePage`
 
 #### Family mode
 - 孩子信息表单（昵称、年龄、总结年份、父母称呼、文案风格）
@@ -97,7 +98,8 @@ npm run dev
 - PDF 保存依赖浏览器打印功能，不上传服务器，不生成云端文件
 - 开发环境下 couple 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
 - 开发环境 mock 预览不会调用 DeepSeek，也不会发送当前表单内容
-- memorial / personal mode 暂不开放真实生成
+- personal mode 当前只做 preview，不调用 AI，不发送填写内容；展示 mock 结果用于体验展示层
+- memorial mode 暂未开放
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
 ---

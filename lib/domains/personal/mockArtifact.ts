@@ -1,6 +1,6 @@
 // lib/domains/personal/mockArtifact.ts
-// personal mode 开发阶段的 mock artifact，用于前端骨架体验。
-// 仅在开发环境展示，不调用 DeepSeek。
+// Phase 10.1 preview 阶段的 mock artifact。
+// 用于 personal mode 前端体验，不调用 DeepSeek，不代表真实 AI 生成结果。
 
 import type { MemoryArtifact } from "@/lib/memory-core/types";
 
