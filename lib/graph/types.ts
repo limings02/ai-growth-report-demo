@@ -1,28 +1,31 @@
 // lib/graph/types.ts
-// 成长星图数据结构定义
+// 成长星图数据结构定义（兼容层）。
+//
+// 本文件保持旧 LifeGraphData 接口供 LifeGraphPreview 使用。
+// LifeGraphNodeType 已扩展为兼容旧类型（child/year）+ 通用类型（subject/person/time/...）。
 
-export type LifeGraphNodeType =
-  | "child"    // 中心节点：孩子
-  | "year"     // 年份节点
-  | "keyword"  // 年度关键词
-  | "event"    // 时间线事件
-  | "letter"   // 给孩子的信
-  | "memory";  // 父母的补充记录
+import type { MemoryGraphNodeType } from "@/lib/memory-core/types";
+
+// 旧 family-specific 节点类型，保留兼容
+export type LegacyLifeGraphNodeType = "child" | "year";
+
+// 扩展后的节点类型：兼容旧 child/year + 通用 MemoryGraphNodeType
+export type LifeGraphNodeType = LegacyLifeGraphNodeType | MemoryGraphNodeType;
 
 export type LifeGraphNode = {
   id: string;
   type: LifeGraphNodeType;
   label: string;
   description?: string;
-  source?: "raw" | "generated"; // 来源：原始材料 or AI 生成
-  x?: number; // 布局坐标（0-1 归一化）
+  source?: "raw" | "generated";
+  x?: number;
   y?: number;
 };
 
 export type LifeGraphEdge = {
   id: string;
-  source: string; // node id
-  target: string; // node id
+  source: string;
+  target: string;
   label?: string;
 };
 

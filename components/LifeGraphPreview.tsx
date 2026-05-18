@@ -12,30 +12,46 @@ type Props = {
   graphHints?: AiGraphHints; // AI 生成的星图语义节点，优先使用；缺失时 fallback 到前端派生
 };
 
-// 节点类型对应的视觉配置
+// ── 节点类型视觉配置 ──────────────────────────────────────────────
+// 保留旧 child/year，新增通用类型（subject/person/time/place/message/emotion）
 const NODE_CONFIG: Record<string, {
   color: string;
   glowColor: string;
   radius: number;
   emoji: string;
   typeName: string;
-  typeHint: string; // 详情卡片中的解释文案
+  typeHint: string;
 }> = {
-  child:   { color: "#f4b8a0", glowColor: "#e8836a", radius: 38, emoji: "🌸", typeName: "主角",      typeHint: "这一年的主角" },
-  year:    { color: "#fde8dc", glowColor: "#f4b8a0", radius: 26, emoji: "📅", typeName: "年份",      typeHint: "这一年的成长记录" },
-  keyword: { color: "#fcd5c0", glowColor: "#e8836a", radius: 20, emoji: "✨", typeName: "关键词",    typeHint: "这是这一年反复出现的成长印记" },
-  event:   { color: "#e8cdb8", glowColor: "#c08070", radius: 22, emoji: "⏱", typeName: "重要瞬间",  typeHint: "这是今年值得被记住的一个瞬间" },
-  letter:  { color: "#fde8dc", glowColor: "#f4b8a0", radius: 24, emoji: "✉️", typeName: "给未来的信", typeHint: "这是父母想留给未来孩子的话" },
-  memory:  { color: "#ddd0c8", glowColor: "#b09080", radius: 20, emoji: "📓", typeName: "记录",      typeHint: "这是父母亲手补充的原始记录" },
+  // ── 旧 family-specific 类型（保留兼容） ──
+  child:   { color: "#f4b8a0", glowColor: "#e8836a", radius: 38, emoji: "🌸", typeName: "主角",       typeHint: "这一年的主角" },
+  year:    { color: "#fde8dc", glowColor: "#f4b8a0", radius: 26, emoji: "📅", typeName: "年份",       typeHint: "这一年的成长记录" },
+  // ── 共用类型 ──
+  keyword: { color: "#fcd5c0", glowColor: "#e8836a", radius: 20, emoji: "✨", typeName: "关键词",     typeHint: "这是这一年反复出现的成长印记" },
+  event:   { color: "#e8cdb8", glowColor: "#c08070", radius: 22, emoji: "⏱", typeName: "重要瞬间",   typeHint: "这是今年值得被记住的一个瞬间" },
+  letter:  { color: "#fde8dc", glowColor: "#f4b8a0", radius: 24, emoji: "✉️", typeName: "给未来的信",  typeHint: "这是父母想留给未来孩子的话" },
+  memory:  { color: "#ddd0c8", glowColor: "#b09080", radius: 20, emoji: "📓", typeName: "记录",       typeHint: "这是父母亲手补充的原始记录" },
+  // ── 通用类型（Phase 6 新增）──
+  subject: { color: "#f4b8a0", glowColor: "#e8836a", radius: 38, emoji: "🌸", typeName: "主题",       typeHint: "这段记忆的中心" },
+  person:  { color: "#f4b8a0", glowColor: "#e8836a", radius: 26, emoji: "👤", typeName: "人物",       typeHint: "这段记忆中的重要人物" },
+  time:    { color: "#fde8dc", glowColor: "#f4b8a0", radius: 26, emoji: "📅", typeName: "时间",       typeHint: "这段记忆发生的时间" },
+  place:   { color: "#e8cdb8", glowColor: "#c08070", radius: 22, emoji: "📍", typeName: "地点",       typeHint: "这段记忆中的地点" },
+  message: { color: "#ddd0c8", glowColor: "#b09080", radius: 20, emoji: "💬", typeName: "对话",       typeHint: "一段被记住的话" },
+  emotion: { color: "#fcd5c0", glowColor: "#e8836a", radius: 20, emoji: "💛", typeName: "情绪",       typeHint: "这段记忆里的情绪" },
 };
 
-// 按节点类型决定标签最大字数
+// ── 标签截断 ────────────────────────────────────────────────────
 function truncateLabel(label: string, type: LifeGraphNodeType): string {
-  const maxLen: Record<LifeGraphNodeType, number> = {
+  const maxLen: Partial<Record<LifeGraphNodeType, number>> = {
     child:   8,
     year:    6,
+    subject: 8,
+    person:  6,
+    time:    6,
     keyword: 5,
     event:   5,
+    place:   6,
+    message: 6,
+    emotion: 5,
     letter:  6,
     memory:  6,
   };
@@ -43,27 +59,35 @@ function truncateLabel(label: string, type: LifeGraphNodeType): string {
   return label.length > max ? label.slice(0, max) + "…" : label;
 }
 
-// 布局：在 [0, 1] 范围内计算各节点坐标
+// ── 布局计算 ─────────────────────────────────────────────────────
 function computeLayout(nodes: LifeGraphNode[]): Map<string, { x: number; y: number }> {
   const layout = new Map<string, { x: number; y: number }>();
   const cx = 0.5;
   const cy = 0.48;
 
-  const keywords = nodes.filter((n) => n.type === "keyword");
-  const events   = nodes.filter((n) => n.type === "event");
-  const specials = nodes.filter((n) => n.type === "letter" || n.type === "memory");
-  const yearNode = nodes.find((n) => n.type === "year");
+  // 中心节点：优先 subject，fallback child
+  const centerNode =
+    nodes.find((n) => n.type === "subject") ??
+    nodes.find((n) => n.type === "child");
 
-  layout.set("child", { x: cx, y: cy });
+  // 时间节点：优先 time，fallback year
+  const timeNode =
+    nodes.find((n) => n.type === "time") ??
+    nodes.find((n) => n.type === "year");
 
-  if (yearNode) layout.set(yearNode.id, { x: cx - 0.28, y: cy - 0.28 });
+  if (centerNode) layout.set(centerNode.id, { x: cx, y: cy });
+  if (timeNode) layout.set(timeNode.id, { x: cx - 0.28, y: cy - 0.28 });
 
+  // 关键词 + 情绪节点环绕中心
+  const keywords = nodes.filter((n) => n.type === "keyword" || n.type === "emotion");
   keywords.forEach((node, i) => {
     const total = keywords.length;
     const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
     layout.set(node.id, { x: cx + 0.26 * Math.cos(angle), y: cy + 0.26 * Math.sin(angle) });
   });
 
+  // 事件 + 地点节点外圈
+  const events = nodes.filter((n) => n.type === "event" || n.type === "place");
   events.forEach((node, i) => {
     const total = events.length;
     const offset = keywords.length > 0 ? Math.PI / keywords.length : Math.PI / 4;
@@ -71,6 +95,13 @@ function computeLayout(nodes: LifeGraphNode[]): Map<string, { x: number; y: numb
     layout.set(node.id, { x: cx + 0.38 * Math.cos(angle), y: cy + 0.38 * Math.sin(angle) });
   });
 
+  // 信件 + 记录 + 对话 + 人物节点底部
+  const specials = nodes.filter((n) =>
+    n.type === "letter" ||
+    n.type === "memory" ||
+    n.type === "message" ||
+    n.type === "person"
+  );
   specials.forEach((node, i) => {
     layout.set(node.id, { x: i === 0 ? cx + 0.30 : cx - 0.30, y: cy + 0.35 });
   });
@@ -83,20 +114,16 @@ function toSvg(v: number, size: number, padding: number): number {
 }
 
 export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Props) {
-  // 优先使用 AI 生成的 graphHints，fallback 到前端派生
   const useAiHints = graphHints && graphHints.nodes.length > 0;
 
-  // 前端派生图谱（fallback 或与 AI 图谱合并用于布局/边）
   const derivedGraph = useMemo(
     () => buildLifeGraph({ rawMaterial, report }),
     [rawMaterial, report]
   );
 
-  // 若有 AI 节点，重建节点和边（不复用 derivedGraph.edges，旧 edges 指向旧 id）
   const graph = useMemo(() => {
     if (!useAiHints) return derivedGraph;
 
-    // AI 节点 id 用 label 的 slug，避免 id 冲突
     const aiNodes: LifeGraphNode[] = graphHints.nodes.map((n, i) => ({
       id: `ai-${n.type}-${i}`,
       type: n.type,
@@ -105,36 +132,43 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
       source: "generated" as const,
     }));
 
-    const childNode = derivedGraph.nodes.find((n) => n.type === "child");
-    const yearNode = derivedGraph.nodes.find((n) => n.type === "year");
-    const yearId = yearNode?.id ?? "year";
+    // 优先找 subject，fallback child
+    const centerNode =
+      derivedGraph.nodes.find((n) => n.type === "subject") ??
+      derivedGraph.nodes.find((n) => n.type === "child");
+    // 优先找 time，fallback year
+    const timeNode =
+      derivedGraph.nodes.find((n) => n.type === "time") ??
+      derivedGraph.nodes.find((n) => n.type === "year");
+    const timeId = timeNode?.id ?? "year";
 
     const baseNodes: LifeGraphNode[] = [
-      childNode ? { ...childNode, description: graphHints.centerDescription } : childNode!,
-      ...(yearNode ? [yearNode] : []),
+      centerNode
+        ? { ...centerNode, description: graphHints.centerDescription }
+        : null,
+      timeNode ?? null,
       ...aiNodes,
-    ].filter(Boolean);
+    ].filter((n): n is LifeGraphNode => n !== null);
 
-    // 为 AI 节点重建边
     const edgeIds = new Set<string>();
     const edges: LifeGraphEdge[] = [];
     function addEdge(id: string, source: string, target: string, label?: string) {
-      if (!edgeIds.has(id)) { edgeIds.add(id); edges.push({ id, source, target, label }); }
+      if (!edgeIds.has(id)) {
+        edgeIds.add(id);
+        edges.push({ id, source, target, label });
+      }
     }
 
-    // child → year
-    addEdge("e-child-year", "child", yearId);
+    const centerId = centerNode?.id ?? "child";
+    addEdge("e-center-time", centerId, timeId);
 
     aiNodes.forEach((aiNode) => {
-      // child → 每个 AI 节点
-      addEdge(`e-child-${aiNode.id}`, "child", aiNode.id);
-      // year → event 类型的 AI 节点（虚线）
-      if (aiNode.type === "event") {
-        addEdge(`e-year-${aiNode.id}`, yearId, aiNode.id);
+      addEdge(`e-center-${aiNode.id}`, centerId, aiNode.id);
+      if (aiNode.type === "event" || aiNode.type === "place") {
+        addEdge(`e-time-${aiNode.id}`, timeId, aiNode.id);
       }
     });
 
-    // relatedTo 弱关联边：根据 label 查找对应节点 id
     const labelToId = new Map(aiNodes.map((n) => [n.label, n.id]));
     graphHints.nodes.forEach((n, i) => {
       const sourceId = `ai-${n.type}-${i}`;
@@ -149,15 +183,26 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
     return { nodes: baseNodes, edges };
   }, [useAiHints, graphHints, derivedGraph]);
 
-  // 标题和副标题：优先使用 AI 版本
   const graphTitle = useAiHints ? graphHints.title : "被爱点亮的这一年";
   const graphSubtitle = useAiHints ? graphHints.subtitle : "每一颗星，都是你认真记住过的瞬间。";
 
-  const [selectedId, setSelectedId] = useState<string>("child");
+  // selectedId 初始化：优先 subject/child，fallback 第一个节点
+  // 用 useMemo 从 graph.nodes 派生，避免在 useEffect 里 setState
+  const defaultSelectedId = useMemo(() => {
+    return (
+      graph.nodes.find((n) => n.type === "subject")?.id ??
+      graph.nodes.find((n) => n.type === "child")?.id ??
+      graph.nodes[0]?.id ??
+      ""
+    );
+  }, [graph.nodes]);
+
+  const [selectedId, setSelectedId] = useState<string>(() => defaultSelectedId);
+
   const layout = useMemo(() => computeLayout(graph.nodes), [graph.nodes]);
 
   const selectedNode = graph.nodes.find((n) => n.id === selectedId) ?? graph.nodes[0];
-  const cfg = NODE_CONFIG[selectedNode?.type ?? "child"];
+  const cfg = NODE_CONFIG[selectedNode?.type ?? "child"] ?? NODE_CONFIG.memory;
 
   const W = 560;
   const H = 420;
@@ -225,16 +270,15 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
             const y1 = toSvg(src.y, H, PAD);
             const x2 = toSvg(tgt.x, W, PAD);
             const y2 = toSvg(tgt.y, H, PAD);
-            // relatedTo 弱关联用更淡的点线；year->event 用虚线；其他用实线
             const isKwEv = edge.id.startsWith("edge-kw-ev-") || edge.id.startsWith("e-rel-");
-            const isYearEv = edge.source.startsWith("year-");
+            const isTimeEv = edge.source.startsWith("year-") || edge.source.startsWith("time-");
             return (
               <line key={edge.id}
                 x1={x1} y1={y1} x2={x2} y2={y2}
                 stroke="#f4b8a0"
-                strokeWidth={isKwEv ? 0.8 : isYearEv ? 0.6 : 1}
-                strokeOpacity={isKwEv ? 0.18 : isYearEv ? 0.2 : 0.35}
-                strokeDasharray={isKwEv ? "2 6" : isYearEv ? "3 5" : undefined}
+                strokeWidth={isKwEv ? 0.8 : isTimeEv ? 0.6 : 1}
+                strokeOpacity={isKwEv ? 0.18 : isTimeEv ? 0.2 : 0.35}
+                strokeDasharray={isKwEv ? "2 6" : isTimeEv ? "3 5" : undefined}
               />
             );
           })}
@@ -248,6 +292,7 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
             const y = toSvg(pos.y, H, PAD);
             const isSelected = node.id === selectedId;
             const scale = isSelected ? 1.18 : 1;
+            const isCenterType = node.type === "child" || node.type === "subject";
 
             return (
               <g key={node.id}
@@ -261,16 +306,16 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
                   stroke={isSelected ? "#f4b8a0" : "transparent"}
                   strokeWidth={isSelected ? 1.5 : 0}
                 />
-                <text x={x} y={y - (node.type === "child" ? 6 : 4)}
+                <text x={x} y={y - (isCenterType ? 6 : 4)}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={node.type === "child" ? 18 : 13}>
+                  fontSize={isCenterType ? 18 : 13}>
                   {c.emoji}
                 </text>
-                <text x={x} y={y + (node.type === "child" ? 14 : 11)}
+                <text x={x} y={y + (isCenterType ? 14 : 11)}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={node.type === "child" ? 11 : 9}
-                  fontWeight={node.type === "child" ? "bold" : "normal"}
-                  fill={node.type === "child" ? "#2d1f1a" : "#3d2c2c"}
+                  fontSize={isCenterType ? 11 : 9}
+                  fontWeight={isCenterType ? "bold" : "normal"}
+                  fill={isCenterType ? "#2d1f1a" : "#3d2c2c"}
                   style={{ pointerEvents: "none", userSelect: "none" }}>
                   {truncateLabel(node.label, node.type)}
                 </text>
@@ -280,7 +325,7 @@ export default function LifeGraphPreview({ rawMaterial, report, graphHints }: Pr
         </svg>
       </div>
 
-      {/* 详情卡片：emoji + 类型名 + label → 解释文案 → description */}
+      {/* 详情卡片 */}
       {selectedNode && (
         <div className="mx-4 mb-5 px-4 py-3 rounded-2xl"
           style={{ background: "rgba(255,248,243,0.08)", border: "1px solid rgba(244,184,160,0.2)" }}>

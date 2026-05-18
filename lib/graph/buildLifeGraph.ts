@@ -1,118 +1,79 @@
 // lib/graph/buildLifeGraph.ts
-// 从 rawMaterial + report 派生成长星图数据
-// 纯函数：不调用 AI，不访问网络，不读写存储
+// 兼容 wrapper：保持旧调用接口 buildLifeGraph({ rawMaterial, report })。
+//
+// 内部已改为：
+//   buildFamilyMemoryGraph（通用 MemoryGraphData）
+//     → memoryGraphToLifeGraph（降级回 LifeGraphData）
+//
+// 这样现有的 LifeGraphPreview 调用不需要修改，
+// 但内部逻辑已从 family 通用图谱开始构建。
 
 import type { RawMaterial, ReportData } from "@/lib/types";
-import type { LifeGraphData, LifeGraphNode, LifeGraphEdge } from "./types";
+import type { LifeGraphData, LifeGraphNode, LifeGraphEdge, LifeGraphNodeType } from "./types";
+import type { MemoryGraphData, MemoryGraphNode } from "@/lib/memory-core/graphTypes";
+import type { MemoryGraphNodeType } from "@/lib/memory-core/types";
+import { buildFamilyMemoryGraph } from "@/lib/domains/family/buildFamilyMemoryGraph";
 
 export function buildLifeGraph(input: {
   rawMaterial: RawMaterial;
   report: ReportData;
 }): LifeGraphData {
-  const { rawMaterial, report } = input;
-  const nodes: LifeGraphNode[] = [];
-  const edges: LifeGraphEdge[] = [];
-  // 用于去重：已存在的边 id 集合
-  const edgeIds = new Set<string>();
+  const memoryGraph = buildFamilyMemoryGraph(input);
+  return memoryGraphToLifeGraph(memoryGraph);
+}
 
-  function addEdge(edge: LifeGraphEdge) {
-    if (!edgeIds.has(edge.id)) {
-      edgeIds.add(edge.id);
-      edges.push(edge);
-    }
+// ── 通用类型 → 旧 LifeGraphNodeType 降级映射 ────────────────────
+// 旧 LifeGraphPreview 还没完全改名，旧 UI 仍以 LifeGraphData 渲染。
+// 保留此函数作为过渡，后续 LifeGraphPreview 完全支持 MemoryGraphNodeType 后可删除。
+function toLifeGraphNodeType(type: MemoryGraphNodeType): LifeGraphNodeType {
+  switch (type) {
+    case "subject":  return "child";
+    case "time":     return "year";
+    case "keyword":  return "keyword";
+    case "event":    return "event";
+    case "letter":   return "letter";
+    case "memory":   return "memory";
+    // 新增通用类型的降级
+    case "person":   return "memory";
+    case "place":    return "event";
+    case "message":  return "memory";
+    case "emotion":  return "keyword";
+    default:         return "memory";
   }
+}
 
-  // ── 中心节点：孩子 ───────────────────────────────────────────
-  const agePrefix = rawMaterial.childAge !== "" ? `${rawMaterial.childAge} 岁 · ` : "";
-  nodes.push({
-    id: "child",
-    type: "child",
-    label: rawMaterial.childName || "宝贝",
-    description: `${agePrefix}${rawMaterial.reportYear} 年｜这一年，被认真记住了`,
-    source: "raw",
-  });
+// ── 通用 MemoryGraphNode id 映射规则 ────────────────────────────
+// subject → child（旧 LifeGraphPreview 默认选中 id="child"）
+// time-XXXX → year-XXXX
+// 其他节点 id 保持不变
+function toLifeNodeId(node: MemoryGraphNode): string {
+  if (node.type === "subject") return "child";
+  if (node.type === "time") return node.id.replace(/^time-/, "year-");
+  return node.id;
+}
 
-  // ── 年份节点 ─────────────────────────────────────────────────
-  const yearId = `year-${rawMaterial.reportYear}`;
-  nodes.push({
-    id: yearId,
-    type: "year",
-    label: `${rawMaterial.reportYear}`,
-    description: "这一年的成长记录",
-    source: "raw",
-  });
-  addEdge({ id: "edge-child-year", source: "child", target: yearId });
+function memoryGraphToLifeGraph(graph: MemoryGraphData): LifeGraphData {
+  // 构建 id 映射表（新 id → 旧 id），用于边的转换
+  const idMap = new Map<string, string>(
+    graph.nodes.map((n) => [n.id, toLifeNodeId(n)])
+  );
 
-  // ── 关键词节点（最多 5 个）───────────────────────────────────
-  const keywordNodes: LifeGraphNode[] = [];
-  report.keywords.slice(0, 5).forEach((kw, i) => {
-    const nodeId = `keyword-${i}`;
-    const node: LifeGraphNode = {
-      id: nodeId,
-      type: "keyword",
-      label: kw,
-      description: "年度关键词",
-      source: "generated",
-    };
-    nodes.push(node);
-    keywordNodes.push(node);
-    addEdge({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
-  });
+  const nodes: LifeGraphNode[] = graph.nodes.map((n) => ({
+    id: toLifeNodeId(n),
+    type: toLifeGraphNodeType(n.type),
+    label: n.label,
+    description: n.description,
+    source: n.source,
+    x: n.x,
+    y: n.y,
+  }));
 
-  // ── 时间线事件节点（最多 5 个）──────────────────────────────
-  const eventNodes: LifeGraphNode[] = [];
-  report.timeline.slice(0, 5).forEach((item, i) => {
-    const nodeId = `event-${i}`;
-    const node: LifeGraphNode = {
-      id: nodeId,
-      type: "event",
-      label: item.title,
-      description: `${item.time}｜${item.description}`,
-      source: "generated",
-    };
-    nodes.push(node);
-    eventNodes.push(node);
-    addEdge({ id: `edge-child-${nodeId}`, source: "child", target: nodeId });
-    addEdge({ id: `edge-year-${nodeId}`, source: yearId, target: nodeId });
-  });
-
-  // ── keyword → event 弱关联（简单字符串 includes 匹配）───────
-  keywordNodes.forEach((kwNode) => {
-    eventNodes.forEach((evNode) => {
-      const kw = kwNode.label;
-      const evText = evNode.label + (evNode.description ?? "");
-      if (evText.includes(kw)) {
-        addEdge({
-          id: `edge-kw-ev-${kwNode.id}-${evNode.id}`,
-          source: kwNode.id,
-          target: evNode.id,
-          label: "相关",
-        });
-      }
-    });
-  });
-
-  // ── 信件节点 ─────────────────────────────────────────────────
-  nodes.push({
-    id: "letter",
-    type: "letter",
-    label: "写给未来的你",
-    description: report.letter.slice(0, 80) + (report.letter.length > 80 ? "……" : ""),
-    source: "generated",
-  });
-  addEdge({ id: "edge-child-letter", source: "child", target: "letter" });
-
-  // ── 自由记录节点（有内容才生成）─────────────────────────────
-  if (rawMaterial.freeNote.trim()) {
-    nodes.push({
-      id: "memory",
-      type: "memory",
-      label: "父母的补充记录",
-      description: rawMaterial.freeNote.slice(0, 80) + (rawMaterial.freeNote.length > 80 ? "……" : ""),
-      source: "raw",
-    });
-    addEdge({ id: "edge-child-memory", source: "child", target: "memory" });
-  }
+  const edges: LifeGraphEdge[] = graph.edges.map((e) => ({
+    id: e.id,
+    source: idMap.get(e.source) ?? e.source,
+    target: idMap.get(e.target) ?? e.target,
+    label: e.label,
+  }));
 
   return { nodes, edges };
 }
