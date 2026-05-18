@@ -6,9 +6,7 @@
 
 **当前可用模式：**
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
-
-**进行中：**
-- `couple mode`：恋爱纪念册介绍页与输入页已开放，可体验填写情侣信息、手动粘贴聊天文本并预览记忆材料结构；AI 生成下一阶段接入
+- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 雏形
 
 **预留模式（coming soon）：**
 - `personal mode`：个人人生 Wiki / 自我回忆录
@@ -49,7 +47,7 @@ npm run dev
 11. **切换原始记录** — 点击「📋 原始记录」标签查看你填写的所有原始内容
 12. **打印 / 保存 PDF** — 点击「🖨️ 打印 / 保存 PDF」，在浏览器打印对话框中选择「另存为 PDF」
 
-> couple / personal / memorial 当前点击后只进入 coming soon 页面，不触发任何生成。
+> couple mode 已支持 AI 生成，可进入恋爱纪念册完整流程。personal / memorial 仍进入 coming soon 页面。
 
 ---
 
@@ -60,7 +58,8 @@ npm run dev
 #### Multi-mode 首页
 - `MemoryModeHome`：记忆主题选择页（默认首屏）
 - `family mode` 可用，点击进入孩子成长 landing
-- `couple / personal / memorial` coming soon，点击进入 `ComingSoonModePage`
+- `couple mode` 可用，点击进入恋爱纪念册流程（介绍页 → 输入页 → 生成结果）
+- `personal / memorial` coming soon，点击进入 `ComingSoonModePage`
 
 #### Family mode
 - 孩子信息表单（昵称、年龄、总结年份、父母称呼、文案风格）
@@ -90,10 +89,8 @@ npm run dev
 - 不做云存储
 - 照片不上传服务器
 - 照片不上传给 AI（只传文本和照片数量）
-- couple mode 当前有介绍页和输入页骨架，不调用 AI 生成，不生成真实纪念册
-- couple mode 不读取微信数据库，只处理用户主动粘贴的文本
-- couple mode 不读取微信数据库
-- couple mode 不做自动导入微信聊天记录
+- couple mode 不读取微信数据库，不自动导入微信聊天记录，只处理用户主动粘贴的文本
+- couple mode 照片当前只记录数量，不上传服务器，不传给 AI
 - memorial / personal mode 暂不开放真实生成
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
@@ -153,7 +150,7 @@ npm run dev
 | mode | 状态 |
 |------|------|
 | `family` | available |
-| `couple` | coming_soon |
+| `couple` | available |
 | `personal` | coming_soon |
 | `memorial` | coming_soon |
 
@@ -202,6 +199,14 @@ Family form
 - 输入：MemoryRawMaterial（含 legacyFamilyInput 兼容字段）
 - 输出：GrowthMemoryArtifact（暂时，为兼容旧前端）
 - 用途：孩子成长记录 / 亲子成长礼物
+
+### couple-memory
+
+`.skills/couple-memory/` 是 couple mode 的真实 skill pack（Phase 8.2）。
+
+- 输入：MemoryRawMaterial（mode: "couple"）
+- 输出：标准 MemoryArtifact（不走 GrowthMemoryArtifact 兼容层）
+- 用途：恋爱纪念册 MVP，生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy
 
 ### growth-memory
 
@@ -252,7 +257,8 @@ lib/
       artifactAdapter.ts           # GrowthMemoryArtifact ↔ MemoryArtifact
       buildFamilyMemoryGraph.ts    # family → MemoryGraphData
     couple/
-      adapter.ts                   # CoupleRawInput → MemoryRawMaterial（占位）
+      adapter.ts                   # CoupleRawInput → MemoryRawMaterial
+      defaultQuestions.ts          # couple 默认访谈问题
     personal/
       adapter.ts                   # PersonalRawInput → MemoryRawMaterial（占位）
     memorial/
@@ -272,7 +278,7 @@ lib/
 .skills/
   family-memory/                   # 当前可用
   growth-memory/                   # 旧 skill，保留为 fallback
-  couple-memory/                   # 占位
+  couple-memory/                   # couple mode 真实 skill pack（Phase 8.2）
   personal-memory/                 # 占位
   memorial-memory/                 # 占位
 

@@ -57,9 +57,7 @@ export default function MemoryModeHome({ onSelectMode }: Props) {
 
             {/* 三种状态说明 */}
             <p className="text-sm" style={{ color: "#b08878" }}>
-              🟢 可生成：<strong>家庭亲子记忆</strong>
-              &nbsp;·&nbsp;
-              🧪 可体验：<strong>情侣恋爱纪念输入页</strong>
+              🟢 可生成：<strong>家庭亲子记忆、情侣恋爱纪念</strong>
               &nbsp;·&nbsp;
               ⏳ 后续开放：个人、纪念馆
             </p>

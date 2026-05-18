@@ -84,7 +84,7 @@ GrowthMemoryArtifact（兼容旧前端）
 | mode | status | 说明 |
 |------|--------|------|
 | `family` | available | 完整可用，已接入真实生成 |
-| `couple` | preview | 介绍页+输入页可体验，AI 生成下一阶段接入 |
+| `couple` | available | MVP 可生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
 | `personal` | coming_soon | 占位，仅展示说明 |
 | `memorial` | coming_soon | 占位，仅展示说明 |
 

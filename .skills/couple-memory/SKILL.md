@@ -2,32 +2,59 @@
 
 ## 定位
 
-这是 **couple mode** 的 skill pack（占位，当前不接入真实生成）。
+这是 **couple mode** 的 skill pack。
 
 用途：情侣恋爱纪念 / 恋爱周年 Wiki。
 
-## 当前状态
+输入：`MemoryRawMaterial`（mode: "couple"）
+输出：标准 `MemoryArtifact`（不输出 GrowthMemoryArtifact，不经过 family 兼容层）
 
-**⚠ 未开放**：此 skill pack 当前只是占位，不接入任何真实 AI 生成。
+## 输入结构
 
-应用层（app/page.tsx）会在用户点击 couple mode 时展示 ComingSoonModePage，不会调用此 skill。
+核心材料来自：
 
-## 未来规划
+- `subject`：恋爱记忆主题（title / primaryName / timeRange）
+- `participants`：partnerA 和 partnerB
+- `qaList`：用户回答的恋爱访谈问题
+- `freeNote`：用户自由记录
+- `domainPayload.chatText`：用户手动粘贴的聊天文本
+- `domainPayload.partnerAName`
+- `domainPayload.partnerBName`
+- `domainPayload.relationshipTimeRange`
+- `domainPayload.anniversaryDate`（可选）
 
-- 输入：`MemoryRawMaterial`（mode: "couple"）
-- 输出：`MemoryArtifact`
+媒体说明：
+- `media` 只包含照片数量和聊天条数估算，不包含实际文件
+- 照片不上传服务器，不传给 AI
 
-未来功能：
-- 生成恋爱时间线
-- 关系关键词星图（Relationship Galaxy）
-- 聊天摘录整理
-- 周年纪念信
-- 朋友圈 / 小红书文案
+## 输出结构
 
-## 数据隐私约束
+标准 `MemoryArtifact`：
 
-- MVP 只允许用户**手动粘贴**聊天文本
+- `artifactVersion`："0.1"
+- `mode`："couple"
+- `narrative`：title / keywords / summary / timeline / longFormText / socialPosts
+- `graph`：title / subtitle / centerDescription / nodes
+- `extensions`：sourceTrace / qualityReview
+
+## 隐私边界
+
+- 用户聊天文本必须来自主动粘贴
 - 不读取微信数据库
-- 不绕过系统权限
-- 不做自动导入微信聊天记录
-- 照片只在本地预览，不上传服务器
+- 不自动导入聊天记录
+- 不假设聊天记录完整
+- 不编造具体地点、日期、对话
+- 不对关系做道德评判
+- 不夸大承诺
+
+## 目录结构
+
+```
+.skills/couple-memory/
+  SKILL.md
+  prompts/
+    00_system_role.md
+    01_task.md
+    02_output_contract.md
+    03_quality_rules.md
+```

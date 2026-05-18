@@ -40,12 +40,14 @@
 - CTA 在 Hero 和底部各出现一次
 - 仍然不接入 AI 生成
 
-**Phase 8.2 待完成：**
+**Phase 8.2 已完成（本阶段）：**
 
-- `.skills/couple-memory` 从占位改为真实 prompt
-- 接入 `runMemorySkill`，返回 `MemoryArtifact`
-- 新增结果展示组件（`MemoryArtifactPreview` 或 `CoupleArtifactPreview`）
-- Relationship Galaxy 图谱展示
+- `.skills/couple-memory` 从占位改为真实 prompt（01_task.md / 02_output_contract.md / 03_quality_rules.md）
+- 新增 `app/api/generate-couple-memory/route.ts`（couple 专用 API route，不复用 family route）
+- `CoupleMemoryApp` 从 JSON 预览升级为 input / generating / result / error 状态机
+- 新增 `CoupleArtifactPreview`（展示 narrative / graph nodes / qualityReview）
+- couple mode 直接生成 `MemoryArtifact`，不走 `GrowthMemoryArtifact` 兼容层
+- family mode 不受影响
 
 ---
 
