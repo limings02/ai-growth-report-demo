@@ -1,8 +1,13 @@
 "use client";
 
 // components/couple/CoupleLandingPage.tsx
-// couple mode 的专属落地介绍页。
-// 让用户在进入表单前了解当前可体验内容和边界，避免误解 AI 已经可以生成。
+// couple mode 的专属落地介绍页（Phase 8.1.2 增强版）。
+//
+// 目标：先调动情绪，再说明功能和边界。
+// 开发约定：
+// - 面向用户不出现「MemoryRawMaterial」，改称「记忆材料」
+// - AI 生成当前未接入，在页面底部轻量说明，不做大块警告
+// - 不修改 CoupleMemoryApp 核心逻辑
 
 type Props = {
   onStart: () => void;
@@ -33,111 +38,225 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
         </button>
       </div>
 
-      {/* 主体 */}
       <main className="flex-1 flex flex-col items-center px-5 py-14">
         <div className="w-full max-w-2xl">
 
-          {/* ── Hero 区 ── */}
-          <div className="text-center mb-12">
+          {/* ── Hero 情绪区 ─────────────────────────────────── */}
+          <div className="text-center mb-14">
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-5"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6"
               style={{ background: "#fde8dc", color: "#c0674a" }}
             >
               <span>💑</span>
-              <span>恋爱纪念册</span>
+              <span>恋爱纪念册 · Preview</span>
             </div>
 
             <h1
-              className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-4"
-              style={{ color: "#2d1f1a", lineHeight: "1.4" }}
+              className="text-3xl sm:text-4xl font-bold mb-5"
+              style={{ color: "#2d1f1a", lineHeight: "1.45" }}
             >
-              把你们的恋爱故事，<br />
-              <span style={{ color: "#e07a5f" }}>整理成一本会被珍藏的纪念册。</span>
+              从第一句晚安，<br />
+              <span style={{ color: "#e07a5f" }}>到后来每一次想念。</span>
             </h1>
 
             <p
-              className="text-base leading-relaxed mb-5 max-w-lg mx-auto"
+              className="text-base leading-relaxed mb-8 max-w-lg mx-auto"
               style={{ color: "#7a5a52" }}
             >
-              从聊天片段、照片数量、纪念日和你们写下的故事中，
-              整理出恋爱时间线、关系关键词、周年信和 Relationship Galaxy。
+              那些藏在聊天记录里的心动、玩笑、争吵与和好，
+              都可以被认真整理成你们的恋爱时间线、关系关键词、周年信和 Relationship Galaxy。
             </p>
 
-            {/* 当前阶段提示 */}
-            <div
-              className="inline-block px-4 py-2 rounded-xl text-sm"
-              style={{ background: "#fff3e0", color: "#e65100", border: "1px solid #ffe0b2" }}
+            {/* Hero CTA */}
+            <button
+              onClick={onStart}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-white text-base font-semibold shadow-lg transition-all cursor-pointer hover:shadow-xl hover:scale-[1.02] active:scale-95"
+              style={{ background: "linear-gradient(135deg, #e8836a, #e07a5f)" }}
             >
-              🧪 当前可体验：输入页与 MemoryRawMaterial 预览 &nbsp;·&nbsp; AI 生成下一阶段接入
+              开始整理恋爱故事 →
+            </button>
+
+            {/* 阶段说明：轻量，不做警告 */}
+            <p className="text-xs mt-3" style={{ color: "#b08878" }}>
+              当前可体验：填写恋爱故事，预览 AI 将如何整理你们的记忆材料
+            </p>
+          </div>
+
+          {/* ── 它会帮你整理什么 ─────────────────────────────── */}
+          <div className="mb-12">
+            <h2
+              className="text-lg font-bold text-center mb-2"
+              style={{ color: "#2d1f1a" }}
+            >
+              它不是简单总结聊天记录，
+            </h2>
+            <p className="text-center text-sm mb-7" style={{ color: "#9d7b72" }}>
+              而是重新讲述你们的关系。
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                {
+                  emoji: "🕰️",
+                  title: "恋爱时间线",
+                  desc: "第一次认识、第一次心动、第一次旅行、一次争吵和一次和好，都可以成为你们关系里的节点。",
+                },
+                {
+                  emoji: "✨",
+                  title: "关系关键词",
+                  desc: "从聊天和回答中提炼只属于你们的词：昵称、暗号、地点、习惯和反复出现的小事。",
+                },
+                {
+                  emoji: "✉️",
+                  title: "周年纪念信",
+                  desc: "把普通日常写成一封能在纪念日、生日或某个深夜重新读起的信。",
+                },
+                {
+                  emoji: "🌌",
+                  title: "Relationship Galaxy",
+                  desc: "把人、地点、对话、情绪连接成一张关系星图，让这段感情有可以看见的形状。",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-2xl p-5"
+                  style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
+                >
+                  <div className="text-2xl mb-2">{item.emoji}</div>
+                  <p className="font-semibold text-sm mb-1.5" style={{ color: "#2d1f1a" }}>
+                    {item.title}
+                  </p>
+                  <p className="text-xs leading-relaxed" style={{ color: "#9d7b72" }}>
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* ── 价值卡片 ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            {[
-              {
-                emoji: "🕰️",
-                title: "恋爱时间线",
-                desc: "整理第一次认识、心动、旅行、争吵和好的节点，让那些瞬间不再只活在记忆里。",
-              },
-              {
-                emoji: "✉️",
-                title: "周年纪念信",
-                desc: "把普通的聊天和日常，写成一封有仪式感的信，送给未来某一年的你们。",
-              },
-              {
-                emoji: "🌌",
-                title: "Relationship Galaxy",
-                desc: "把人、地点、对话、情绪变成一张关系星图，让这段感情有了可以看见的形状。",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-2xl p-5"
-                style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
-              >
-                <div className="text-2xl mb-2">{item.emoji}</div>
-                <p className="font-semibold text-sm mb-1" style={{ color: "#2d1f1a" }}>
-                  {item.title}
-                </p>
-                <p className="text-xs leading-relaxed" style={{ color: "#9d7b72" }}>
-                  {item.desc}
-                </p>
-              </div>
-            ))}
+          {/* ── 适合什么时候生成 ─────────────────────────────── */}
+          <div className="mb-12">
+            <h2
+              className="text-lg font-bold text-center mb-6"
+              style={{ color: "#2d1f1a" }}
+            >
+              适合在这些时刻，送给你们。
+            </h2>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {[
+                "恋爱周年",
+                "520 · 七夕",
+                "生日礼物",
+                "求婚前的小册子",
+                "异地见面前",
+                "一次和好之后",
+                "普通但想被记住的一天",
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-4 py-2 rounded-full text-sm font-medium"
+                  style={{ background: "#fde8dc", color: "#c0674a" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* ── 隐私说明 ── */}
+          {/* ── 样例预览 ─────────────────────────────────────── */}
+          <div className="mb-12">
+            <h2
+              className="text-lg font-bold text-center mb-2"
+              style={{ color: "#2d1f1a" }}
+            >
+              未来它可能会这样整理你们的故事
+            </h2>
+            <p className="text-center text-xs mb-6" style={{ color: "#b08878" }}>
+              以下是示例，不是你的真实生成结果
+            </p>
+
+            <div
+              className="rounded-2xl p-5 mb-4"
+              style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
+            >
+              <p className="text-xs font-semibold mb-3" style={{ color: "#c0674a" }}>
+                ⏱ 恋爱时间线示例
+              </p>
+              <div
+                className="rounded-xl p-4 text-sm leading-relaxed"
+                style={{ background: "white", border: "1px solid #f0ddd5" }}
+              >
+                <p className="font-medium mb-1" style={{ color: "#2d1f1a" }}>
+                  2023.06 · 第一次认真聊天
+                </p>
+                <p style={{ color: "#7a5a52" }}>
+                  那天你们聊到很晚，从最近的生活聊到喜欢的电影。
+                  后来很多次晚安，都是从那一晚开始变得不一样。
+                </p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#fde8dc", color: "#c0674a" }}>晚安</span>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#fde8dc", color: "#c0674a" }}>电影</span>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#fde8dc", color: "#c0674a" }}>散步</span>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#fde8dc", color: "#c0674a" }}>想你</span>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#fde8dc", color: "#c0674a" }}>老地方</span>
+              </div>
+            </div>
+
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: "#fffdf9",
+                border: "1px solid #f0ddd5",
+                backgroundImage: "repeating-linear-gradient(transparent, transparent 27px, #f5e8e0 27px, #f5e8e0 28px)",
+                backgroundSize: "100% 28px",
+                backgroundPositionY: "36px",
+              }}
+            >
+              <p className="text-xs font-semibold mb-3 relative z-10" style={{ color: "#c0674a" }}>
+                ✉️ 周年信片段示例
+              </p>
+              <p
+                className="text-sm leading-loose relative z-10"
+                style={{ color: "#3d2c2c", fontFamily: "'PingFang SC', 'Hiragino Sans GB', serif" }}
+              >
+                写给未来的你们：<br /><br />
+                如果有一天你们忘了最开始为什么靠近，<br />
+                就回来看看这些聊天和故事。<br />
+                那里有很多很小的证据，<br />
+                证明你们曾经认真地喜欢过彼此。
+              </p>
+            </div>
+          </div>
+
+          {/* ── 隐私说明（温柔版）────────────────────────────── */}
           <div
-            className="rounded-2xl p-4 mb-8"
+            className="rounded-2xl p-5 mb-8"
             style={{ background: "#f9f5f3", border: "1px solid #ead8d0" }}
           >
-            <p className="text-xs font-semibold mb-2" style={{ color: "#7a5a52" }}>
-              🔒 隐私与边界
+            <p className="text-sm font-semibold mb-3" style={{ color: "#7a5a52" }}>
+              🔒 你掌控自己要交出的记忆
             </p>
-            <ul className="text-xs space-y-1" style={{ color: "#9d7b72" }}>
-              <li>• 不读取微信数据库，不自动导入聊天记录</li>
-              <li>• 只处理你主动粘贴的文本</li>
-              <li>• 照片当前只记录数量，不上传服务器</li>
+            <ul className="text-xs space-y-2" style={{ color: "#9d7b72" }}>
+              <li>· 不读取微信数据库，不自动导入聊天记录</li>
+              <li>· 只处理你主动粘贴的文本</li>
+              <li>· 照片当前只记录数量，不上传服务器</li>
+              <li>· 你可以只粘贴最想保存的一小段，不需要全部</li>
             </ul>
           </div>
 
-          {/* ── 当前阶段边界 ── */}
+          {/* ── Preview 阶段说明（轻量）─────────────────────── */}
           <div
-            className="rounded-2xl p-4 mb-10"
+            className="rounded-xl px-4 py-3 mb-8 text-center"
             style={{ background: "#fff3e0", border: "1px solid #ffe0b2" }}
           >
-            <p className="text-xs font-semibold mb-1" style={{ color: "#e65100" }}>
-              ⚠️ 当前阶段说明
-            </p>
-            <p className="text-xs" style={{ color: "#bf360c" }}>
-              本阶段不会调用 AI，不会生成真实纪念册。
-              点击开始后进入输入页，可填写信息并预览 MemoryRawMaterial 结构，
-              验证你的故事已被完整收集。AI 生成在下一阶段接入。
+            <p className="text-xs" style={{ color: "#e65100" }}>
+              当前是 Preview 体验：你可以先填写故事，查看系统如何整理你们的记忆材料。
+              完整 AI 纪念册生成将在下一阶段开放。
             </p>
           </div>
 
-          {/* ── CTA 按钮 ── */}
+          {/* ── 底部 CTA ──────────────────────────────────────── */}
           <button
             onClick={onStart}
             className="w-full py-4 rounded-full text-white text-base font-semibold shadow-lg transition-all cursor-pointer hover:shadow-xl hover:scale-[1.01] active:scale-95"
@@ -147,7 +266,7 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
           </button>
 
           <p className="text-center text-xs mt-3" style={{ color: "#b08878" }}>
-            填写完成后，你可以预览整理好的记忆结构
+            填写完成后，可以预览 AI 将如何整理你们的记忆材料
           </p>
         </div>
       </main>
