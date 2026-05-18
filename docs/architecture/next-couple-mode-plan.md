@@ -94,12 +94,21 @@
 - 给结果页增加「保存与使用建议」MemorySectionCard
 - 未修改 runtime / API / prompt
 
-**Phase 9.1 进行中 / 本阶段目标：**
+**Phase 9.1 已完成：**
 
 - 抽出通用 MemoryArtifact 展示小组件（`components/memory/`）
-- `CoupleArtifactPreview` 先接入这些通用小组件
+- 新增：MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails
+- `CoupleArtifactPreview` 接入上述组件，删除本地 SectionCard
 - family `ReportPreview` 暂不迁移
-- 不修改 API / runtime / prompt
+- 未修改 API / runtime / prompt
+
+**Phase 9.2 已完成：**
+
+- 继续抽出通用 MemoryArtifact 叙事展示组件
+- 新增：MemoryFallbackNotice / MemoryCoverSection / MemoryTimelineSection / MemoryLongFormSection / MemorySocialPostsSection / MemoryUsageTipsSection
+- `CoupleArtifactPreview` 替换所有本地叙事展示逻辑为通用组件，仅保留 couple-specific 文案通过 props 传入
+- family `ReportPreview` 暂不迁移
+- 未修改 API / runtime / prompt
 
 > **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
 

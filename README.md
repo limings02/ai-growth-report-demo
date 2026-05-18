@@ -252,6 +252,12 @@ components/
     MemoryPrintButton.tsx          # 通用浏览器打印按钮
     MemoryQualityReviewPanel.tsx   # 通用生成质量说明面板
     MemorySourceTraceDetails.tsx   # 通用内容溯源折叠区
+    MemoryFallbackNotice.tsx       # 通用 fallback 提示（生成结果不完整）
+    MemoryCoverSection.tsx         # 通用封面区（标题/关键词/总结）
+    MemoryTimelineSection.tsx      # 通用时间线展示区
+    MemoryLongFormSection.tsx      # 通用长文展示区（信件/纪念文等）
+    MemorySocialPostsSection.tsx   # 通用分享文案区（含复制按钮）
+    MemoryUsageTipsSection.tsx     # 通用保存与使用建议区
   GrowthReportApp.tsx              # family 主状态机
   LifeGraphPreview.tsx             # 成长星图（支持通用节点类型）
   ReportPreview.tsx                # 成长报告展示
