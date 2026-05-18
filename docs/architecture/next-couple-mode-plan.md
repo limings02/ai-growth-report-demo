@@ -87,12 +87,19 @@
 - 更新浏览器标签页标题为「Memory Wiki｜AI 记忆整理与纪念生成器」
 - 未修改 runtime / API / prompt
 
-**Phase 8.7 进行中 / 本阶段目标：**
+**Phase 8.7 已完成：**
 
-- 优化 mock 入口说明文字
-- 给 couple 结果页增加「回到首页」入口
-- 给结果页增加「保存与使用建议」
+- 优化 mock 入口说明文字（「不会调用 DeepSeek，也不会发送当前表单内容」）
+- 给 couple 结果页增加「回到首页」入口（顶部操作栏）
+- 给结果页增加「保存与使用建议」MemorySectionCard
 - 未修改 runtime / API / prompt
+
+**Phase 9.1 进行中 / 本阶段目标：**
+
+- 抽出通用 MemoryArtifact 展示小组件（`components/memory/`）
+- `CoupleArtifactPreview` 先接入这些通用小组件
+- family `ReportPreview` 暂不迁移
+- 不修改 API / runtime / prompt
 
 > **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
 

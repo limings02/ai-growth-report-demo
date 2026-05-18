@@ -14,7 +14,10 @@
 import { useState } from "react";
 import type { MemoryArtifact, MemorySourceTrace, MemoryQualityReview } from "@/lib/memory-core/types";
 import RelationshipGalaxyPreview from "./RelationshipGalaxyPreview";
-import CouplePrintButton from "./CouplePrintButton";
+import MemoryPrintButton from "@/components/memory/MemoryPrintButton";
+import MemorySectionCard from "@/components/memory/MemorySectionCard";
+import MemoryQualityReviewPanel from "@/components/memory/MemoryQualityReviewPanel";
+import MemorySourceTraceDetails from "@/components/memory/MemorySourceTraceDetails";
 
 type Props = {
   artifact: MemoryArtifact;
@@ -73,7 +76,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
           )}
         </div>
         <div className="flex items-center gap-2">
-          <CouplePrintButton label="保存 PDF" />
+          <MemoryPrintButton label="保存 PDF" />
           <button
             onClick={onCreateAnother}
             className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
@@ -162,7 +165,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
 
         {/* ── 恋爱时间线 ── */}
         {narrative.timeline.length > 0 ? (
-          <SectionCard title="⏱ 恋爱时间线">
+          <MemorySectionCard title="⏱ 恋爱时间线">
             <div className="relative pl-4">
               <div
                 className="absolute left-[7px] top-2 bottom-2 w-px"
@@ -195,13 +198,13 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
                 ))}
               </div>
             </div>
-          </SectionCard>
+          </MemorySectionCard>
         ) : (
-          <SectionCard title="⏱ 恋爱时间线">
+          <MemorySectionCard title="⏱ 恋爱时间线">
             <p className="text-xs" style={{ color: "#9d7b72" }}>
               还没有足够材料生成恋爱时间线。可以补充第一次见面、一次旅行、一次争吵与和好、一个普通但想保存的日常。
             </p>
-          </SectionCard>
+          </MemorySectionCard>
         )}
 
         {/* ── 写给未来你们的信 ── */}
@@ -230,7 +233,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
 
         {/* ── 分享文案 ── */}
         {narrative.socialPosts.length > 0 ? (
-          <SectionCard title="📱 分享文案">
+          <MemorySectionCard title="📱 分享文案">
             <div className="space-y-3">
               {narrative.socialPosts.map((post, i) => (
                 <div
@@ -265,80 +268,23 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
                 </div>
               ))}
             </div>
-          </SectionCard>
+          </MemorySectionCard>
         ) : (
-          <SectionCard title="📱 分享文案">
+          <MemorySectionCard title="📱 分享文案">
             <p className="text-xs" style={{ color: "#9d7b72" }}>
               这次没有生成分享文案。可以补充更具体的纪念日、想表达的情绪或送礼场景后重新生成。
             </p>
-          </SectionCard>
+          </MemorySectionCard>
         )}
 
         {/* ── Relationship Galaxy 轻量 SVG 星图 ── */}
         <RelationshipGalaxyPreview graph={graph} />
 
-        {/* ── 生成质量说明 ── */}
-        {qualityReview && (
-          <div
-            className="rounded-2xl p-5 mb-5"
-            style={{ background: "#f9f5f3", border: "1px solid #ead8d0" }}
-          >
-            <p className="text-xs font-semibold mb-3" style={{ color: "#7a5a52" }}>
-              📊 生成质量说明
-            </p>
-            <div className="space-y-2 text-xs" style={{ color: "#9d7b72" }}>
-              <div className="flex items-center gap-2">
-                <span>幻觉风险：</span>
-                <span
-                  className="px-2 py-0.5 rounded-full font-medium"
-                  style={{
-                    background:
-                      qualityReview.riskOfFabrication === "low"
-                        ? "#e8f5e9"
-                        : qualityReview.riskOfFabrication === "medium"
-                        ? "#fff3e0"
-                        : "#fff0ee",
-                    color:
-                      qualityReview.riskOfFabrication === "low"
-                        ? "#2e7d32"
-                        : qualityReview.riskOfFabrication === "medium"
-                        ? "#e65100"
-                        : "#c0674a",
-                  }}
-                >
-                  {qualityReview.riskOfFabrication === "low"
-                    ? "低"
-                    : qualityReview.riskOfFabrication === "medium"
-                    ? "中"
-                    : "较高"}
-                </span>
-              </div>
-              {qualityReview.weaknesses.length > 0 && (
-                <div>
-                  <p className="font-medium mb-1">不足之处：</p>
-                  <ul className="space-y-0.5">
-                    {qualityReview.weaknesses.map((w, i) => (
-                      <li key={i}>· {w}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {qualityReview.suggestionsForBetterInput.length > 0 && (
-                <div>
-                  <p className="font-medium mb-1">下次可以补充：</p>
-                  <ul className="space-y-0.5">
-                    {qualityReview.suggestionsForBetterInput.map((s, i) => (
-                      <li key={i}>· {s}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {/* ── 生成质量说明（通用组件）── */}
+        <MemoryQualityReviewPanel qualityReview={qualityReview} />
 
         {/* ── 保存与使用建议 ── */}
-        <SectionCard title="💌 保存与使用建议">
+        <MemorySectionCard title="💌 保存与使用建议">
           <p className="text-xs leading-relaxed" style={{ color: "#7a5a52" }}>
             你可以把这份纪念册保存成 PDF，作为周年日、生日或某个普通日子的纪念。
           </p>
@@ -346,40 +292,10 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
             如果想让下一版更贴近你们，可以返回修改，补充更具体的聊天片段、地点、称呼、
             一次争吵与和好，或一段你想对 TA 说的话。
           </p>
-        </SectionCard>
+        </MemorySectionCard>
 
-        {/* ── sourceTrace 折叠 ── */}
-        {sourceTrace && (
-          <details className="mb-5">
-            <summary
-              className="text-xs cursor-pointer px-3 py-2 rounded-xl"
-              style={{ color: "#b08878", background: "#f9f5f3" }}
-            >
-              🔍 查看内容溯源
-            </summary>
-            <div
-              className="mt-2 rounded-xl p-3 text-xs space-y-2"
-              style={{ background: "#f5f0ee", color: "#7a5a52" }}
-            >
-              {sourceTrace.usedQuestions.length > 0 && (
-                <div>
-                  <p className="font-medium mb-1">使用的问题：</p>
-                  <ul className="space-y-0.5" style={{ color: "#9d7b72" }}>
-                    {sourceTrace.usedQuestions.map((q, i) => <li key={i}>· {q}</li>)}
-                  </ul>
-                </div>
-              )}
-              {sourceTrace.groundingNotes.length > 0 && (
-                <div>
-                  <p className="font-medium mb-1">内容依据说明：</p>
-                  <ul className="space-y-0.5" style={{ color: "#9d7b72" }}>
-                    {sourceTrace.groundingNotes.map((n, i) => <li key={i}>· {n}</li>)}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </details>
-        )}
+        {/* ── sourceTrace 折叠（通用组件）── */}
+        <MemorySourceTraceDetails sourceTrace={sourceTrace} />
 
         {/* ── 底部按钮（打印时隐藏） ── */}
         <div className="flex gap-3 print:hidden">
@@ -403,16 +319,3 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
   );
 }
 
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div
-      className="rounded-2xl p-5 mb-5"
-      style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
-    >
-      <p className="text-xs font-semibold mb-3" style={{ color: "#9d7b72" }}>
-        {title}
-      </p>
-      {children}
-    </div>
-  );
-}

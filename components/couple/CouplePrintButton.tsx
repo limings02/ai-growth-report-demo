@@ -1,29 +1,15 @@
 "use client";
 
 // components/couple/CouplePrintButton.tsx
-// 触发浏览器打印对话框，用户可在对话框中选择「另存为 PDF」。
-//
-// 约束：
-// - 不使用第三方 PDF 库
-// - 不上传数据，不存储数据
-// - 打印时自身隐藏（className="print:hidden"）
+// 兼容 wrapper，内部使用通用 MemoryPrintButton。
+// 保留此文件避免破坏已有 import 引用。
+
+import MemoryPrintButton from "@/components/memory/MemoryPrintButton";
 
 type Props = {
   label?: string;
 };
 
 export default function CouplePrintButton({ label = "打印 / 保存 PDF" }: Props) {
-  function handlePrint() {
-    window.print();
-  }
-
-  return (
-    <button
-      onClick={handlePrint}
-      className="print:hidden text-xs px-3 py-1.5 rounded-full font-medium cursor-pointer transition-all hover:shadow-md active:scale-95"
-      style={{ background: "#fde8dc", color: "#c0674a", border: "1px solid #f4b8a0" }}
-    >
-      🖨️ {label}
-    </button>
-  );
+  return <MemoryPrintButton label={label} />;
 }

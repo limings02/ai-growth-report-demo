@@ -240,6 +240,18 @@ components/
   ComingSoonModePage.tsx            # coming soon 页面
   family/
     FamilyLandingPage.tsx          # family mode landing
+  couple/
+    CoupleLandingPage.tsx          # couple mode landing
+    CoupleMemoryApp.tsx            # couple 主状态机
+    CoupleArtifactPreview.tsx      # couple 结果展示
+    RelationshipGalaxyPreview.tsx  # Relationship Galaxy SVG 星图
+    CouplePrintButton.tsx          # 打印按钮（MemoryPrintButton wrapper）
+    mockArtifact.ts                # 开发环境 mock artifact
+  memory/
+    MemorySectionCard.tsx          # 通用展示 section 容器
+    MemoryPrintButton.tsx          # 通用浏览器打印按钮
+    MemoryQualityReviewPanel.tsx   # 通用生成质量说明面板
+    MemorySourceTraceDetails.tsx   # 通用内容溯源折叠区
   GrowthReportApp.tsx              # family 主状态机
   LifeGraphPreview.tsx             # 成长星图（支持通用节点类型）
   ReportPreview.tsx                # 成长报告展示

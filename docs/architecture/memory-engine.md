@@ -292,8 +292,8 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
 
 ## 12. 后续迁移方向
 
-1. 抽象通用 `MemoryArtifactPreview`，减少 CoupleArtifactPreview 与未来 personal/memorial 展示层重复
-2. 抽象通用 `MemoryPrintButton`，统一 family / couple / future modes 的打印入口
+1. 继续完善 `components/memory/` 通用展示小组件（Phase 9.1 已新增 MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails，先由 CoupleArtifactPreview 使用）
+2. 抽象完整 `MemoryArtifactPreview`，减少 CoupleArtifactPreview 与未来 personal/memorial 展示层重复
 3. Relationship Galaxy 继续增强为更完整的可交互图谱
 4. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
 5. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`

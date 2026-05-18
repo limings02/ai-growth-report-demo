@@ -77,7 +77,7 @@ export default function Home() {
     );
   }
 
-  // couple 输入页骨架（Phase 8.1，暂不接入 AI 生成）
+  // couple 输入与生成页（已接入 AI 生成 MVP）
   if (screen === "couple-app") {
     return (
       <CoupleMemoryApp
