@@ -78,7 +78,7 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
   const answeredCount = form.questions.filter((q) => q.answer.trim()).length;
   const chatLength = form.chatText.length;
 
-  // 表单有效性：基本信息 + 至少一条内容
+  // 表单有效性：基本信息 + 至少一条内容 + chatText 未超长
   const isFormBasicValid =
     form.partnerAName.trim() !== "" &&
     form.partnerBName.trim() !== "" &&
@@ -87,7 +87,8 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
     form.chatText.trim() !== "" ||
     form.freeNote.trim() !== "" ||
     answeredCount >= 1;
-  const isFormValid = isFormBasicValid && hasContent;
+  const isChatTooLong = chatLength > 12000;
+  const isFormValid = isFormBasicValid && hasContent && !isChatTooLong;
 
   async function handleGenerate() {
     if (!isFormValid) return;
@@ -427,6 +428,15 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
               请至少粘贴一段聊天文本、回答 1 个问题，或填写自由记录
             </p>
           )}
+          {isChatTooLong && (
+            <p className="text-center text-xs mb-3" style={{ color: "#c0674a" }}>
+              聊天文本过长。请先粘贴最有代表性的一小段，建议不超过 5000 字。
+            </p>
+          )}
+          {/* 隐私说明（Part H）：不阻断流程，只是小字提示 */}
+          <p className="text-center text-xs mb-3" style={{ color: "#b08878" }}>
+            点击生成后，只会发送你填写的文字内容；不会读取微信数据库，也不会上传照片。
+          </p>
           <button
             onClick={handleGenerate}
             disabled={!isFormValid}

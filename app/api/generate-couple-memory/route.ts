@@ -25,6 +25,18 @@ function isValidStyle(s: unknown): s is ValidStyle {
   return VALID_STYLES.includes(s as ValidStyle);
 }
 
+// null 安全的 qaList 类型守卫：先确认 item 是非 null 对象，再检查字段类型
+function isQuestionAnswerItem(
+  item: unknown
+): item is { question: string; answer: string } {
+  if (!item || typeof item !== "object") return false;
+  const record = item as Record<string, unknown>;
+  return (
+    typeof record.question === "string" &&
+    typeof record.answer === "string"
+  );
+}
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
   try {
@@ -53,15 +65,10 @@ export async function POST(req: NextRequest) {
   const rawStyle = body.style;
   const style: ValidStyle = isValidStyle(rawStyle) ? rawStyle : "romantic";
 
-  // ── qaList 校验 ───────────────────────────────────────────────
+  // ── qaList 校验（使用 null 安全守卫，防止畸形输入导致 500）────
   const rawQaList = body.qaList;
   const qaList: { question: string; answer: string }[] = Array.isArray(rawQaList)
-    ? (rawQaList as unknown[])
-        .filter(
-          (item): item is { question: string; answer: string } =>
-            typeof (item as Record<string, unknown>).question === "string" &&
-            typeof (item as Record<string, unknown>).answer === "string"
-        )
+    ? rawQaList.filter(isQuestionAnswerItem)
     : [];
 
   // ── 内容充分性校验 ────────────────────────────────────────────

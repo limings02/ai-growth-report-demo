@@ -39,6 +39,11 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
   const sourceTrace = extensions?.sourceTrace as MemorySourceTrace | undefined;
   const qualityReview = extensions?.qualityReview as MemoryQualityReview | undefined;
 
+  // 识别 fallback artifact：parseMemoryArtifact 解析失败时的兜底结果
+  const isFallbackArtifact =
+    narrative.summary.includes("最小记忆整理结果") ||
+    narrative.longFormText.voice === "fallback";
+
   function handleCopy(content: string, idx: number) {
     if (!navigator.clipboard) return;
     navigator.clipboard.writeText(content).then(() => {
@@ -76,6 +81,32 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
 
       <div className="max-w-2xl mx-auto px-4 pb-20 pt-6">
 
+        {/* ── Fallback 提示（生成结果不完整时展示）── */}
+        {isFallbackArtifact && (
+          <div
+            className="rounded-2xl p-4 mb-5 flex gap-3"
+            style={{ background: "#fff3e0", border: "1px solid #ffe0b2" }}
+          >
+            <span className="text-xl flex-shrink-0">⚠️</span>
+            <div>
+              <p className="text-sm font-semibold mb-1" style={{ color: "#e65100" }}>
+                这次生成结果不完整
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: "#bf360c" }}>
+                系统没有成功解析出完整的恋爱纪念册。你可以返回修改，补充更多聊天片段、
+                具体时间、地点或故事后重新生成。
+              </p>
+              <button
+                onClick={onBackToEdit}
+                className="mt-2 text-xs underline cursor-pointer"
+                style={{ color: "#e65100" }}
+              >
+                返回修改 →
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── 封面区 ── */}
         <div
           className="rounded-3xl p-7 mb-5"
@@ -89,7 +120,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
           <h2 className="text-2xl font-bold leading-snug mb-3" style={{ color: "#2d1f1a" }}>
             {narrative.title || "恋爱纪念册"}
           </h2>
-          {narrative.keywords.length > 0 && (
+          {narrative.keywords.length > 0 ? (
             <div className="flex flex-wrap gap-2 mb-4">
               {narrative.keywords.map((kw) => (
                 <span
@@ -101,6 +132,10 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
                 </span>
               ))}
             </div>
+          ) : (
+            <p className="text-xs mb-4 opacity-60" style={{ color: "#8b4a38" }}>
+              这次材料中还没有提炼出稳定关键词。可以补充更多聊天片段或具体故事后重新生成。
+            </p>
           )}
           {narrative.summary && (
             <p
@@ -113,7 +148,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
         </div>
 
         {/* ── 恋爱时间线 ── */}
-        {narrative.timeline.length > 0 && (
+        {narrative.timeline.length > 0 ? (
           <SectionCard title="⏱ 恋爱时间线">
             <div className="relative pl-4">
               <div
@@ -148,6 +183,12 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
               </div>
             </div>
           </SectionCard>
+        ) : (
+          <SectionCard title="⏱ 恋爱时间线">
+            <p className="text-xs" style={{ color: "#9d7b72" }}>
+              还没有足够材料生成恋爱时间线。可以补充第一次见面、一次旅行、一次争吵与和好、一个普通但想保存的日常。
+            </p>
+          </SectionCard>
         )}
 
         {/* ── 写给未来你们的信 ── */}
@@ -175,7 +216,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
         )}
 
         {/* ── 分享文案 ── */}
-        {narrative.socialPosts.length > 0 && (
+        {narrative.socialPosts.length > 0 ? (
           <SectionCard title="📱 分享文案">
             <div className="space-y-3">
               {narrative.socialPosts.map((post, i) => (
@@ -212,10 +253,16 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
               ))}
             </div>
           </SectionCard>
+        ) : (
+          <SectionCard title="📱 分享文案">
+            <p className="text-xs" style={{ color: "#9d7b72" }}>
+              这次没有生成分享文案。可以补充更具体的纪念日、想表达的情绪或送礼场景后重新生成。
+            </p>
+          </SectionCard>
         )}
 
         {/* ── Relationship Galaxy 雏形 ── */}
-        {graph && graph.nodes.length > 0 && (
+        {graph && graph.nodes.length > 0 ? (
           <SectionCard title="🌌 Relationship Galaxy">
             <p className="text-xs mb-1 font-bold" style={{ color: "#2d1f1a" }}>
               {graph.title}
@@ -253,6 +300,12 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
                 );
               })}
             </div>
+          </SectionCard>
+        ) : (
+          <SectionCard title="🌌 Relationship Galaxy">
+            <p className="text-xs" style={{ color: "#9d7b72" }}>
+              Relationship Galaxy 还没有足够节点。可以补充地点、昵称、反复出现的对话、共同经历或情绪关键词。
+            </p>
           </SectionCard>
         )}
 

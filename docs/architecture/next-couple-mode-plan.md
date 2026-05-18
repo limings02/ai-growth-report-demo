@@ -40,7 +40,7 @@
 - CTA 在 Hero 和底部各出现一次
 - 仍然不接入 AI 生成
 
-**Phase 8.2 已完成（本阶段）：**
+**Phase 8.2 已完成：**
 
 - `.skills/couple-memory` 从占位改为真实 prompt（01_task.md / 02_output_contract.md / 03_quality_rules.md）
 - 新增 `app/api/generate-couple-memory/route.ts`（couple 专用 API route，不复用 family route）
@@ -48,6 +48,15 @@
 - 新增 `CoupleArtifactPreview`（展示 narrative / graph nodes / qualityReview）
 - couple mode 直接生成 `MemoryArtifact`，不走 `GrowthMemoryArtifact` 兼容层
 - family mode 不受影响
+
+**Phase 8.2.1 已完成 / 稳定性修复：**
+
+- 修复 `/api/generate-couple-memory` 的 qaList 畸形输入校验（null 安全守卫）
+- 修正 `couple output contract` 中 graph node type 示例，避免模型输出联合字符串
+- 新增 `CoupleArtifactPreview` fallback artifact 识别与提示
+- 新增空数据区域的引导性空状态
+- `CoupleMemoryApp` 新增 chatText 前端长度限制（>12000 字禁用生成按钮）
+- 新增生成前隐私说明文字
 
 ---
 

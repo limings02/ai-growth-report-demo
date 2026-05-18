@@ -41,7 +41,7 @@
     "centerDescription": string,
     "nodes": [
       {
-        "type": "person | time | event | emotion | message | keyword | place | memory",
+        "type": "event",
         "label": string,
         "description": string,
         "emotion": string,
@@ -72,3 +72,17 @@
 - 所有字符串字段不能为 null，可以为空字符串 ""
 - 所有数组字段不能为 null，可以为空数组 []
 - `nodes[].relatedTo` 只填与其他节点 label 有真实关联的项
+
+**`graph.nodes[].type` 必须是以下单个字符串之一（不要输出联合字符串）：**
+
+- `"person"`
+- `"time"`
+- `"event"`
+- `"emotion"`
+- `"message"`
+- `"keyword"`
+- `"place"`
+- `"memory"`
+
+❌ 错误示例：`"type": "person | time | event"` —— 这是类型声明语法，不是合法值
+✅ 正确示例：`"type": "event"`
