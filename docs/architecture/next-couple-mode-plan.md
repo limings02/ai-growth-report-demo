@@ -68,7 +68,14 @@
 
 ---
 
-> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；当前继续推进 Step 8：Relationship Galaxy 视觉化（Phase 8.4 已完成）。
+**Phase 8.5 进行中 / 本阶段目标：**
+
+- 清理 `memory-engine.md` 中后续迁移方向的过时描述
+- 为 `CoupleArtifactPreview` 增加打印 / 保存 PDF 能力
+- 优化 couple 纪念册打印样式
+- 不修改 runtime / API / prompt
+
+> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；当前 Phase 8.5 推进打印保存能力。
 
 ---
 

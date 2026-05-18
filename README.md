@@ -6,7 +6,7 @@
 
 **当前可用模式：**
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
-- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 轻量星图
+- `couple mode`：恋爱纪念册 MVP，支持 AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 轻量星图；结果页支持浏览器打印 / 保存 PDF
 
 **预留模式（coming soon）：**
 - `personal mode`：个人人生 Wiki / 自我回忆录
@@ -91,6 +91,7 @@ npm run dev
 - 照片不上传给 AI（只传文本和照片数量）
 - couple mode 不读取微信数据库，不自动导入微信聊天记录，只处理用户主动粘贴的文本
 - couple mode 照片当前只记录数量，不上传服务器，不传给 AI
+- PDF 保存依赖浏览器打印功能，不上传服务器，不生成云端文件
 - memorial / personal mode 暂不开放真实生成
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 

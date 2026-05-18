@@ -14,6 +14,7 @@
 import { useState } from "react";
 import type { MemoryArtifact, MemorySourceTrace, MemoryQualityReview } from "@/lib/memory-core/types";
 import RelationshipGalaxyPreview from "./RelationshipGalaxyPreview";
+import CouplePrintButton from "./CouplePrintButton";
 
 type Props = {
   artifact: MemoryArtifact;
@@ -42,10 +43,10 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#fffaf7" }}>
-      {/* 顶部操作栏 */}
+    <div className="min-h-screen print:bg-white" style={{ background: "#fffaf7" }}>
+      {/* 顶部操作栏（打印时隐藏） */}
       <div
-        className="sticky top-0 z-20 px-5 py-3 flex items-center justify-between"
+        className="sticky top-0 z-20 px-5 py-3 flex items-center justify-between gap-2 print:hidden"
         style={{
           background: "rgba(255, 250, 247, 0.92)",
           backdropFilter: "blur(8px)",
@@ -59,16 +60,27 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
         >
           ← 返回修改
         </button>
-        <button
-          onClick={onCreateAnother}
-          className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
-          style={{ background: "#fde8dc", color: "#c0674a" }}
-        >
-          再做一本
-        </button>
+        <div className="flex items-center gap-2">
+          <CouplePrintButton label="保存 PDF" />
+          <button
+            onClick={onCreateAnother}
+            className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
+            style={{ background: "#fde8dc", color: "#c0674a" }}
+          >
+            再做一本
+          </button>
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pb-20 pt-6">
+      {/* 打印时显示的标题区（正常浏览隐藏） */}
+      <div className="hidden print:block text-center py-6 px-4">
+        <h1 className="text-2xl font-bold mb-1" style={{ color: "#2d1f1a" }}>
+          {narrative.title || "恋爱纪念册"}
+        </h1>
+        <p className="text-xs" style={{ color: "#9d7b72" }}>由 Memory Wiki 生成</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 pb-20 pt-6 print:max-w-none print:px-0 print:pb-0">
 
         {/* ── Fallback 提示（生成结果不完整时展示）── */}
         {isFallbackArtifact && (
@@ -223,7 +235,7 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
                     </span>
                     <button
                       onClick={() => handleCopy(post.content, i)}
-                      className="text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all"
+                      className="print:hidden text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all"
                       style={{
                         background: copiedIdx === i ? "#e8836a" : "white",
                         color: copiedIdx === i ? "white" : "#c0674a",
@@ -346,8 +358,8 @@ export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreate
           </details>
         )}
 
-        {/* ── 底部按钮 ── */}
-        <div className="flex gap-3">
+        {/* ── 底部按钮（打印时隐藏） ── */}
+        <div className="flex gap-3 print:hidden">
           <button
             onClick={onBackToEdit}
             className="flex-1 py-3 rounded-full text-sm font-medium cursor-pointer transition-all hover:shadow-md"

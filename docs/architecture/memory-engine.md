@@ -292,10 +292,11 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
 
 ## 12. 后续迁移方向
 
-1. Relationship Galaxy 从轻量星图升级为更完整的视觉图谱
-2. 抽象通用 MemoryArtifactPreview，减少 CoupleArtifactPreview 与未来 personal/memorial 展示层重复
-3. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
-4. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
-5. `LifeGraphPreview` 改名为 `MemoryGraphPreview`，接收 `MemoryGraphHints` / `MemoryGraphData`
-6. personal / memorial mode 按安全边界逐步开放
-7. 稳定后再考虑删除 `GrowthMemoryArtifact` 兼容层、`buildLifeGraph` wrapper 和 `.skills/growth-memory` fallback
+1. Couple 结果页支持打印 / 保存 PDF（Phase 8.5）
+2. Relationship Galaxy 继续增强为更完整的可交互图谱
+3. 抽象通用 MemoryArtifactPreview，减少 CoupleArtifactPreview 与未来 personal/memorial 展示层重复
+4. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
+5. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
+6. `LifeGraphPreview` 改名为 `MemoryGraphPreview`，接收 `MemoryGraphHints` / `MemoryGraphData`
+7. personal / memorial mode 按安全边界逐步开放
+8. 稳定后再考虑删除 `GrowthMemoryArtifact` 兼容层、`buildLifeGraph` wrapper 和 `.skills/growth-memory` fallback

@@ -124,7 +124,8 @@ export default function RelationshipGalaxyPreview({ graph }: Props) {
       </p>
 
       {/* ── SVG 星图 ── */}
-      <div className="relative w-full overflow-hidden" style={{ borderRadius: "12px" }}>
+      {/* SVG 星图（打印时 overflow visible，保证不被裁切） */}
+      <div className="relative w-full overflow-hidden print:overflow-visible" style={{ borderRadius: "12px" }}>
         <svg
           viewBox="0 0 360 320"
           preserveAspectRatio="xMidYMid meet"
@@ -291,6 +292,23 @@ export default function RelationshipGalaxyPreview({ graph }: Props) {
               </span>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* 打印时显示的节点摘要（正常浏览隐藏） */}
+      {layout.length > 0 && (
+        <div className="hidden print:block mt-4">
+          <p className="text-xs font-semibold mb-2" style={{ color: "#9d7b72" }}>
+            图谱节点：
+          </p>
+          <ul className="text-xs space-y-1" style={{ color: "#7a5a52" }}>
+            {layout.map((node) => (
+              <li key={node.id}>
+                <span className="font-medium">{node.label}</span>
+                {node.description ? `：${node.description}` : ""}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
