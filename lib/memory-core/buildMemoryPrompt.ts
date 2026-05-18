@@ -7,11 +7,11 @@
 // - media 只注入 count / localOnly / description，不注入 File 或 blob URL
 // - domainPayload 原样传入，让对应 mode 的 prompt 自行读取
 //
-// 兼容说明（Part H）：
-// 当前 family 会 fallback 到旧 .skills/growth-memory prompt，
-// 而旧 prompt 期待输入顶层包含 childName / childAge 等字段。
-// 为此在 materialForLLM 中增加 legacyFamilyInput 字段作为过渡兼容。
-// 后续 .skills/family-memory 创建并完全理解 MemoryRawMaterial 后，可删除此字段。
+// 兼容说明：
+// family 优先使用 .skills/family-memory（Phase 5 新建），
+// 旧 .skills/growth-memory 作为 fallback 保留。
+// legacyFamilyInput 字段供 family-memory 01_task.md 和旧 growth-memory 识别关键字段。
+// 后续 family-memory prompt 完全迁移后，可删除 legacyFamilyInput 和此注释。
 
 import type { ChatMessage } from "@/lib/server/deepseekClient";
 import type { MemoryRawMaterial } from "./types";
@@ -56,6 +56,22 @@ export function buildMemoryPrompt(material: MemoryRawMaterial): ChatMessage[] {
         : undefined,
   };
 
+  // family mode 追加兼容说明，帮助 prompt 定位 legacyFamilyInput 字段
+  const familyCompatNote =
+    material.mode === "family"
+      ? [
+          "注意：当前是 family mode。为了兼容旧成长报告输出，孩子成长相关字段位于 legacyFamilyInput 中：",
+          "- legacyFamilyInput.childName",
+          "- legacyFamilyInput.childAge",
+          "- legacyFamilyInput.reportYear",
+          "- legacyFamilyInput.parentName",
+          "- legacyFamilyInput.photoCount",
+          "- legacyFamilyInput.qaList",
+          "- legacyFamilyInput.freeNote",
+          "",
+        ]
+      : [];
+
   const userContent = [
     prompts.taskDescription,
     "",
@@ -69,6 +85,7 @@ export function buildMemoryPrompt(material: MemoryRawMaterial): ChatMessage[] {
     "",
     "---",
     "",
+    ...familyCompatNote,
     "## 输入材料",
     "",
     "```json",

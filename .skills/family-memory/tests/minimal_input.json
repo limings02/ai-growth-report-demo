@@ -1,0 +1,14 @@
+{
+  "_description": "最小输入：只有必填字段，qaList 恰好 2 条",
+  "childName": "小明",
+  "childAge": 5,
+  "reportYear": 2026,
+  "parentName": "妈妈",
+  "style": "warm",
+  "photoCount": 0,
+  "qaList": [
+    { "question": "今年孩子最大的变化是什么？", "answer": "变得更独立了" },
+    { "question": "今年孩子说过哪句话让你印象很深？", "answer": "妈妈你最好了" }
+  ],
+  "freeNote": ""
+}

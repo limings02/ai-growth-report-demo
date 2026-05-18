@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RawMaterial",
+  "type": "object",
+  "required": ["childName", "reportYear", "parentName", "style", "qaList"],
+  "properties": {
+    "childName": { "type": "string", "minLength": 1 },
+    "childAge": { "oneOf": [{ "type": "number", "minimum": 0, "maximum": 30 }, { "type": "string", "const": "" }] },
+    "reportYear": { "type": "integer", "minimum": 2000, "maximum": 2100 },
+    "parentName": { "type": "string", "minLength": 1 },
+    "style": { "type": "string", "enum": ["warm", "playful", "documentary", "literary"] },
+    "photoCount": { "type": "integer", "minimum": 0 },
+    "qaList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["question", "answer"],
+        "properties": {
+          "question": { "type": "string" },
+          "answer": { "type": "string", "minLength": 1 }
+        }
+      },
+      "minItems": 2
+    },
+    "freeNote": { "type": "string" }
+  }
+}

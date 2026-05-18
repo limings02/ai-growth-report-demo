@@ -75,7 +75,7 @@ export const MEMORY_MODES: MemoryModeConfig[] = [
     description: "记录人生某个阶段的感悟、经历与转折，AI 帮你整理成一份私人人生 Wiki。",
     emoji: "📖",
     status: "coming_soon",
-    primaryUseCase: "把自己的某段人生，整理成一本清晰、有温度的回忆录",
+    primaryUseCase: "把自己的某段人生，整理成一本清晰、有温度的回忆录，成为供后人瞻仰的精神遗产",
   },
   {
     id: "memorial",
