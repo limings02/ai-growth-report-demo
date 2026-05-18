@@ -92,6 +92,7 @@ npm run dev
 - couple mode 不读取微信数据库，不自动导入微信聊天记录，只处理用户主动粘贴的文本
 - couple mode 照片当前只记录数量，不上传服务器，不传给 AI
 - PDF 保存依赖浏览器打印功能，不上传服务器，不生成云端文件
+- 开发环境下 couple 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
 - memorial / personal mode 暂不开放真实生成
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
@@ -260,6 +261,7 @@ lib/
     couple/
       adapter.ts                   # CoupleRawInput → MemoryRawMaterial
       defaultQuestions.ts          # couple 默认访谈问题
+      mockArtifact.ts              # couple 结果页开发预览用 mock artifact
     personal/
       adapter.ts                   # PersonalRawInput → MemoryRawMaterial（占位）
     memorial/

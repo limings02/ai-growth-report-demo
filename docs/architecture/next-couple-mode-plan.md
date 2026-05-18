@@ -68,14 +68,23 @@
 
 ---
 
-**Phase 8.5 进行中 / 本阶段目标：**
+**Phase 8.5 已完成：**
 
-- 清理 `memory-engine.md` 中后续迁移方向的过时描述
-- 为 `CoupleArtifactPreview` 增加打印 / 保存 PDF 能力
-- 优化 couple 纪念册打印样式
-- 不修改 runtime / API / prompt
+- 新增 `CouplePrintButton`
+- `CoupleArtifactPreview` 已接入浏览器打印 / 保存 PDF
+- 打印时隐藏返回修改、再做一本、保存 PDF 等交互按钮
+- 打印时显示纪念册标题和 Memory Wiki 标识
+- `RelationshipGalaxyPreview` 已增加打印节点摘要
+- 未修改 runtime / API / prompt
 
-> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；当前 Phase 8.5 推进打印保存能力。
+**Phase 8.6 进行中 / 本阶段目标：**
+
+- 修复 `RelationshipGalaxyPreview` 的 selectedId 同步问题
+- 新增 `MOCK_COUPLE_ARTIFACT`
+- 开发环境下 `CoupleMemoryApp` 可直接进入 mock 结果页，方便调试展示和打印
+- 不修改 API / runtime / prompt
+
+> **历史接入路线说明：** 下方 Step 1-8 是规划接入路线，其中 Step 1-7 已基本完成；Step 8（Relationship Galaxy 视觉化）已在 Phase 8.4 完成；Phase 8.5 完成打印保存能力；当前 Phase 8.6 推进稳定性修复和开发体验。
 
 ---
 

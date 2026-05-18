@@ -74,15 +74,27 @@ function truncate(s: string, max: number): string {
 export default function RelationshipGalaxyPreview({ graph }: Props) {
   const layout = useMemo(() => buildGalaxyLayout(graph.nodes), [graph.nodes]);
 
-  // 用 useMemo 派生默认 selectedId，避免在 useEffect 里 setState
+  // 用 useMemo 派生默认 selectedId，避免在 useEffect 里 setState。
+  // 当 layout 变化时（如传入不同的 graph）重新计算默认选中项：
+  // - layout 为空 → ""
+  // - 当前 selectedId 仍在新 layout 中 → 保留（依赖稳定 id 格式 "type-index-label"）
+  // - 否则 → fallback 到 layout[0]
   const defaultSelectedId = useMemo(
     () => layout[0]?.id ?? "",
     [layout]
   );
+  // useState 用 initializer 函数，避免首次渲染时 defaultSelectedId 还是空字符串
   const [selectedId, setSelectedId] = useState<string>(() => defaultSelectedId);
 
-  // selectedNode：优先找 selectedId，fallback 到 layout[0]
-  const selectedNode = layout.find((n) => n.id === selectedId) ?? layout[0];
+  // 当 layout 变化且 selectedId 不再有效时，useMemo 派生有效 id
+  const effectiveSelectedId = useMemo(() => {
+    if (layout.length === 0) return "";
+    if (layout.some((n) => n.id === selectedId)) return selectedId;
+    return layout[0].id;
+  }, [layout, selectedId]);
+
+  // selectedNode：使用 effectiveSelectedId 确保始终指向有效节点
+  const selectedNode = layout.find((n) => n.id === effectiveSelectedId) ?? layout[0];
 
   if (graph.nodes.length === 0) {
     return (
@@ -166,8 +178,8 @@ export default function RelationshipGalaxyPreview({ graph }: Props) {
               x1={CX} y1={CY}
               x2={node.x} y2={node.y}
               stroke="#f4b8a0"
-              strokeWidth={node.id === selectedId ? 1.2 : 0.7}
-              strokeOpacity={node.id === selectedId ? 0.45 : 0.22}
+              strokeWidth={node.id === effectiveSelectedId ? 1.2 : 0.7}
+              strokeOpacity={node.id === effectiveSelectedId ? 0.45 : 0.22}
             />
           ))}
 
@@ -206,7 +218,7 @@ export default function RelationshipGalaxyPreview({ graph }: Props) {
           {/* 各节点 */}
           {layout.map((node) => {
             const cfg = NODE_TYPE_CONFIG[node.type] ?? DEFAULT_NODE_CFG;
-            const isSelected = node.id === selectedId;
+            const isSelected = node.id === effectiveSelectedId;
             return (
               <g
                 key={node.id}

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "给未来的你｜孩子的成长礼物",
-  description: "上传孩子这一年的照片和故事，整理成一份未来会被珍藏的成长礼物。",
+  title: "Memory Wiki｜AI 记忆整理与纪念生成器",
+  description: "把重要的人、关系和人生片段，整理成会被珍藏的记忆。支持家庭亲子成长册、恋爱纪念册等多种记忆主题。",
 };
 
 export default function RootLayout({

@@ -22,6 +22,7 @@ import {
 } from "@/lib/domains/couple/defaultQuestions";
 import type { MemoryArtifact } from "@/lib/memory-core/types";
 import CoupleArtifactPreview from "./CoupleArtifactPreview";
+import { MOCK_COUPLE_ARTIFACT } from "@/lib/domains/couple/mockArtifact";
 
 type CoupleStyle = CoupleRawInput["style"];
 type CoupleAppStatus = "input" | "generating" | "result" | "error";
@@ -89,6 +90,9 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
     answeredCount >= 1;
   const isChatTooLong = chatLength > 12000;
   const isFormValid = isFormBasicValid && hasContent && !isChatTooLong;
+
+  // 开发预览入口：只在 NODE_ENV=development 时显示，不会出现在生产环境
+  const isDev = process.env.NODE_ENV === "development";
 
   async function handleGenerate() {
     if (!isFormValid) return;
@@ -445,6 +449,26 @@ export default function CoupleMemoryApp({ onBackToLanding }: Props) {
           >
             生成恋爱纪念册 ✨
           </button>
+
+          {/* 开发预览入口：只在 development 环境显示，生产环境不可见 */}
+          {isDev && (
+            <button
+              type="button"
+              onClick={() => {
+                setArtifact(MOCK_COUPLE_ARTIFACT);
+                setErrorMessage("");
+                setStatus("result");
+              }}
+              className="w-full mt-3 py-2 rounded-full text-xs font-medium cursor-pointer transition-all hover:shadow-sm"
+              style={{
+                background: "#f5f0ee",
+                color: "#9d7b72",
+                border: "1px dashed #c8b8b0",
+              }}
+            >
+              🔧 使用 mock 结果预览（开发用）
+            </button>
+          )}
         </div>
       </div>
     </div>
