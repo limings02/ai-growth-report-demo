@@ -15,10 +15,11 @@ export type MemoryMode = "couple" | "family" | "personal" | "memorial";
 
 // ── 模式上线状态 ─────────────────────────────────────────────────
 /**
- * available：当前已有完整功能，可进入生成流程
- * coming_soon：占位预留，仅展示卡片和说明，不进入生成流程
+ * available：完整可用，已接入真实生成流程
+ * preview：可体验输入页或原型页，但还没有接入真实 AI 生成
+ * coming_soon：只展示占位说明，不进入业务流程
  */
-export type MemoryModeStatus = "available" | "coming_soon";
+export type MemoryModeStatus = "available" | "preview" | "coming_soon";
 
 // ── 模式配置结构 ─────────────────────────────────────────────────
 /**
@@ -47,7 +48,7 @@ export type MemoryModeConfig = {
 /**
  * 所有 mode 的配置数组。
  * 顺序决定 ModeSelector 卡片的显示顺序。
- * family 排第一，因为它是当前唯一可用的 mode。
+ * family 排第一，因为它是当前唯一完整可用（available）的 mode。
  */
 export const MEMORY_MODES: MemoryModeConfig[] = [
   {
@@ -63,10 +64,10 @@ export const MEMORY_MODES: MemoryModeConfig[] = [
     id: "couple",
     title: "恋爱纪念册",
     subtitle: "情侣 · 恋爱周年",
-    description: "上传聊天记录、照片、约会故事，AI 为你们生成一本专属的恋爱 Wiki。",
+    description: "填写情侣信息、粘贴聊天片段和恋爱故事，预览将用于生成恋爱 Wiki 的结构化记忆材料。AI 生成下一阶段接入。",
     emoji: "💑",
-    status: "coming_soon",
-    primaryUseCase: "把恋爱的每一个瞬间，变成可以珍藏一生的纪念册",
+    status: "preview",
+    primaryUseCase: "先体验恋爱纪念册输入流程，把你们的故事整理成可生成的记忆材料",
   },
   {
     id: "personal",

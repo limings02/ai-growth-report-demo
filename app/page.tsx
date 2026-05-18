@@ -5,8 +5,9 @@
 // 默认进入 MemoryModeHome（记忆主题选择页），
 // 通过前端状态跳转到各子页面。
 //
-// Phase 8.1 变更：
-// - couple mode 从 ComingSoonModePage 改为进入 CoupleMemoryApp（输入骨架）
+// Phase 8.1.1 变更：
+// - couple mode 增加 couple-landing（CoupleLandingPage）
+// - 进入顺序：mode-select → couple-landing → couple-app
 // - personal / memorial 仍然 coming soon
 
 import { useState } from "react";
@@ -15,12 +16,14 @@ import MemoryModeHome from "@/components/MemoryModeHome";
 import FamilyLandingPage from "@/components/family/FamilyLandingPage";
 import ComingSoonModePage from "@/components/ComingSoonModePage";
 import GrowthReportApp from "@/components/GrowthReportApp";
+import CoupleLandingPage from "@/components/couple/CoupleLandingPage";
 import CoupleMemoryApp from "@/components/couple/CoupleMemoryApp";
 
 type HomeScreen =
   | "mode-select"
   | "family-landing"
   | "family-app"
+  | "couple-landing"
   | "couple-app"
   | "coming-soon";
 
@@ -33,7 +36,7 @@ export default function Home() {
     if (mode === "family") {
       setScreen("family-landing");
     } else if (mode === "couple") {
-      setScreen("couple-app");
+      setScreen("couple-landing");
     } else {
       setScreen("coming-soon");
     }
@@ -61,14 +64,24 @@ export default function Home() {
     );
   }
 
-  // couple mode 输入页骨架（Phase 8.1，暂不接入 AI 生成）
-  if (screen === "couple-app") {
+  // couple landing（恋爱纪念册介绍页）
+  if (screen === "couple-landing") {
     return (
-      <CoupleMemoryApp
+      <CoupleLandingPage
+        onStart={() => setScreen("couple-app")}
         onBackToModes={() => {
           setSelectedMode(null);
           setScreen("mode-select");
         }}
+      />
+    );
+  }
+
+  // couple 输入页骨架（Phase 8.1，暂不接入 AI 生成）
+  if (screen === "couple-app") {
+    return (
+      <CoupleMemoryApp
+        onBackToLanding={() => setScreen("couple-landing")}
       />
     );
   }

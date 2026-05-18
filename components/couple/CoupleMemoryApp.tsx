@@ -38,7 +38,7 @@ type CoupleFormState = {
 };
 
 type Props = {
-  onBackToModes: () => void;
+  onBackToLanding: () => void;
 };
 
 const STYLE_OPTIONS: { value: CoupleStyle; label: string }[] = [
@@ -48,7 +48,7 @@ const STYLE_OPTIONS: { value: CoupleStyle; label: string }[] = [
   { value: "literary", label: "🍃 文艺清淡" },
 ];
 
-export default function CoupleMemoryApp({ onBackToModes }: Props) {
+export default function CoupleMemoryApp({ onBackToLanding }: Props) {
   const [form, setForm] = useState<CoupleFormState>({
     partnerAName: "",
     partnerBName: "",
@@ -113,11 +113,11 @@ export default function CoupleMemoryApp({ onBackToModes }: Props) {
         }}
       >
         <button
-          onClick={onBackToModes}
+          onClick={onBackToLanding}
           className="text-sm cursor-pointer hover:underline flex items-center gap-1"
           style={{ color: "#9d7b72" }}
         >
-          ← 返回记忆主题
+          ← 返回恋爱纪念册介绍
         </button>
       </div>
 

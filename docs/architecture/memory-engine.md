@@ -81,12 +81,12 @@ GrowthMemoryArtifact（兼容旧前端）
 - `status`：`available` 或 `coming_soon`
 - `primaryUseCase`：核心使用场景说明
 
-| mode | status |
-|------|--------|
-| `family` | available |
-| `couple` | coming_soon |
-| `personal` | coming_soon |
-| `memorial` | coming_soon |
+| mode | status | 说明 |
+|------|--------|------|
+| `family` | available | 完整可用，已接入真实生成 |
+| `couple` | preview | 介绍页+输入页可体验，AI 生成下一阶段接入 |
+| `personal` | coming_soon | 占位，仅展示说明 |
+| `memorial` | coming_soon | 占位，仅展示说明 |
 
 `getMemoryModeConfig(mode)` 按 id 查找配置。
 

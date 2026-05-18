@@ -18,6 +18,15 @@
 - `lib/domains/couple/adapter.ts` 已新增 `chatText` 字段
 - `lib/domains/couple/defaultQuestions.ts` 已创建
 
+**Phase 8.1.1 已完成：**
+
+- `MemoryModeStatus` 新增 `preview` 状态，couple 从 `coming_soon` 改为 `preview`
+- `MemoryModeHome` 支持三种状态：可生成（green）/ 可体验（orange）/ 即将开放（rose）
+- 新增 `CoupleLandingPage`（恋爱纪念册介绍页）
+- 进入顺序改为：`MemoryModeHome → CoupleLandingPage → CoupleMemoryApp`
+- `CoupleMemoryApp` 顶部返回按钮从「返回记忆主题」改为「返回恋爱纪念册介绍」
+- 当前仍不调用 AI，只预览 `MemoryRawMaterial`
+
 **Phase 8.2 待完成：**
 
 - `.skills/couple-memory` 从占位改为真实 prompt

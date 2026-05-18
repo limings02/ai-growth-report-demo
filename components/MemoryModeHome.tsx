@@ -55,10 +55,13 @@ export default function MemoryModeHome({ onSelectMode }: Props) {
               整理成时间线、纪念文、星图与可分享的回忆册。
             </p>
 
+            {/* 三种状态说明 */}
             <p className="text-sm" style={{ color: "#b08878" }}>
-              🟢 当前可体验：<strong>家庭亲子记忆</strong>
+              🟢 可生成：<strong>家庭亲子记忆</strong>
               &nbsp;·&nbsp;
-              后续开放：情侣、个人、纪念馆
+              🧪 可体验：<strong>情侣恋爱纪念输入页</strong>
+              &nbsp;·&nbsp;
+              ⏳ 后续开放：个人、纪念馆
             </p>
           </div>
 
@@ -66,51 +69,72 @@ export default function MemoryModeHome({ onSelectMode }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {MEMORY_MODES.map((cfg) => {
               const isAvailable = cfg.status === "available";
+              const isPreview = cfg.status === "preview";
+              const isComingSoon = cfg.status === "coming_soon";
+              // available 和 preview 都可点击，coming_soon 也可以点（进入 coming soon 页）
+              const isClickable = isAvailable || isPreview || isComingSoon;
+
+              // 卡片视觉强度
+              const cardOpacity = isComingSoon ? 0.72 : 1;
+              const cardBackground = isAvailable ? "#fffaf7" : isPreview ? "#fef9f6" : "#f9f5f3";
+              const cardBorder = isAvailable
+                ? "1.5px solid #f4b8a0"
+                : isPreview
+                ? "1.5px solid #f0c8b0"
+                : "1.5px solid #ead8d0";
+              const cardShadow = isAvailable
+                ? "0 2px 12px rgba(200, 120, 90, 0.10)"
+                : isPreview
+                ? "0 2px 8px rgba(200, 120, 90, 0.07)"
+                : "none";
+
+              // 状态角标
+              const badgeStyle = isAvailable
+                ? { background: "#e8f5e9", color: "#2e7d32" }
+                : isPreview
+                ? { background: "#fff3e0", color: "#e65100" }
+                : { background: "#fde8dc", color: "#c0674a" };
+              const badgeText = isAvailable ? "可生成" : isPreview ? "可体验" : "即将开放";
+
               return (
                 <div
                   key={cfg.id}
-                  onClick={() => onSelectMode(cfg.id)}
+                  onClick={() => isClickable && onSelectMode(cfg.id)}
                   className="relative rounded-2xl p-5 flex flex-col gap-3 transition-all"
                   style={{
-                    background: isAvailable ? "#fffaf7" : "#f9f5f3",
-                    border: isAvailable ? "1.5px solid #f4b8a0" : "1.5px solid #ead8d0",
-                    cursor: "pointer",
-                    opacity: isAvailable ? 1 : 0.78,
-                    boxShadow: isAvailable
-                      ? "0 2px 12px rgba(200, 120, 90, 0.10)"
-                      : "none",
+                    background: cardBackground,
+                    border: cardBorder,
+                    cursor: isClickable ? "pointer" : "default",
+                    opacity: cardOpacity,
+                    boxShadow: cardShadow,
                   }}
                   onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.boxShadow = isAvailable
-                      ? "0 6px 24px rgba(200, 120, 90, 0.20)"
-                      : "0 4px 16px rgba(200, 120, 90, 0.10)";
-                    el.style.transform = "translateY(-2px)";
+                    if (!isComingSoon) {
+                      const el = e.currentTarget as HTMLDivElement;
+                      el.style.boxShadow = "0 6px 24px rgba(200, 120, 90, 0.18)";
+                      el.style.transform = "translateY(-2px)";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.boxShadow = isAvailable
-                      ? "0 2px 12px rgba(200, 120, 90, 0.10)"
-                      : "none";
-                    el.style.transform = "translateY(0)";
+                    if (!isComingSoon) {
+                      const el = e.currentTarget as HTMLDivElement;
+                      el.style.boxShadow = cardShadow;
+                      el.style.transform = "translateY(0)";
+                    }
                   }}
                 >
                   {/* 状态角标 */}
                   <span
                     className="absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={
-                      isAvailable
-                        ? { background: "#e8f5e9", color: "#2e7d32" }
-                        : { background: "#fde8dc", color: "#c0674a" }
-                    }
+                    style={badgeStyle}
                   >
-                    {isAvailable ? "可体验" : "即将开放"}
+                    {badgeText}
                   </span>
 
                   {/* Emoji 图标 */}
                   <div
                     className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ background: isAvailable ? "#fde8dc" : "#f0e8e4" }}
+                    style={{ background: isAvailable || isPreview ? "#fde8dc" : "#f0e8e4" }}
                   >
                     {cfg.emoji}
                   </div>
@@ -131,14 +155,24 @@ export default function MemoryModeHome({ onSelectMode }: Props) {
                   {/* 底部 CTA */}
                   <div
                     className="rounded-xl px-3 py-2 text-xs leading-relaxed"
-                    style={{ background: isAvailable ? "#fdf0e8" : "#f5eee9", color: "#9d7b72" }}
+                    style={{
+                      background: isAvailable ? "#fdf0e8" : isPreview ? "#fef5ef" : "#f5eee9",
+                      color: "#9d7b72",
+                    }}
                   >
-                    {isAvailable ? (
+                    {isAvailable && (
                       <span>
-                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ 立即体验：</span>
+                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ 立即生成：</span>
                         {cfg.primaryUseCase}
                       </span>
-                    ) : (
+                    )}
+                    {isPreview && (
+                      <span>
+                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ 先体验：</span>
+                        {cfg.primaryUseCase}
+                      </span>
+                    )}
+                    {isComingSoon && (
                       <span>💡 {cfg.primaryUseCase}</span>
                     )}
                   </div>
