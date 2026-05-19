@@ -1,11 +1,11 @@
 // lib/aiReportGenerator.ts
-// 前端调用层，v0.4：返回 GrowthMemoryArtifact
+// 前端调用层，Phase 12.4B：返回 MemoryArtifact
 // 只调用 /api/generate-report，不读取任何环境变量
 import type { RawMaterial } from "./types";
-import type { GrowthMemoryArtifact } from "./skill-runtime/types";
+import type { MemoryArtifact } from "./memory-core/types";
 
 class AiReportGenerator {
-  async generate(material: RawMaterial): Promise<GrowthMemoryArtifact> {
+  async generate(material: RawMaterial): Promise<MemoryArtifact> {
     // 网络错误处理：DNS 失败、连接超时等
     let res: Response;
     try {
@@ -20,9 +20,9 @@ class AiReportGenerator {
     }
 
     // JSON 解析失败处理：如 502 的 HTML 响应、空响应等
-    let data: GrowthMemoryArtifact & { error?: string };
+    let data: MemoryArtifact & { error?: string };
     try {
-      data = (await res.json()) as GrowthMemoryArtifact & { error?: string };
+      data = (await res.json()) as MemoryArtifact & { error?: string };
     } catch {
       throw new Error(`服务器返回非 JSON 响应 (HTTP ${res.status})，请稍后重试`);
     }

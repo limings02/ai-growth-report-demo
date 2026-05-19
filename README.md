@@ -101,7 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family 生产默认结果页已切换为 `FamilyArtifactPreview`**（Phase 12.4A）：承接封面/时间线/图谱/信件/分享文案/照片预览/原始记录折叠区；`/api/generate-report` 仍返回 `GrowthMemoryArtifact`，前端本地转换为 `MemoryArtifact`；`ReportPreview` 仍保留作为 dev-only legacy fallback
+- **family API + 前端已完成 MemoryArtifact 迁移**（Phase 12.4B）：`/api/generate-report` 现在直接返回标准 `MemoryArtifact`；`GrowthReportApp` state 已切换为 `MemoryArtifact`；`FamilyArtifactPreview` 直接消费；dev-only legacy `ReportPreview` 通过 `memoryArtifactToGrowthArtifact` 支持
 - 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
 
 ---
@@ -354,6 +354,8 @@ docs/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
     memorial-generation-eval.md   # memorial 真实生成质量与安全边界评测（Phase 11.3）
+    family-ui-migration-regression.md  # family 新旧 UI 回归验收（Phase 12.4A.2）
+    family-api-memoryartifact-migration.md  # family API MemoryArtifact 迁移验证（Phase 12.4B）
 ```
 
 ---

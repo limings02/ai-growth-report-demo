@@ -1,6 +1,6 @@
 // app/api/generate-report/route.ts
 // 服务端 API Route，Next.js App Router
-// v0.4：通过 skill runtime 调用，返回 GrowthMemoryArtifact
+// Phase 12.4B：返回标准 MemoryArtifact（不再返回 GrowthMemoryArtifact）
 
 // 必须使用 nodejs runtime：skill runtime 依赖 fs 读取 .skills/prompts/*.md
 export const runtime = "nodejs";
@@ -9,7 +9,7 @@ export const maxDuration = 150;
 
 import { NextRequest, NextResponse } from "next/server";
 import { RawMaterial } from "@/lib/types";
-import { runGrowthMemorySkill } from "@/lib/skill-runtime/runGrowthMemorySkill";
+import { runFamilyMemorySkill } from "@/lib/domains/family/runFamilyMemorySkill";
 
 // 旧链路已迁移到 skill runtime，保留注释方便回溯：
 // import { callDeepSeek } from "@/lib/server/deepseekClient";
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const encoder = new TextEncoder();
       try {
-        const artifact = await runGrowthMemorySkill(material);
+        const artifact = await runFamilyMemorySkill(material);
         controller.enqueue(encoder.encode(JSON.stringify(artifact)));
       } catch (err) {
         const message = err instanceof Error ? err.message : "生成失败，请重试";

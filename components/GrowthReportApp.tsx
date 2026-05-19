@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { AppState, GrowthReportFormData, InterviewQuestion, RawMaterial } from "@/lib/types";
 import { extractRawMaterial } from "@/lib/extractRawMaterial";
-import type { GrowthMemoryArtifact } from "@/lib/skill-runtime/types";
+import type { MemoryArtifact } from "@/lib/memory-core/types";
 import { aiGenerator } from "@/lib/aiReportGenerator";
 // 本地无 API Key 时可切换回 mock（mock 仍返回 ReportData，需临时适配）：
 // import { mockGenerator } from "@/lib/mockReportGenerator";
@@ -14,12 +14,11 @@ import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
 import ReportPreview from "./ReportPreview";
-// ── Phase 12.4A：FamilyArtifactPreview 现为 family 生产默认结果页 ──
-// GrowthReportApp state 仍持有 GrowthMemoryArtifact（API 不变），
-// result 阶段用 growthArtifactToMemoryArtifact 本地转换后渲染 FamilyArtifactPreview。
-// development 环境保留 legacy fallback 按钮可切回旧 ReportPreview。
+// ── Phase 12.4B：API 已返回 MemoryArtifact，state 直接持有 MemoryArtifact ──
+// FamilyArtifactPreview 是生产默认结果页，直接消费 MemoryArtifact。
+// development 环境保留 legacy fallback，通过 memoryArtifactToGrowthArtifact 转回旧格式给 ReportPreview。
 import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
-import { growthArtifactToMemoryArtifact } from "@/lib/domains/family/artifactAdapter";
+import { memoryArtifactToGrowthArtifact } from "@/lib/domains/family/artifactAdapter";
 
 function makeDefaultQuestions(): InterviewQuestion[] {
   const labels = [
@@ -56,7 +55,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
 
   // 原始材料与生成结果分开存储
   const [rawMaterial, setRawMaterial] = useState<RawMaterial | null>(null);
-  const [artifact, setArtifact] = useState<GrowthMemoryArtifact | null>(null);
+  const [artifact, setArtifact] = useState<MemoryArtifact | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
   // Phase 12.4A：isDev 控制 dev-only legacy fallback 按钮
@@ -85,7 +84,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
 
     try {
       const result = await generator.generate(material);
-      setArtifact(result as GrowthMemoryArtifact);
+      setArtifact(result);
       setAppState("result");
     } catch (err) {
       setGenerateError(err instanceof Error ? err.message : "生成失败，请重试");
@@ -117,15 +116,16 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   }
 
   if (appState === "result" && artifact && rawMaterial) {
-    // Phase 12.4A：本地转换 GrowthMemoryArtifact → MemoryArtifact（不重新调用 AI）
-    const memoryArtifact = growthArtifactToMemoryArtifact(artifact);
+    // Phase 12.4B：artifact 已是 MemoryArtifact，直接使用，无需本地转换
 
     // dev-only legacy fallback：仅 development 环境可切回旧 ReportPreview 对比
     if (isDev && showLegacyReportPreview) {
+      // 旧版 ReportPreview 需要 GrowthMemoryArtifact，通过 memoryArtifactToGrowthArtifact 转换
+      const legacyArtifact = memoryArtifactToGrowthArtifact(artifact);
       return (
         <>
           <ReportPreview
-            artifact={artifact}
+            artifact={legacyArtifact}
             rawMaterial={rawMaterial}
             photos={formData.photos}
             onBack={() => {
@@ -154,11 +154,11 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
       );
     }
 
-    // 生产 + dev 默认：渲染新版 FamilyArtifactPreview
+    // 生产 + dev 默认：渲染新版 FamilyArtifactPreview（直接消费 MemoryArtifact）
     return (
       <>
         <FamilyArtifactPreview
-          artifact={memoryArtifact}
+          artifact={artifact}
           rawMaterial={rawMaterial}
           photos={formData.photos}
           onBackToEdit={() => setAppState("input")}

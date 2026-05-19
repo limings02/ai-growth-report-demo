@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.4A.2 真实生成回归验收完成（有条件通过）。允许进入 Phase 12.4B。
+> 当前状态：Phase 12.4B 已完成。`/api/generate-report` 现在直接返回 `MemoryArtifact`，`GrowthReportApp` state 已切换。
 
 ---
 
@@ -201,25 +201,16 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.4B：family API 返回 MemoryArtifact
+### Phase 12.4B：family API 返回 MemoryArtifact（已完成）
 
-**前置验收（进入 12.4B 前必须完成 Phase 12.4A.2）**：
-- 完成 `docs/quality/family-ui-migration-regression.md` 中的 A/B/C 三组样例验收
-- 用 dev-only legacy fallback 逐项对比新旧版，确认无遗漏：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
-- 所有样例通过后才允许启动 Phase 12.4B
-- **不允许在未完成 Phase 12.4A.2 验收的情况下启动 Phase 12.4B**
-
-**目标**：在 12.4A 稳定后，让 `/api/generate-report` 直接返回 `MemoryArtifact`。
-
-**操作**：
-1. `aiReportGenerator` 修改返回类型为 `MemoryArtifact`
-2. `GrowthReportApp` state 类型切换到 `MemoryArtifact`，去掉本地转换
-3. `/api/generate-report` 改为返回 `MemoryArtifact`（这步影响最大，需充分测试）
-4. 保留旧格式转换兜底作为回滚路径
-
-**注意**：这一步必须在 12.4A 稳定运行后执行。
-
-**验收**：family 生成功能完整，API 返回字段结构正确，质量不低于迁移前。
+**已完成**：
+- 新增 `lib/domains/family/runFamilyMemorySkill.ts`：`RawMaterial → runMemorySkill → MemoryArtifact`
+- `/api/generate-report` 改为调用 `runFamilyMemorySkill`，返回标准 `MemoryArtifact`
+- `aiReportGenerator.generate()` 返回类型改为 `Promise<MemoryArtifact>`
+- `GrowthReportApp` state 切换为 `MemoryArtifact | null`，主路径不再调用 `growthArtifactToMemoryArtifact`
+- dev-only legacy fallback 通过 `memoryArtifactToGrowthArtifact` 转回旧格式给 `ReportPreview`
+- `runGrowthMemorySkill` 保留作为 rollback path，不删除
+- API 验证：两组真实样例均返回标准 MemoryArtifact，顶层无 `report`，有 `mode: "family"` 和 `narrative`
 
 ---
 
@@ -271,7 +262,7 @@ MemoryArtifact（标准格式）
 | Phase 12.3 | development 环境可通过 shadow preview 查看 MemoryArtifact 版 family 结果页；production 不显示入口；默认 ReportPreview 主链路不变 |
 | Phase 12.3.1 | shadow preview 承接 rawMaterial/photos；backLabel 透传；照片区 / 原始记录区可见；迁移验收说明文字在开发环境显示 |
 | Phase 12.4A | ✅ 已完成：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱可见；dev-only 可切回旧 ReportPreview；/api/generate-report 未修改 |
-| Phase 12.4B | /api/generate-report 返回 MemoryArtifact；GrowthReportApp state 切换；体验不回归 |
+| Phase 12.4B | ✅ 已完成：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换；API 格式验证通过 |
 | Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
 
