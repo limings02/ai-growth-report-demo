@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.4A 已完成。family 生产默认 UI 已切换为 FamilyArtifactPreview；API 仍返回 GrowthMemoryArtifact；前端本地转换；dev 环境可切回旧 ReportPreview。
+> 当前状态：Phase 12.4A.2 真实生成回归验收完成（有条件通过）。允许进入 Phase 12.4B。
 
 ---
 
