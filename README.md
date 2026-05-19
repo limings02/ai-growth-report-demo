@@ -46,7 +46,7 @@ npm run dev
 11. **切换原始记录** — 点击「📋 原始记录」标签查看你填写的所有原始内容
 12. **打印 / 保存 PDF** — 点击「🖨️ 打印 / 保存 PDF」，在浏览器打印对话框中选择「另存为 PDF」
 
-> couple mode 和 personal mode 均已支持 AI 生成；personal mode 的开发环境仍保留 mock 预览按钮，方便调试结果页；memorial mode 当前是 preview 体验，进入后可填写纪念材料并查看 mock 纪念册；四个 mode 均不再是 coming soon。
+> couple / personal / memorial mode 均已支持 AI 生成；personal 和 memorial 在开发环境仍保留 mock 预览按钮，方便调试结果页；四个 mode 均不再是 coming soon。
 
 ---
 
@@ -274,8 +274,8 @@ components/
     PersonalMemoryApp.tsx          # personal 主状态机（AI 生成，dev 环境保留 mock 预览按钮）
     PersonalMemoryGraphPreview.tsx # personal 记忆 SVG 星图（Phase 10.4 升级）
   memorial/
-    MemorialLandingPage.tsx        # memorial mode landing（preview 体验）
-    MemorialMemoryApp.tsx          # memorial 主状态机（preview，展示 mock 结果）
+    MemorialLandingPage.tsx        # memorial mode landing
+    MemorialMemoryApp.tsx          # memorial 主状态机（AI 生成，dev 环境保留 mock 预览按钮）
     MemorialMemoryGraphPreview.tsx # memorial 记忆图谱 SVG 星图（克制色调）
   memory/
     MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
@@ -320,7 +320,7 @@ lib/
     memorial/
       adapter.ts                   # MemorialRawInput → MemoryRawMaterial
       defaultQuestions.ts          # memorial 默认访谈问题（Phase 11.1 新增）
-      mockArtifact.ts              # memorial preview mock artifact（Phase 11.1 新增）
+      mockArtifact.ts              # memorial 开发预览用 mock artifact
 
   skill-runtime/
     runGrowthMemorySkill.ts        # 旧入口（现为兼容 wrapper）

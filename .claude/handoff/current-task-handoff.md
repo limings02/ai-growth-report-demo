@@ -158,7 +158,7 @@ lib/
   couple-memory/                             # 【禁止修改】
   growth-memory/                             # 【禁止修改，fallback】
   personal-memory/                           # 真实 skill pack【Phase 10.2 升级】
-  memorial-memory/                           # 占位
+  memorial-memory/                           # 真实 skill pack【Phase 11.2 升级】
 ```
 
 ---
