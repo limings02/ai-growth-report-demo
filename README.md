@@ -11,7 +11,7 @@
 
 
 **预留模式（coming soon）：**
-- `memorial mode`：纪念馆 / 逝者回忆 / 家族记忆传承
+- `memorial mode`：纪念册 / 人生故事整理 / 家族记忆传承（preview 骨架，不调用 AI，展示 mock 结果）
 
 ---
 
@@ -48,7 +48,7 @@ npm run dev
 11. **切换原始记录** — 点击「📋 原始记录」标签查看你填写的所有原始内容
 12. **打印 / 保存 PDF** — 点击「🖨️ 打印 / 保存 PDF」，在浏览器打印对话框中选择「另存为 PDF」
 
-> couple mode 和 personal mode 均已支持 AI 生成；personal mode 的开发环境仍保留 mock 预览按钮，方便调试结果页；memorial 仍进入 coming soon 页面。
+> couple mode 和 personal mode 均已支持 AI 生成；personal mode 的开发环境仍保留 mock 预览按钮，方便调试结果页；memorial mode 当前是 preview 体验，进入后可填写纪念材料并查看 mock 纪念册；四个 mode 均不再是 coming soon。
 
 ---
 
@@ -61,7 +61,7 @@ npm run dev
 - `family mode` 可用，点击进入孩子成长 landing
 - `couple mode` 可用，点击进入恋爱纪念册流程（介绍页 → 输入页 → 生成结果）
 - `personal mode` available，点击进入 PersonalLandingPage → PersonalMemoryApp → AI 生成结果页
-- `memorial mode` coming soon，点击进入 `ComingSoonModePage`
+- `memorial mode` preview，点击进入 MemorialLandingPage → MemorialMemoryApp → mock 结果页
 
 #### Family mode
 - 孩子信息表单（昵称、年龄、总结年份、父母称呼、文案风格）
@@ -99,7 +99,8 @@ npm run dev
 - 开发环境 mock 预览不会调用 DeepSeek，也不会发送当前表单内容
 - personal mode 不上传照片，只处理用户主动填写的文字内容
 - 开发环境下 personal 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
-- memorial mode 暂未开放
+- memorial mode 当前只做 preview，不调用 AI，不发送填写内容；展示 mock 结果用于体验展示层
+- 不使用「AI 复活」「与逝者对话」等表达，定位为人生故事整理与家族记忆传承
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
 ---
@@ -164,7 +165,7 @@ npm run dev
 | `family` | available |
 | `couple` | available |
 | `personal` | available |
-| `memorial` | coming_soon |
+| `memorial` | preview（Phase 11.1 骨架，不调用 AI） |
 
 ### 输入层：MemoryRawMaterial
 
@@ -271,6 +272,10 @@ components/
     PersonalLandingPage.tsx        # personal mode landing
     PersonalMemoryApp.tsx          # personal 主状态机（AI 生成，dev 环境保留 mock 预览按钮）
     PersonalMemoryGraphPreview.tsx # personal 记忆 SVG 星图（Phase 10.4 升级）
+  memorial/
+    MemorialLandingPage.tsx        # memorial mode landing（preview 体验）
+    MemorialMemoryApp.tsx          # memorial 主状态机（preview，展示 mock 结果）
+    MemorialMemoryGraphPreview.tsx # memorial 记忆图谱 SVG 星图（克制色调）
   memory/
     MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
     MemorySectionCard.tsx          # 通用展示 section 容器
@@ -312,7 +317,9 @@ lib/
       defaultQuestions.ts          # personal 默认访谈问题（Phase 10.1 新增）
       mockArtifact.ts              # personal 开发预览用 mock artifact
     memorial/
-      adapter.ts                   # MemorialRawInput → MemoryRawMaterial（占位）
+      adapter.ts                   # MemorialRawInput → MemoryRawMaterial
+      defaultQuestions.ts          # memorial 默认访谈问题（Phase 11.1 新增）
+      mockArtifact.ts              # memorial preview mock artifact（Phase 11.1 新增）
 
   skill-runtime/
     runGrowthMemorySkill.ts        # 旧入口（现为兼容 wrapper）

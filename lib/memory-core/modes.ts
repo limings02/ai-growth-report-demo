@@ -80,12 +80,12 @@ export const MEMORY_MODES: MemoryModeConfig[] = [
   },
   {
     id: "memorial",
-    title: "纪念馆",
-    subtitle: "逝者记忆 · 家族传承",
-    description: "为挚爱的人留下一座数字纪念馆，收录他们的故事、声音与精神，让记忆永远不消散。",
+    title: "纪念册",
+    subtitle: "人生故事 · 家族记忆传承",
+    description: "把关于一个人的记忆材料——故事、照片数量、问答、自由文字——整理成一份可保存的家族纪念册，留给后辈也留给自己。",
     emoji: "🕯️",
-    status: "coming_soon",
-    primaryUseCase: "把对逝去之人的思念，变成可以代代相传的家族记忆",
+    status: "preview",
+    primaryUseCase: "把对家人或挚友的回忆，整理成一份克制、有温度的人生故事",
   },
 ];
 

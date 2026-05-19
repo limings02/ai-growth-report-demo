@@ -123,8 +123,12 @@ family-memory skill pack
   LifeGraphPreview → MemoryGraphPreview
   删除 GrowthMemoryArtifact 兼容层
 
-阶段 5（长期）：
-  memorial 接入
+阶段 5（进行中）：
+  memorial mode preview 骨架（Phase 11.1 已完成，不调用 AI，展示 mock 结果）
+  memorial 真实 AI 生成留到 Phase 11.2
+
+阶段 6（长期）：
+  memorial mode 真实 AI 接入（.skills/memorial-memory 完善 + API route 新增）
   统一 MemoryArtifactPreview 跨 mode 展示
 ```
 

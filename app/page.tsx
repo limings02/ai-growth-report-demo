@@ -7,6 +7,7 @@
 //
 // Phase 8.1.1：couple mode 增加 couple-landing
 // Phase 10.1：personal mode 从 coming-soon 改为 personal-landing → personal-app
+// Phase 11.1：memorial mode 从 coming-soon 改为 memorial-landing → memorial-app
 
 import { useState } from "react";
 import type { MemoryMode } from "@/lib/memory-core/modes";
@@ -18,6 +19,8 @@ import CoupleLandingPage from "@/components/couple/CoupleLandingPage";
 import CoupleMemoryApp from "@/components/couple/CoupleMemoryApp";
 import PersonalLandingPage from "@/components/personal/PersonalLandingPage";
 import PersonalMemoryApp from "@/components/personal/PersonalMemoryApp";
+import MemorialLandingPage from "@/components/memorial/MemorialLandingPage";
+import MemorialMemoryApp from "@/components/memorial/MemorialMemoryApp";
 
 type HomeScreen =
   | "mode-select"
@@ -27,6 +30,8 @@ type HomeScreen =
   | "couple-app"
   | "personal-landing"
   | "personal-app"
+  | "memorial-landing"
+  | "memorial-app"
   | "coming-soon";
 
 export default function Home() {
@@ -41,6 +46,8 @@ export default function Home() {
       setScreen("couple-landing");
     } else if (mode === "personal") {
       setScreen("personal-landing");
+    } else if (mode === "memorial") {
+      setScreen("memorial-landing");
     } else {
       setScreen("coming-soon");
     }
@@ -107,7 +114,7 @@ export default function Home() {
     );
   }
 
-  // personal app（preview 骨架，mock 结果，不调用 AI）
+  // personal app（真实 AI 生成，dev 环境保留 mock 预览按钮）
   if (screen === "personal-app") {
     return (
       <PersonalMemoryApp
@@ -120,7 +127,33 @@ export default function Home() {
     );
   }
 
-  // memorial coming soon
+  // memorial landing（纪念册介绍页）
+  if (screen === "memorial-landing") {
+    return (
+      <MemorialLandingPage
+        onStart={() => setScreen("memorial-app")}
+        onBackToModes={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
+  // memorial app（preview 骨架，mock 结果，不调用 AI）
+  if (screen === "memorial-app") {
+    return (
+      <MemorialMemoryApp
+        onBackToLanding={() => setScreen("memorial-landing")}
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
+  // coming-soon（暂无其他 mode）
   if (screen === "coming-soon" && selectedMode) {
     return (
       <ComingSoonModePage

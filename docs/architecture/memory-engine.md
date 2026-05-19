@@ -89,7 +89,7 @@ GrowthMemoryArtifact（兼容旧前端）
 | `family` | available | 完整可用，已接入真实生成 |
 | `couple` | available | MVP 可生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
 | `personal` | available | Phase 10.2 MVP：真实 AI 生成，直接输出 MemoryArtifact，不经 GrowthMemoryArtifact 兼容层 |
-| `memorial` | coming_soon | 占位，仅展示说明 |
+| `memorial` | preview | Phase 11.1 preview 骨架：可体验输入页 + mock 结果展示，不调用 AI |
 
 `getMemoryModeConfig(mode)` 按 id 查找配置。
 
@@ -167,7 +167,7 @@ type MemoryArtifact = {
 | `lib/domains/family/adapter.ts` | `RawMaterial → MemoryRawMaterial` |
 | `lib/domains/couple/adapter.ts` | `CoupleRawInput → MemoryRawMaterial`（当前用于 couple 真实生成链路）|
 | `lib/domains/personal/adapter.ts` | `PersonalRawInput → MemoryRawMaterial`（当前用于 personal 真实生成链路）|
-| `lib/domains/memorial/adapter.ts` | `MemorialRawInput → MemoryRawMaterial`（占位）|
+| `lib/domains/memorial/adapter.ts` | `MemorialRawInput → MemoryRawMaterial`（当前已有类型定义，Phase 11.2 接入真实生成时使用）|
 
 ### Artifact adapter（family）
 
@@ -299,7 +299,7 @@ LifeGraphPreview（components/LifeGraphPreview.tsx）
    - Phase 9.1：MemorySectionCard / MemoryPrintButton / MemoryQualityReviewPanel / MemorySourceTraceDetails
    - Phase 9.2：MemoryFallbackNotice / MemoryCoverSection / MemoryTimelineSection / MemoryLongFormSection / MemorySocialPostsSection / MemoryUsageTipsSection
    - Phase 9.3：`MemoryArtifactPreview`（完整页面 shell 容器，含 graphSlot 插槽）；`CoupleArtifactPreview` 已精简为薄 wrapper
-2. **下一步**：memorial mode 后续可复用 `MemoryArtifactPreview`，只需传入 memorial-specific 文案和 graphSlot（personal 已完成此步骤）
+2. **已完成（Phase 11.1）**：memorial mode preview 骨架已建立，已验证 `MemoryArtifactPreview` 可被 memorial 复用（MemorialMemoryApp 传入 memorial-specific 文案和 MemorialMemoryGraphPreview 作为 graphSlot）
 3. Relationship Galaxy 继续增强为更完整的可交互图谱
 4. `family-memory` 改为直接输出 `MemoryArtifact`（移除 GrowthMemoryArtifact 输出合约）
 5. `ReportPreview` 泛化为 `MemoryArtifactPreview`，消费 `MemoryArtifact`
