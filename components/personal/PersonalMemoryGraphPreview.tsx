@@ -1,12 +1,15 @@
 "use client";
 
 // components/personal/PersonalMemoryGraphPreview.tsx
-// personal mode 个人记忆 SVG 星图（Phase 10.4）。
+// personal mode 个人记忆 SVG 星图（Phase 10.4 / 10.4.1 稳健性收尾）。
 //
 // 布局策略：
 // - 中心节点：graph.centerDescription，固定在 SVG 中心
 // - 周围节点：最多前 12 个，椭圆轨道均匀排列
 // - 点击节点切换选中，下方展示详情面板
+// - normalizeNode：对 LLM 非严格输出做轻量防御
+// - relatedTo 边去重（edgeKey = sorted pair）
+// - 超过 12 个节点时显示轻提示
 // - 不新增依赖，不做 force layout，不做动画
 
 import { useMemo, useState } from "react";
@@ -15,16 +18,16 @@ import MemorySectionCard from "@/components/memory/MemorySectionCard";
 
 // ── 节点视觉配置 ─────────────────────────────────────────────────
 const NODE_TYPE_CONFIG: Record<string, { emoji: string; label: string; color: string; border: string }> = {
-  subject: { emoji: "👤", label: "主角",  color: "#dbeafe", border: "#93c5fd" },
-  person:  { emoji: "🙋", label: "人物",  color: "#fce7f3", border: "#f9a8d4" },
-  time:    { emoji: "📅", label: "时间",  color: "#e0f2fe", border: "#7dd3fc" },
-  event:   { emoji: "⏱", label: "事件",  color: "#dcfce7", border: "#86efac" },
-  place:   { emoji: "📍", label: "地点",  color: "#fef9c3", border: "#fde047" },
-  emotion: { emoji: "💛", label: "情绪",  color: "#fef3c7", border: "#fcd34d" },
+  subject: { emoji: "👤", label: "主角",   color: "#dbeafe", border: "#93c5fd" },
+  person:  { emoji: "🙋", label: "人物",   color: "#fce7f3", border: "#f9a8d4" },
+  time:    { emoji: "📅", label: "时间",   color: "#e0f2fe", border: "#7dd3fc" },
+  event:   { emoji: "⏱", label: "事件",   color: "#dcfce7", border: "#86efac" },
+  place:   { emoji: "📍", label: "地点",   color: "#fef9c3", border: "#fde047" },
+  emotion: { emoji: "💛", label: "情绪",   color: "#fef3c7", border: "#fcd34d" },
   keyword: { emoji: "✨", label: "关键词", color: "#ede9fe", border: "#c4b5fd" },
-  memory:  { emoji: "📓", label: "记忆",  color: "#fff7ed", border: "#fdba74" },
-  letter:  { emoji: "✉️", label: "信件",  color: "#f0fdf4", border: "#86efac" },
-  message: { emoji: "💬", label: "话语",  color: "#f1f5f9", border: "#94a3b8" },
+  memory:  { emoji: "📓", label: "记忆",   color: "#fff7ed", border: "#fdba74" },
+  letter:  { emoji: "✉️", label: "信件",   color: "#f0fdf4", border: "#86efac" },
+  message: { emoji: "💬", label: "话语",   color: "#f1f5f9", border: "#94a3b8" },
 };
 const DEFAULT_CFG = { emoji: "✨", label: "节点", color: "#e8edf8", border: "#8090b8" };
 
@@ -40,6 +43,30 @@ const MAX_RELATED_EDGES = 8;
 
 function truncate(s: string, max: number): string {
   return s.length > max ? `${s.slice(0, max)}…` : s;
+}
+
+// ── normalizeNode：对 LLM 非严格输出做轻量防御 ───────────────────
+// TypeScript 类型层面 node 字段都合法，但真实 AI 输出仍可能出现
+// 空 label、null relatedTo、非法 type 等运行时情况。
+function normalizeNode(node: MemoryGraphNodeHint, index: number): MemoryGraphNodeHint {
+  return {
+    type: NODE_TYPE_CONFIG[node.type as string] ? node.type : "memory",
+    label:
+      typeof node.label === "string" && node.label.trim()
+        ? node.label.trim()
+        : `记忆节点 ${index + 1}`,
+    description:
+      typeof node.description === "string" ? node.description : "",
+    emotion:
+      typeof node.emotion === "string" && node.emotion.trim()
+        ? node.emotion.trim()
+        : undefined,
+    relatedTo: Array.isArray(node.relatedTo)
+      ? node.relatedTo.filter(
+          (x): x is string => typeof x === "string" && x.trim().length > 0
+        )
+      : [],
+  };
 }
 
 type PositionedNode = MemoryGraphNodeHint & { id: string; x: number; y: number };
@@ -60,11 +87,17 @@ function buildLayout(nodes: MemoryGraphNodeHint[]): PositionedNode[] {
 type Props = { graph: MemoryGraphHints };
 
 export default function PersonalMemoryGraphPreview({ graph }: Props) {
-  const layout = useMemo(() => buildLayout(graph.nodes), [graph.nodes]);
+  // normalizeNode 在 useMemo 内运行，保证运行时安全
+  const normalizedNodes = useMemo(
+    () => graph.nodes.map(normalizeNode),
+    [graph.nodes]
+  );
+  const layout = useMemo(() => buildLayout(normalizedNodes), [normalizedNodes]);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const effectiveIndex = layout.length === 0 ? 0 : Math.min(selectedIndex, layout.length - 1);
   const selectedNode = layout[effectiveIndex] ?? null;
+  const hasMore = graph.nodes.length > MAX_NODES;
 
   // ── 空状态 ────────────────────────────────────────────────────
   if (graph.nodes.length === 0) {
@@ -115,7 +148,7 @@ export default function PersonalMemoryGraphPreview({ graph }: Props) {
           <ellipse cx={CX} cy={CY} rx={RADIUS_X + 10} ry={RADIUS_Y + 10} fill="url(#personalBg)" />
 
           {/* 装饰星点 */}
-          {[[20, 15], [340, 20], [15, 245], [345, 240], [180, 8], [55, 130], [305, 130]].map(([sx, sy], i) => (
+          {([[20, 15], [340, 20], [15, 245], [345, 240], [180, 8], [55, 130], [305, 130]] as [number, number][]).map(([sx, sy], i) => (
             <circle key={i} cx={sx} cy={sy} r={1.2} fill="#8090b8" opacity={0.12 + (i % 3) * 0.1} />
           ))}
 
@@ -130,28 +163,32 @@ export default function PersonalMemoryGraphPreview({ graph }: Props) {
             />
           ))}
 
-          {/* relatedTo 虚线边（最多 MAX_RELATED_EDGES 条） */}
+          {/* relatedTo 虚线边（去重 + 最多 MAX_RELATED_EDGES 条） */}
           {(() => {
             const edges: React.ReactNode[] = [];
+            const drawnEdges = new Set<string>();
             let count = 0;
             for (const node of layout) {
               if (count >= MAX_RELATED_EDGES) break;
               for (const rel of node.relatedTo) {
                 if (count >= MAX_RELATED_EDGES) break;
                 const target = layout.find((n) => n.label === rel && n.id !== node.id);
-                if (target) {
-                  edges.push(
-                    <line
-                      key={`rel-${node.id}-${target.id}`}
-                      x1={node.x} y1={node.y} x2={target.x} y2={target.y}
-                      stroke="#8090b8"
-                      strokeWidth={0.5}
-                      strokeOpacity={0.1}
-                      strokeDasharray="3 5"
-                    />
-                  );
-                  count++;
-                }
+                if (!target) continue;
+                // 用排序后的 label pair 去重，避免 A-B 和 B-A 重复
+                const edgeKey = [node.label, target.label].sort().join("::");
+                if (drawnEdges.has(edgeKey)) continue;
+                drawnEdges.add(edgeKey);
+                edges.push(
+                  <line
+                    key={`rel-${edgeKey}`}
+                    x1={node.x} y1={node.y} x2={target.x} y2={target.y}
+                    stroke="#8090b8"
+                    strokeWidth={0.5}
+                    strokeOpacity={0.1}
+                    strokeDasharray="3 5"
+                  />
+                );
+                count++;
               }
             }
             return edges;
@@ -216,6 +253,13 @@ export default function PersonalMemoryGraphPreview({ graph }: Props) {
           })}
         </svg>
       </div>
+
+      {/* 超过 12 个节点时的轻提示（不影响打印） */}
+      {hasMore && (
+        <p className="mt-1 text-xs print:hidden" style={{ color: "#a0aec0" }}>
+          已展示前 {MAX_NODES} 个代表性节点，其余节点可在后续版本中展开。
+        </p>
+      )}
 
       {/* ── 选中节点详情面板 ─────────────────────────────────── */}
       {selectedNode && (

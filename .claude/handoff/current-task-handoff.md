@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 10.4 已完成  
+> 当前阶段：Phase 10.4.1 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -72,6 +72,9 @@
   - 打印时展示节点文字摘要
   - 不新增依赖
 
+### Phase 10.4.1（PersonalMemoryGraphPreview 稳健性收尾）
+- `components/personal/PersonalMemoryGraphPreview.tsx`：新增 `normalizeNode` 防御（空 label / 非法 type / null relatedTo）；relatedTo 边去重（sorted pair edgeKey）；超过 12 个节点时显示轻提示
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -83,7 +86,7 @@
 
 ### 短期（优先级 1）
 - [x] ~~Phase 10.3：personal 真实生成质量评测与 prompt 打磨~~（已完成）
-- [ ] **Phase 10.4**：PersonalMemoryGraphPreview 视觉增强（可选 SVG 图谱）
+- [x] **Phase 10.4**：PersonalMemoryGraphPreview 视觉增强（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
