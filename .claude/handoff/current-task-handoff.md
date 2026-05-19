@@ -14,7 +14,7 @@
 - family：available，真实 AI 生成（GrowthMemoryArtifact 兼容链路）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
-- memorial：coming_soon
+- memorial：preview，前端可体验 mock 结果，不调用 AI（Phase 11.1 已完成）
 
 ---
 
@@ -104,7 +104,6 @@
 - [ ] `LifeGraphPreview` 改名为 `MemoryGraphPreview`
 
 ### 长期
-- [ ] memorial mode 接入（克制文案，隐私保护）
 - [ ] 删除 GrowthMemoryArtifact 兼容层（条件：ReportPreview 泛化后）
 
 ---
@@ -216,7 +215,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - family-memory prompt 改为直接输出 MemoryArtifact
 - ReportPreview 迁移为消费 MemoryArtifact + MemoryArtifactPreview
 
-### 优先级 3：memorial mode preview 骨架（参考 Phase 10.1 路线）
+
 
 ---
 

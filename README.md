@@ -9,8 +9,7 @@
 - `couple mode`：恋爱纪念册 MVP，AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 星图
 - `personal mode`：个人人生 Wiki / 自我回忆录 MVP，AI 生成人生阶段时间线、关键词、写给未来自己的信和个人记忆图谱
 
-
-**预留模式（coming soon）：**
+**当前预览模式：**
 - `memorial mode`：纪念册 / 人生故事整理 / 家族记忆传承（preview 骨架，不调用 AI，展示 mock 结果）
 
 ---
