@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 11.3 已完成  
+> 当前阶段：Phase 12.1 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -99,6 +99,13 @@
 - `03_quality_rules.md` 禁止表达补充「ta 用另一种方式爱你」「ta 内心深处」→ 已修正
 - 新增 `docs/quality/memorial-generation-eval.md`：完整评测报告
 
+### Phase 12.1（family MemoryArtifact 泛化迁移前置审计）
+- 新增 `docs/architecture/family-memoryartifact-migration-plan.md`：完整迁移计划
+- 审计了 family 旧链路（`GrowthMemoryArtifact → runGrowthMemorySkill → ReportPreview`）
+- 列出所有兼容层（10 项）和 GrowthMemoryArtifact 依赖文件（12 个）
+- 设计了 6 阶段低风险迁移路线（Phase 12.2~12.6）
+- 明确了高风险点：ReportPreview 含 rawMaterial 原始记录 + 照片预览，不能直接替换
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -114,6 +121,7 @@
 - [x] **Phase 11.1**：memorial mode preview 骨架（已完成）
 - [x] **Phase 11.2**：memorial 真实 AI 生成 MVP（已完成）
 - [x] **Phase 11.3**：memorial 真实生成质量评测与 prompt 打磨（已完成）
+- [x] **Phase 12.1**：family MemoryArtifact 泛化迁移前置审计（已完成，仅文档）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -219,7 +227,13 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
+### 优先级 1：Phase 12.2 - 新增 FamilyArtifactPreview wrapper（不替换主链路）
+- 新增 `components/family/FamilyArtifactPreview.tsx`
+- 输入 `MemoryArtifact`，复用 `MemoryArtifactPreview`
+- GrowthReportApp / ReportPreview / API 均不变
+- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.2 节
+
+### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
 - memorial 结果页 usage tips 等文案优化
 
@@ -241,13 +255,13 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 11.3 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
 - memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
-- memorial prompt 已通过 4 组真实样例评测，安全边界 PASS
-- docs/quality/memorial-generation-eval.md 评测报告
+- Phase 12.1：family 链路泛化前置审计完成，迁移计划已建立
+- 下一步：Phase 12.2 新增 FamilyArtifactPreview（不替换主链路）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

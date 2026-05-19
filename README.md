@@ -344,7 +344,8 @@ docs/
   architecture/
     memory-engine.md               # 架构详解
     next-couple-mode-plan.md       # couple MVP 规划
-    current-transition-state.md   # 当前过渡态说明
+    current-transition-state.md              # 当前过渡态说明
+    family-memoryartifact-migration-plan.md  # family 旧链路迁移到 MemoryArtifact 的阶段计划
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）

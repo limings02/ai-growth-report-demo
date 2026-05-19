@@ -1,0 +1,274 @@
+# Family 链路泛化迁移计划
+
+> 文档创建：Phase 12.1（2026-05-19）  
+> 当前状态：审计阶段，不是迁移阶段。本文档只用于规划，不代表已修改任何功能代码。
+
+---
+
+## 1. 背景
+
+当前 family mode 是最早上线的场景，其生成链路独立于 couple / personal / memorial 的通用链路。
+
+其他三个 mode 已经：
+- 直接输出标准 `MemoryArtifact`
+- 复用 `MemoryArtifactPreview` 通用展示容器
+- 共用 `runMemorySkill` 通用 runtime
+
+而 family 仍维护一套兼容层：`GrowthMemoryArtifact` → `ReportPreview` → `LifeGraphPreview`。
+
+本计划的目标是设计一条低风险迁移路线，让 family 最终也走通用链路，同时保证用户体验不回归。
+
+---
+
+## 2. 当前 family 旧链路
+
+```
+family 表单填写（GrowthReportApp）
+  ↓ extractRawMaterial
+RawMaterial（family-only 字段）
+  ↓ fetch /api/generate-report
+  ↓ runGrowthMemorySkill（wrapper）
+    ↓ familyRawMaterialToMemoryRawMaterial
+    ↓ runMemorySkill（通用 runtime）
+      ↓ buildMemoryPrompt
+      ↓ callDeepSeek → .skills/family-memory
+      ↓ parseMemoryArtifact
+        ├── 识别 GrowthMemoryArtifact 格式 → growthArtifactToMemoryArtifact
+        └── 识别 MemoryArtifact 格式 → normalizeMemoryArtifact
+    ↓ memoryArtifactToGrowthArtifact
+GrowthMemoryArtifact（旧格式）
+  ↓ GrowthReportApp.setState
+  ↓ <ReportPreview artifact={...} rawMaterial={...} photos={...} />
+    ↓ artifact.report（ReportData）展示成长报告
+    ↓ <LifeGraphPreview rawMaterial={...} report={...} graphHints={...} />
+      ↓ buildLifeGraph（wrapper → buildFamilyMemoryGraph → memoryGraphToLifeGraph）
+      ↓ LifeGraphData 节点渲染
+```
+
+注意：`runGrowthMemorySkill` 内部已经走了通用 `runMemorySkill`，只是最后一步把结果转回 `GrowthMemoryArtifact` 给旧 UI 用。这是一个已经完成的中间状态。
+
+---
+
+## 3. 新 mode 标准链路（couple / personal / memorial）
+
+```
+表单填写（CoupleMemoryApp / PersonalMemoryApp / MemorialMemoryApp）
+  ↓ fetch /api/generate-{mode}-memory
+  ↓ {mode}RawInputToMemoryRawMaterial
+  ↓ runMemorySkill
+      ↓ buildMemoryPrompt → callDeepSeek → .skills/{mode}-memory
+      ↓ parseMemoryArtifact → MemoryArtifact
+MemoryArtifact（标准格式）
+  ↓ <MemoryArtifactPreview artifact={...} graphSlot={<...GraphPreview />} />
+```
+
+---
+
+## 4. 当前兼容层清单
+
+| 兼容层 | 文件 | 职责 | 可删除条件 |
+|--------|------|------|-----------|
+| `runGrowthMemorySkill` | `lib/skill-runtime/runGrowthMemorySkill.ts` | `RawMaterial → GrowthMemoryArtifact` wrapper | ReportPreview 迁移后 |
+| `GrowthMemoryArtifact` 类型 | `lib/skill-runtime/types.ts` | 旧前端消费的 artifact 类型 | ReportPreview/GrowthReportApp 迁移后 |
+| `memoryArtifactToGrowthArtifact` | `lib/domains/family/artifactAdapter.ts` | MemoryArtifact → GrowthMemoryArtifact 降级 | `runGrowthMemorySkill` 删除后 |
+| `growthArtifactToMemoryArtifact` | `lib/domains/family/artifactAdapter.ts` | GrowthMemoryArtifact → MemoryArtifact 升级 | `parseMemoryArtifact` family fallback 路径删除后 |
+| `parseGrowthMemoryArtifact` | `lib/skill-runtime/parseGrowthMemoryArtifact.ts` | 旧格式解析兜底 | family-memory prompt 改为 MemoryArtifact 输出后 |
+| `buildLifeGraph` wrapper | `lib/graph/buildLifeGraph.ts` | `buildFamilyMemoryGraph → LifeGraphData` 降级 | LifeGraphPreview 改名/替换后 |
+| `LifeGraphData` 类型 | `lib/graph/types.ts` | 旧 LifeGraphPreview 渲染的数据结构 | LifeGraphPreview 替换为 MemoryGraphPreview 后 |
+| `aiReportGenerator` | `lib/aiReportGenerator.ts` | 前端调用层，返回 `GrowthMemoryArtifact` | GrowthReportApp 迁移后 |
+| `fallbackSkillDir: "growth-memory"` | `lib/memory-core/skillRegistry.ts` | family-memory 不存在时 fallback | family-memory 稳定后 |
+
+---
+
+## 5. 依赖 GrowthMemoryArtifact 的文件清单
+
+| 文件 | 依赖方式 | 说明 |
+|------|---------|------|
+| `app/api/generate-report/route.ts` | 调用 `runGrowthMemorySkill`，返回值即为 `GrowthMemoryArtifact` | 迁移最后一步 |
+| `components/GrowthReportApp.tsx` | `useState<GrowthMemoryArtifact>` | 消费 API 返回值 |
+| `components/ReportPreview.tsx` | `props: { artifact: GrowthMemoryArtifact }` | 最核心的展示层 |
+| `components/LifeGraphPreview.tsx` | 消费 `rawMaterial + report + graphHints`（均来自 GrowthMemoryArtifact.report） | 依赖旧字段结构 |
+| `lib/aiReportGenerator.ts` | 返回类型 `GrowthMemoryArtifact`，被 GrowthReportApp import | 前端调用层 |
+| `lib/skill-runtime/runGrowthMemorySkill.ts` | 生产 `GrowthMemoryArtifact`（wrapper，内部已走 runMemorySkill） | 迁移删除点 |
+| `lib/skill-runtime/parseGrowthMemoryArtifact.ts` | 解析旧格式 JSON | `parseMemoryArtifact` 中 family fallback 路径调用 |
+| `lib/skill-runtime/types.ts` | 定义 `GrowthMemoryArtifact` 类型 | 全项目引用点 |
+| `lib/domains/family/artifactAdapter.ts` | 双向转换 adapter | 兼容层核心 |
+| `lib/memory-core/parseMemoryArtifact.ts` | 识别旧格式并调用 `growthArtifactToMemoryArtifact` | 过渡兼容路径 |
+| `.skills/family-memory/` | prompt 要求输出 `GrowthMemoryArtifact` 格式 | 迁移的起始点之一 |
+
+---
+
+## 6. family-memory / growth-memory skill 现状
+
+### family-memory（当前可用）
+
+文件：`.skills/family-memory/prompts/02_output_contract.md`
+
+**当前要求输出：**
+```json
+{
+  "artifactVersion": "0.1",
+  "report": { ... },      ← GrowthMemoryArtifact 的旧 report 字段
+  "graph": { ... },
+  "videoScript": { ... },
+  "sourceTrace": { ... },
+  "qualityReview": { ... }
+}
+```
+
+注意：`parseMemoryArtifact` 能识别这个旧格式并转换为 `MemoryArtifact`，再由 `runGrowthMemorySkill` 的 wrapper 转回 `GrowthMemoryArtifact`。所以 AI 实际输出是 `GrowthMemoryArtifact`，整个链路转了两次格式。
+
+### growth-memory（保留为 fallback）
+
+文件：`.skills/growth-memory/`
+
+当前作为 `family` mode 的 `fallbackSkillDir`，当 `.skills/family-memory/` 主目录某个文件缺失时自动启用。这个 fallback 已经很旧，保留只是为了应急。
+
+---
+
+## 7. 迁移风险
+
+| 风险 | 说明 | 风险等级 |
+|------|------|---------|
+| family 是最早上线模式 | 用户体验已被依赖，任何回归都是严重问题 | 🔴 高 |
+| ReportPreview 内容复杂 | 除了生成内容外，还包含"原始记录"标签页（rawMaterial）、照片预览（photos）、朋友圈复制、打印逻辑，不是单纯的 MemoryArtifact 展示 | 🔴 高 |
+| LifeGraphPreview 数据结构差异 | 依赖 `LifeGraphData`（含 `child`/`year` 等旧节点类型和 id 格式），而 `MemoryGraphHints` 用不同字段和类型。两套结构不等价 | 🟡 中 |
+| GrowthMemoryArtifact ≠ MemoryArtifact | `GrowthMemoryArtifact.report` 包含 `ReportData`（keywords/yearlySummary/timeline/letter/socialPosts/skillStatus）；`MemoryArtifact.narrative` 字段名不同。转换时有信息损失 | 🟡 中 |
+| family-memory prompt 改动 | 如果直接改 prompt 要求输出 MemoryArtifact，会影响 `parseMemoryArtifact` 的识别路径，需同步修改 | 🟡 中 |
+| 照片本地预览逻辑 | `photos: PhotoItem[]` 是纯客户端照片预览，`ReportPreview` 用来展示但不上传。迁移时不能误认为需要传给 AI | 🟢 低（已有保障）|
+| `/api/generate-report` 直接替换 | 这条路影响最广，应该最后做，且需要充分测试 | 🔴 高 |
+
+---
+
+## 8. 推荐迁移路线
+
+迁移原则：
+- **每个阶段独立可回滚**
+- **旧 UI 在下一阶段验证稳定前保持可用**
+- **不一步到位**
+
+### Phase 12.2：创建 FamilyArtifactPreview，不替换主链路
+
+**目标**：新增一个能消费 `MemoryArtifact` 的 family 结果页，复用 `MemoryArtifactPreview`，但不接入主链路。
+
+**操作**：
+- 新增 `components/family/FamilyArtifactPreview.tsx`
+- 输入：`MemoryArtifact`（不是 `GrowthMemoryArtifact`）
+- 传入 family-specific 文案配置 + 临时 graphSlot（可用简单节点列表）
+- **GrowthReportApp 和 /api/generate-report 不变**
+
+**验收**：lint/build 通过，不影响现有 family 功能。
+
+---
+
+### Phase 12.3：在 /api/generate-report 增加 shadow 对比路径（可选）
+
+**目标**：在 server 端同时生成 `MemoryArtifact`，与 `GrowthMemoryArtifact` 做字段对比，不影响 UI 返回值。
+
+**操作**：
+- 在 `runGrowthMemorySkill` 或 API 中，额外记录 `memoryArtifact` 到 server log
+- 比较关键字段是否等价（title/keywords/summary 等）
+- **前端仍接收 GrowthMemoryArtifact**
+
+**验收**：server log 可见对比结果，UI 体验无变化。
+
+---
+
+### Phase 12.4：family 前端迁移到 MemoryArtifactPreview
+
+**目标**：GrowthReportApp 改为接收 `MemoryArtifact`，使用 `FamilyArtifactPreview`。
+
+**操作**：
+1. `GrowthReportApp` 修改 state 类型为 `MemoryArtifact`
+2. `aiReportGenerator` 修改返回类型为 `MemoryArtifact`
+3. `/api/generate-report` 改为返回 `MemoryArtifact`（这一步影响最大）
+4. 保留 `ReportPreview` 为可回滚路径
+
+**注意**：`ReportPreview` 还包含 rawMaterial 原始记录标签页和照片预览，这些需要在 `FamilyArtifactPreview` 或 `MemoryArtifactPreview` 中单独考虑如何承接。
+
+**验收**：family 生成功能完整可用，不回归任何体验。
+
+---
+
+### Phase 12.5：family-memory prompt 改为直接输出 MemoryArtifact
+
+**目标**：`.skills/family-memory/prompts/02_output_contract.md` 改为要求输出 `MemoryArtifact` 格式，不再输出 `GrowthMemoryArtifact`。
+
+**操作**：
+1. 修改 `02_output_contract.md`，输出合约改为 MemoryArtifact 结构
+2. 修改 `01_task.md`，把 `yearlySummary`/`letter`/`skillStatus` 等旧字段映射到 `narrative`
+3. `parseMemoryArtifact` 中 family 的 GrowthMemoryArtifact 识别路径可以保留但不再会被触发
+
+**注意**：
+- 这一步必须在 Phase 12.4 完成后执行
+- `growth-memory` fallback 可以继续保留作为应急
+
+**验收**：生成结果字段完整，质量不低于迁移前。
+
+---
+
+### Phase 12.6：删除 / 归档兼容层
+
+**目标**：清理所有不再被使用的兼容代码。
+
+**可删除**：
+- `lib/skill-runtime/runGrowthMemorySkill.ts`（如果没有其他 import）
+- `lib/skill-runtime/parseGrowthMemoryArtifact.ts`（family mode fallback 路径）
+- `lib/skill-runtime/types.ts` 中的 `GrowthMemoryArtifact` 类型（引用清零后）
+- `lib/domains/family/artifactAdapter.ts` 中的 `memoryArtifactToGrowthArtifact`
+- `lib/graph/buildLifeGraph.ts` wrapper（LifeGraphPreview 已替换后）
+- `lib/graph/types.ts` 中的 `LifeGraphData` 类型
+- `components/ReportPreview.tsx`（已被 FamilyArtifactPreview 替代后）
+- `components/LifeGraphPreview.tsx`（已被新图谱组件替代后）
+- `components/PrintButton.tsx`（如已被 MemoryPrintButton 替代）
+- `lib/aiReportGenerator.ts`（迁移到新 fetch helper 后）
+
+**可归档不删除**：
+- `.skills/growth-memory/`（保留为历史参考，不再作为 fallback）
+
+**注意**：删除前必须 `grep -rn` 确认无引用。
+
+---
+
+## 9. 每阶段验收标准
+
+| 阶段 | 验收标准 |
+|------|---------|
+| Phase 12.2 | FamilyArtifactPreview 组件存在，lint/build 通过，family 现有功能不变 |
+| Phase 12.3 | Server log 有 MemoryArtifact 对比输出，UI 无变化 |
+| Phase 12.4 | family 生成功能完整（报告/星图/打印/原始记录标签），体验不回归 |
+| Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
+| Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
+
+---
+
+## 10. 禁止事项
+
+- 不要一次性替换整个 family 链路
+- 不要在 Phase 12.4 完成前修改 `.skills/family-memory/`
+- 不要删除 `.skills/growth-memory/` 作为 fallback，直到 Phase 12.5 验证稳定后
+- 不要忘记 `ReportPreview` 的"原始记录"标签页和照片预览——这些是 family mode 特有的功能，不能在迁移中丢失
+- 不要在没有回滚路径的情况下修改 `/api/generate-report`
+
+---
+
+## 附录：关键文件路径速查
+
+```
+app/api/generate-report/route.ts              # family API（禁止在 Phase 12.4 之前修改）
+lib/skill-runtime/runGrowthMemorySkill.ts      # wrapper（Phase 12.4 之后可移除）
+lib/skill-runtime/types.ts                    # GrowthMemoryArtifact 类型定义
+lib/skill-runtime/parseGrowthMemoryArtifact.ts # 旧格式解析
+lib/domains/family/adapter.ts                 # RawMaterial → MemoryRawMaterial
+lib/domains/family/artifactAdapter.ts         # GrowthMemoryArtifact ↔ MemoryArtifact
+lib/domains/family/buildFamilyMemoryGraph.ts  # 图谱构建（已基于 MemoryGraphData）
+lib/graph/buildLifeGraph.ts                   # LifeGraphData wrapper（Phase 12.6 删除）
+lib/graph/types.ts                            # LifeGraphData 旧类型
+lib/aiReportGenerator.ts                      # 前端调用层（Phase 12.4 替换）
+components/GrowthReportApp.tsx                # family 主状态机（Phase 12.4 修改）
+components/ReportPreview.tsx                  # 当前 family 展示层（Phase 12.4 替换）
+components/LifeGraphPreview.tsx               # 旧星图组件（Phase 12.6 替换）
+.skills/family-memory/                        # 当前 prompt（Phase 12.5 修改输出合约）
+.skills/growth-memory/                        # fallback（Phase 12.6 归档）
+lib/memory-core/skillRegistry.ts              # fallbackSkillDir 配置（Phase 12.6 清理）
+```
