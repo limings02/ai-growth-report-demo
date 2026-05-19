@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 10.3.1 已完成  
+> 当前阶段：Phase 10.3.2 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -58,6 +58,9 @@
 - `docs/quality/personal-generation-eval.md`：修正对 v4-pro 的定性（不再建议改模型）
 - `docs/quality/deepseek-v4-pro-compat.md`：新增兼容说明文档
 - **已验证**：`deepseek-v4-pro` + `thinking: disabled` 通过 `/api/generate-personal-memory` 真实调用成功生成完整 MemoryArtifact
+
+### Phase 10.3.2（handoff 文档一致性修复）
+- `.claude/handoff/current-task-handoff.md`：删除第 7 节中错误建议（「将 DEEPSEEK_MODEL 改为 deepseek-chat」），改为推荐 v4-pro + DEEPSEEK_THINKING=disabled 配置
 
 ---
 
@@ -165,9 +168,17 @@ package.json
 
 ## 7. 下一步建议
 
-### 立即处理（用户操作）
-将 `.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 改为 `deepseek-chat`。
-`deepseek-v4-pro` 是推理模型，输出在 `reasoning_content` 而非 `content`，导致所有 personal 和其他 mode 的生成调用均返回空响应。
+### 立即处理（用户配置）
+如果本地 `.env.local` 尚未更新，请保持以下配置（**不要改成 deepseek-chat**）：
+
+```
+DEEPSEEK_MODEL=deepseek-v4-pro
+DEEPSEEK_THINKING=disabled
+DEEPSEEK_JSON_MODE=true
+DEEPSEEK_MAX_TOKENS=8192
+```
+
+Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
 ### 优先级 1：Phase 10.4 - PersonalMemoryGraphPreview 视觉增强
 - 参考 RelationshipGalaxyPreview 的 SVG 布局算法
