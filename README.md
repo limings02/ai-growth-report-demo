@@ -270,7 +270,7 @@ components/
   personal/
     PersonalLandingPage.tsx        # personal mode landing
     PersonalMemoryApp.tsx          # personal 主状态机（AI 生成，dev 环境保留 mock 预览按钮）
-    PersonalMemoryGraphPreview.tsx # personal 轻量图谱（节点卡片列表）
+    PersonalMemoryGraphPreview.tsx # personal 记忆 SVG 星图（Phase 10.4 升级）
   memory/
     MemoryArtifactPreview.tsx      # 通用 MemoryArtifact 展示容器（完整页面 shell）
     MemorySectionCard.tsx          # 通用展示 section 容器

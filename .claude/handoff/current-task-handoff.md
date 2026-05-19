@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 10.3.2 已完成  
+> 当前阶段：Phase 10.4 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -61,6 +61,16 @@
 
 ### Phase 10.3.2（handoff 文档一致性修复）
 - `.claude/handoff/current-task-handoff.md`：删除第 7 节中错误建议（「将 DEEPSEEK_MODEL 改为 deepseek-chat」），改为推荐 v4-pro + DEEPSEEK_THINKING=disabled 配置
+
+### Phase 10.4（PersonalMemoryGraphPreview SVG 视觉增强）
+- `components/personal/PersonalMemoryGraphPreview.tsx`：从节点卡片列表升级为 SVG 个人记忆星图
+  - 中心节点：graph.centerDescription，固定在 SVG 中心
+  - 周围节点：最多 12 个，椭圆轨道均匀排列
+  - 节点类型视觉配置：subject/person/time/event/place/emotion/keyword/memory/letter/message
+  - 点击节点切换选中，下方展示详情面板（label/description/emotion/relatedTo）
+  - relatedTo 虚线边（最多 8 条）
+  - 打印时展示节点文字摘要
+  - 不新增依赖
 
 ---
 
@@ -180,10 +190,9 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 10.4 - PersonalMemoryGraphPreview 视觉增强
-- 参考 RelationshipGalaxyPreview 的 SVG 布局算法
-- 为 personal 的 subject/person/place/emotion/event/keyword 节点配置专属视觉样式
-- 不引入新依赖
+### 优先级 1：Phase 10.5 - personal 文案与视觉微调（可选）
+- PersonalLandingPage 情绪表达打磨
+- personal 结果页 usage tips 等文案优化
 
 ### 优先级 2：family 链路泛化
 - family-memory prompt 改为直接输出 MemoryArtifact
@@ -199,7 +208,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 10.3.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 10.4 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal 三个 mode 均可真实 AI 生成
