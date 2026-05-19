@@ -101,7 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family API + 前端已完成 MemoryArtifact 迁移**（Phase 12.4B）：`/api/generate-report` 现在直接返回标准 `MemoryArtifact`；`GrowthReportApp` state 已切换为 `MemoryArtifact`；`FamilyArtifactPreview` 直接消费；dev-only legacy `ReportPreview` 通过 `memoryArtifactToGrowthArtifact` 支持
+- **family API + 前端已完成 MemoryArtifact 迁移，回归验收通过**（Phase 12.4B.1）：`/api/generate-report` 直接返回 `MemoryArtifact`；`aiReportGenerator` 有结构防御；dev-only legacy `ReportPreview` 通过 `memoryArtifactToGrowthArtifact` 支持；旧兼容层保留
 - 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
 
 ---

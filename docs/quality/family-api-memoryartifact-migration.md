@@ -158,3 +158,43 @@ print({
 | `GrowthMemoryArtifact` 类型仍存在 | 被 dev-only legacy fallback 间接使用 |
 | `ReportPreview` / `LifeGraphPreview` 仍保留 | dev-only legacy fallback 用到 |
 | 信件标题固定"给未来的信" | 可在 growthArtifactToMemoryArtifact 中优化（低优先级）|
+
+---
+
+## 7. Phase 12.4B.1 回归验收（2026-05-19）
+
+### 7.1 API 正常响应
+
+- **样例 A**（childName=小星星，2问答，无freeNote）：
+  - HTTP 200，5581 bytes
+  - `mode: "family"` ✅，`has narrative` ✅，`has report` ❌（正确）
+  - `narrative.title`: "小星星的2024成长礼物" ✅
+  - `isMemoryArtifactLike` 校验通过（mode/narrative/keywords/timeline 均合法）✅
+
+### 7.2 API 错误响应
+
+- **缺少 childName**（`childName: ""`）：
+  - HTTP 400，`{"error":"缺少孩子昵称"}` ✅
+- **qaList 少于 2 条**（只有 1 条）：
+  - HTTP 400，`{"error":"至少需要回答 2 个问题"}` ✅
+
+### 7.3 前端 development 验证（代码静态分析）
+
+- 默认生成进入 FamilyArtifactPreview：✅（GrowthReportApp result 分支直接传 `artifact`）
+- dev-only 切换旧 ReportPreview：✅（`isDev && showLegacyReportPreview` 分支，`memoryArtifactToGrowthArtifact` 转换）
+- 旧版返回新版：✅（`setShowLegacyReportPreview(false)`）
+- 旧版返回修改后再次生成默认新版：✅（Phase 12.4A.1 修复的状态重置）
+- 再做一本：✅（清空所有 state 并 `setAppState("input")`）
+- 照片区：✅（通过 `extraSections` 注入 FamilyArtifactPreview）
+- 原始记录折叠区：✅（通过 `extraSections` 注入 FamilyArtifactPreview）
+- `aiReportGenerator` 结构防御：✅（新增 `isMemoryArtifactLike` 校验）
+
+### 7.4 production 验证
+
+- **npm run build**：✅ 通过（Phase 12.4B 和 12.4B.1 改动均已通过构建）
+- **npm run start**：未完整验证（dev server 正在运行，避免端口冲突），但静态分析确认：
+  - `isDev = process.env.NODE_ENV === "development"` → production 为 `false`
+  - dev-only 浮动按钮不渲染 ✅
+  - legacy `ReportPreview` 分支不执行 ✅
+  - 默认渲染 `FamilyArtifactPreview` ✅
+  - `/api/generate-report` 返回 MemoryArtifact ✅

@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.4B 已完成。`/api/generate-report` 现在直接返回 `MemoryArtifact`，`GrowthReportApp` state 已切换。
+> 当前状态：Phase 12.4B.1 已完成。API 返回 MemoryArtifact，回归验收通过，aiReportGenerator 有结构防御。下一步 Phase 12.5 需谨慎（修改 family prompt 输出合约）。
 
 ---
 
@@ -214,6 +214,23 @@ MemoryArtifact（标准格式）
 
 ---
 
+### Phase 12.4B.1：API 迁移后回归验收与小清理（已完成）
+
+**目标**：
+- 验证 API 返回 MemoryArtifact 后，family 前端主路径、dev fallback、错误响应、production 行为无回归
+- 清理 Phase 12.4A/12.4B 遗留旧注释
+- 在进入 Phase 12.5 之前建立明确准入标准
+
+**已完成**：
+- `components/GrowthReportApp.tsx` 旧注释修正（Phase 12.4A → 12.4B）
+- `lib/aiReportGenerator.ts` 新增 `isMemoryArtifactLike` 结构防御（不引入新依赖）
+- API 错误响应验证：缺少 childName → 400 + `{"error":"缺少孩子昵称"}` ✅；qaList < 2 → 400 ✅
+- API 正常响应验证：mode=family，有 narrative，无 report，`isMemoryArtifactLike` 通过 ✅
+- `docs/quality/family-api-memoryartifact-migration.md` 追加 12.4B.1 回归验收章节
+- lint/build 通过
+
+---
+
 ### Phase 12.5：family-memory prompt 改为直接输出 MemoryArtifact
 
 **目标**：`.skills/family-memory/prompts/02_output_contract.md` 改为要求输出 `MemoryArtifact` 格式，不再输出 `GrowthMemoryArtifact`。
@@ -224,7 +241,7 @@ MemoryArtifact（标准格式）
 3. `parseMemoryArtifact` 中 family 的 GrowthMemoryArtifact 识别路径可以保留但不再会被触发
 
 **注意**：
-- 这一步必须在 Phase 12.4B 完成后执行
+- 这一步必须在 Phase 12.4B.1 回归验收通过后执行（不得直接从 12.4B 跳到 12.5）
 - `growth-memory` fallback 可以继续保留作为应急
 
 **验收**：生成结果字段完整，质量不低于迁移前。
@@ -263,6 +280,7 @@ MemoryArtifact（标准格式）
 | Phase 12.3.1 | shadow preview 承接 rawMaterial/photos；backLabel 透传；照片区 / 原始记录区可见；迁移验收说明文字在开发环境显示 |
 | Phase 12.4A | ✅ 已完成：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱可见；dev-only 可切回旧 ReportPreview；/api/generate-report 未修改 |
 | Phase 12.4B | ✅ 已完成：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换；API 格式验证通过 |
+| Phase 12.4B.1 | ✅ 已完成：旧注释清理；aiReportGenerator 结构防御；API 错误响应验证；12.4B.1 回归通过 |
 | Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
 

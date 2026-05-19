@@ -58,7 +58,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [artifact, setArtifact] = useState<MemoryArtifact | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
-  // Phase 12.4A：isDev 控制 dev-only legacy fallback 按钮
+  // Phase 12.4B：isDev 控制 dev-only legacy fallback 按钮
   const isDev = process.env.NODE_ENV === "development";
   // showLegacyReportPreview：仅 dev 环境可切回旧 ReportPreview 做对比，默认 false
   const [showLegacyReportPreview, setShowLegacyReportPreview] = useState(false);
