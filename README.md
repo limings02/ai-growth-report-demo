@@ -333,6 +333,8 @@ docs/
     memory-engine.md               # 架构详解
     next-couple-mode-plan.md       # couple MVP 规划
     current-transition-state.md   # 当前过渡态说明
+  quality/
+    personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
 ```
 
 ---

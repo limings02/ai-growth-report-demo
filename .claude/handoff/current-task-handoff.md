@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
-> 生成时间：2026-05-18  
-> 当前阶段：Phase 10.2.1 已完成  
+> 生成时间：2026-05-19  
+> 当前阶段：Phase 10.3 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -45,15 +45,23 @@
 - `.skills/personal-memory/prompts/01_task.md`：graph node type 补齐 `letter`
 - `.skills/personal-memory/prompts/02_output_contract.md`：允许 type 列表补齐 `"letter"`
 
+### Phase 10.3（personal 真实生成质量评测与 prompt 打磨）
+- 真实调用 `deepseek-chat` 完成 3 组虚构样例评测（丰富/稀疏/低谷转折）
+- 发现关键配置问题：`.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 是推理模型，`content` 字段为空，导致所有 API 调用失败。需将其改为 `deepseek-chat`
+- 发现 prompt 问题：riskOfFabrication 在稀疏材料时评估偏低；信件中出现轻微评价词（「坚韧」）；suggestions 不够具体
+- `.skills/personal-memory/prompts/03_quality_rules.md`：三项小幅修正（见评测文档）
+- 新增 `docs/quality/personal-generation-eval.md`：完整评测报告
+
 ---
 
 ## 3. 还没完成的 TODO
 
+### 紧急（用户配置）
+- [ ] 将 `.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 改为 `deepseek-chat`（推理模型 content 字段为空，导致所有 personal 生成失败）
+
 ### 短期（优先级 1）
-- [ ] **Phase 10.3**：打磨 personal 生成质量
-  - 测试真实生成结果，调整 prompt
-  - 增强 PersonalMemoryGraphPreview（可选，添加 SVG 图谱）
-  - 打磨 PersonalLandingPage 情绪表达
+- [x] ~~Phase 10.3：personal 真实生成质量评测与 prompt 打磨~~（已完成）
+- [ ] **Phase 10.4**：PersonalMemoryGraphPreview 视觉增强（可选 SVG 图谱）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -148,10 +156,14 @@ package.json
 
 ## 7. 下一步建议
 
-### 优先级 1：Phase 10.3 - personal 生成质量打磨
-- 测试真实生成效果，观察 timeline/keywords/longFormText 质量
-- 如质量不足，调整 .skills/personal-memory/prompts/
-- 可选：升级 PersonalMemoryGraphPreview 为 SVG 图谱（参考 RelationshipGalaxyPreview）
+### 立即处理（用户操作）
+将 `.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 改为 `deepseek-chat`。
+`deepseek-v4-pro` 是推理模型，输出在 `reasoning_content` 而非 `content`，导致所有 personal 和其他 mode 的生成调用均返回空响应。
+
+### 优先级 1：Phase 10.4 - PersonalMemoryGraphPreview 视觉增强
+- 参考 RelationshipGalaxyPreview 的 SVG 布局算法
+- 为 personal 的 subject/person/place/emotion/event/keyword 节点配置专属视觉样式
+- 不引入新依赖
 
 ### 优先级 2：family 链路泛化
 - family-memory prompt 改为直接输出 MemoryArtifact
@@ -167,12 +179,16 @@ package.json
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 10.2 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 10.3 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal 三个 mode 均可真实 AI 生成
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
-- personal-memory skill pack 已从占位升级为真实 prompt
+- personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
+- docs/quality/personal-generation-eval.md：3 组虚构样例评测报告
+
+重要配置问题：.env.local 中 DEEPSEEK_MODEL=deepseek-v4-pro 是推理模型，
+导致 content 字段为空响应。需用户将其改为 deepseek-chat。
 
 核心约束（不可修改）：
 - family API / runtime / .skills/family-memory / .skills/couple-memory
