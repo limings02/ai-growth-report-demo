@@ -348,6 +348,7 @@ docs/
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
+    memorial-generation-eval.md   # memorial 真实生成质量与安全边界评测（Phase 11.3）
 ```
 
 ---

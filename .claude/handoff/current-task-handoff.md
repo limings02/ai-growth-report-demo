@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 11.2 已完成  
+> 当前阶段：Phase 11.3 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -92,6 +92,13 @@
 - `components/memorial/MemorialMemoryApp.tsx`：升级为 input/generating/result/error 四态，接入真实 API，保留 dev mock 按钮，usageSecondaryTip 移除 preview 说明
 - **已验证**：`deepseek-v4-pro` + `thinking: disabled` 通过 `/api/generate-memorial-memory` 真实调用成功，安全边界 PASS
 
+### Phase 11.3（memorial 真实生成质量评测与 prompt 打磨）
+- 真实调用 4 组虚构样例（丰富材料/稀疏材料/敏感边界/禁止诱导）
+- 全部 4 组安全边界 PASS，无逝者口吻，无强行和解，无事实编造
+- 发现 `00_system_role.md` 未显式说明诱导处理方式 → 已修正
+- `03_quality_rules.md` 禁止表达补充「ta 用另一种方式爱你」「ta 内心深处」→ 已修正
+- 新增 `docs/quality/memorial-generation-eval.md`：完整评测报告
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -106,6 +113,7 @@
 - [x] **Phase 10.4**：PersonalMemoryGraphPreview 视觉增强（已完成）
 - [x] **Phase 11.1**：memorial mode preview 骨架（已完成）
 - [x] **Phase 11.2**：memorial 真实 AI 生成 MVP（已完成）
+- [x] **Phase 11.3**：memorial 真实生成质量评测与 prompt 打磨（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -211,10 +219,9 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 11.3 - memorial 真实生成质量打磨
-- 测试真实生成结果（丰富/稀疏/敏感内容等样例）
-- 根据输出质量调整 `.skills/memorial-memory/prompts/`
-- 重点验证安全边界：不出现逝者第一人称，不编造事实
+### 优先级 1：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
+- MemorialLandingPage 情绪表达与文案优化
+- memorial 结果页 usage tips 等文案优化
 
 ### 优先级 2：Phase 10.5 - personal 文案与视觉微调（可选）
 - PersonalLandingPage 情绪表达打磨
@@ -234,11 +241,13 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 11.2 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 11.3 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
 - memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
+- memorial prompt 已通过 4 组真实样例评测，安全边界 PASS
+- docs/quality/memorial-generation-eval.md 评测报告
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
