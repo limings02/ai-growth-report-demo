@@ -76,6 +76,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
 
   async function handleGenerate() {
     setGenerateError(null);
+    setShowLegacyReportPreview(false); // 每次重新生成都回到新版默认 UI
     setAppState("generating");
 
     // 提取原始材料（和 File 对象解耦，可序列化/传给 AI）
@@ -127,7 +128,10 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             artifact={artifact}
             rawMaterial={rawMaterial}
             photos={formData.photos}
-            onBack={() => setAppState("input")}
+            onBack={() => {
+              setShowLegacyReportPreview(false); // 返回修改时重置，避免再次生成后仍停在旧版
+              setAppState("input");
+            }}
           />
           {/* Dev-only：返回新版 FamilyArtifactPreview */}
           <div

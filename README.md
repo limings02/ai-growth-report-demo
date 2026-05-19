@@ -101,8 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- family 仍默认走旧 ReportPreview 主链路；FamilyArtifactPreview 是 Phase 12.2 新增的迁移准备组件，尚未替换线上展示（Phase 12.4 完成后替换）
-- **Phase 12.4A 已完成**：family 生产默认结果页已切换为 `FamilyArtifactPreview`（承接照片预览、原始记录折叠区）；`/api/generate-report` 仍返回 `GrowthMemoryArtifact`，前端本地转换
+- **family 生产默认结果页已切换为 `FamilyArtifactPreview`**（Phase 12.4A）：承接封面/时间线/图谱/信件/分享文案/照片预览/原始记录折叠区；`/api/generate-report` 仍返回 `GrowthMemoryArtifact`，前端本地转换为 `MemoryArtifact`；`ReportPreview` 仍保留作为 dev-only legacy fallback
 - 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
 
 ---

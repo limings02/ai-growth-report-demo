@@ -203,10 +203,11 @@ MemoryArtifact（标准格式）
 
 ### Phase 12.4B：family API 返回 MemoryArtifact
 
-**前置验收（进入 12.4B 前必须完成）**：
-- 至少做一次真实生成回归验收：填写表单、完整生成、逐项检查 FamilyArtifactPreview 是否承接旧版体验
-- 确认以下功能无回归：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
-- 用 dev-only legacy fallback 对比新旧版差异，确认无遗漏
+**前置验收（进入 12.4B 前必须完成 Phase 12.4A.2）**：
+- 完成 `docs/quality/family-ui-migration-regression.md` 中的 A/B/C 三组样例验收
+- 用 dev-only legacy fallback 逐项对比新旧版，确认无遗漏：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
+- 所有样例通过后才允许启动 Phase 12.4B
+- **不允许在未完成 Phase 12.4A.2 验收的情况下启动 Phase 12.4B**
 
 **目标**：在 12.4A 稳定后，让 `/api/generate-report` 直接返回 `MemoryArtifact`。
 

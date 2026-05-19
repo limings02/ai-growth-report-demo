@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 12.4A 已完成  
+> 当前阶段：Phase 12.4A.1 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -110,7 +110,7 @@
 - 新增 `components/family/FamilyArtifactPreview.tsx`：`MemoryArtifact` 输入，复用 `MemoryArtifactPreview`，family-specific 文案
 - 新增 `components/family/FamilyMemoryGraphPreview.tsx`：轻量 SVG 成长星图（绿色配色）
 - GrowthReportApp / ReportPreview / /api/generate-report 均未修改
-- family 主链路仍走旧 `GrowthMemoryArtifact` 链路
+- Phase 12.2 时 family 主链路仍走旧 `GrowthMemoryArtifact` 链路（已被 Phase 12.4A 替换）
 
 ### Phase 12.3（dev-only shadow preview）
 - `GrowthReportApp` 新增 `showMemoryArtifactPreview` state + `isDev` 判断
@@ -130,6 +130,11 @@
 - `FamilyArtifactPreview.tsx`：重构为单层 wrapper，照片区+原始记录区通过 `extraSections` 注入（均 print:hidden）
 - `GrowthReportApp.tsx`：result 分支默认渲染 FamilyArtifactPreview（本地转换 GrowthMemoryArtifact）；dev-only「🧪 查看旧版 ReportPreview」按钮；`onBackToEdit` 真正返回输入表单；生产不显示任何 legacy fallback
 - API / aiReportGenerator / .skills/family-memory 均未修改
+
+### Phase 12.4A.1（状态流转修复 + 文档收口 + 验收模板）
+- `GrowthReportApp`：`handleGenerate()` 开头加 `setShowLegacyReportPreview(false)`；legacy onBack 也重置该状态，防止再次生成后卡在旧版
+- README / handoff 中"family 仍默认走旧 ReportPreview"等过时描述已清理
+- 新增 `docs/quality/family-ui-migration-regression.md`：family 新旧 UI 回归验收模板 + Phase 12.4B 准入标准
 
 ---
 
@@ -151,6 +156,7 @@
 - [x] **Phase 12.3**：dev-only shadow preview（已完成，生产不显示）
 - [x] **Phase 12.3.1**：shadow preview 补齐 rawMaterial/photos/backLabel + 迁移计划 12.4A/12.4B 拆分（已完成）
 - [x] **Phase 12.4A**：family 生产默认 UI 切换到 FamilyArtifactPreview（已完成，API 未修改）
+- [x] **Phase 12.4A.1**：状态流转 bug 修复 + 文档收口 + 验收模板（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -238,10 +244,10 @@ package.json
 
 | 过渡态 | 说明 |
 |--------|------|
-| `family-memory` 仍输出 `GrowthMemoryArtifact` | 旧前端未泛化 |
-| `runGrowthMemorySkill` 仍保留 | `/api/generate-report` 调用它 |
-| `ReportPreview` 仍消费 `GrowthMemoryArtifact` | 未泛化 |
-| `LifeGraphPreview` 保留旧名字 | 未改名 |
+| `family-memory` 仍输出 `GrowthMemoryArtifact` | API 未迁移；前端已在 Phase 12.4A 本地转换 |
+| `runGrowthMemorySkill` 仍保留 | `/api/generate-report` 调用它，Phase 12.4B 迁移 |
+| `ReportPreview` 仍存在 | 现为 dev-only legacy fallback，不再是生产默认 UI |
+| `LifeGraphPreview` 保留旧名字 | 未改名，Phase 12.6 清理 |
 | `.skills/growth-memory` 保留 | 作为 family 的 fallback |
 
 ---
@@ -260,11 +266,12 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.4B 前置验收（在改 API 之前）
-- 用 dev-only legacy fallback 对比新旧版，确认功能无遗漏
-- 逐项检查：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
-- 验收通过后再进入 Phase 12.4B（API 返回 MemoryArtifact）
-- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.4B 节
+### 优先级 1：Phase 12.4A.2 - 执行真实生成回归验收
+- 填写 `docs/quality/family-ui-migration-regression.md` 的验收表格
+- 至少完成样例 A（丰富）/ 样例 B（最小）/ 样例 C（长文本）
+- 使用 dev-only legacy fallback 对比新旧版，逐项确认无遗漏
+- 验收通过后才能进入 Phase 12.4B
+- **不允许在未完成 12.4A.2 的情况下启动 Phase 12.4B**
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -288,17 +295,15 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.4A 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.4A.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
 - memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
-- Phase 12.1：family 链路泛化前置审计完成
-- Phase 12.2：FamilyArtifactPreview + FamilyMemoryGraphPreview 已新增
-- Phase 12.3：GrowthReportApp dev-only shadow preview
-- Phase 12.3.1：shadow preview 补齐 rawMaterial/photos/backLabel；迁移计划 12.4A/12.4B 拆分
-- Phase 12.4A：family 生产默认 UI 已切换为 FamilyArtifactPreview（API 未修改，前端本地转换）
-- 下一步：Phase 12.4B 前置验收，确认无功能回归后再改 API
+- Phase 12.1~12.3.1：family 审计 + dev shadow preview 完整建立
+- Phase 12.4A：family 生产默认 UI 已切换为 FamilyArtifactPreview（API 未修改）
+- Phase 12.4A.1：状态流转 bug 修复；过时文档清理；验收模板建立
+- 下一步：Phase 12.4A.2 真实生成回归验收，**不允许直接进入 Phase 12.4B**
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
