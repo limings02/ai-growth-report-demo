@@ -2,30 +2,44 @@
 
 ## 定位
 
-这是 **memorial mode** 的 skill pack（占位，当前不接入真实生成）。
+这是 **memorial mode** 的 skill pack，用于把用户填写的纪念材料整理成一份完整的 MemoryArtifact。
 
-用途：纪念馆 / 逝者回忆 / 家族记忆传承。
+用途：家族纪念册 / 人生故事整理 / 家族记忆传承。
 
 ## 当前状态
 
-**⚠ 未开放**：此 skill pack 当前只是占位，不接入任何真实 AI 生成。
+**Phase 11.2 起可用于真实 memorial mode 生成。**
 
-应用层（app/page.tsx）会在用户点击 memorial mode 时展示 ComingSoonModePage，不会调用此 skill。
+## 安全边界（必须严格遵守）
 
-## 未来规划
+- **不以逝者第一人称说话**
+- **不模拟逝者语气或意愿**
+- **不做 AI 复活**
+- **不写"ta 想对你说""ta 希望你……"**
+- **不编造任何具体事实**（出生年份、职业、地点、家庭成员等）
+- **不做哀伤治疗或心理建议**
 
-- 输入：`MemoryRawMaterial`（mode: "memorial"）
-- 输出：`MemoryArtifact`
+## 输入
 
-未来功能：
-- 为挚爱的人留下一座数字纪念空间
-- 收录他们的故事、声音与精神
-- 生成家族记忆文
-- 代代相传的记忆册
+`MemoryRawMaterial`（mode: "memorial"）
 
-## 内容原则
+关键字段：
+- `subject.primaryName`：被纪念者称呼
+- `subject.timeRange`：时间跨度
+- `participants`：通常包含 deceased 和 narrator
+- `style`：文稿风格（documentary / warm / solemn / family）
+- `qaList`：家人回答的纪念问题
+- `freeNote`：自由记录
+- `domainPayload.deceasedName`：被纪念者称呼
+- `domainPayload.narratorName`：撰写者称呼（可选）
+- `domainPayload.relationship`：关系（如"外孙女""儿子"）
+- `domainPayload.timeRange`：时间跨度
 
-- 文案克制、尊重、不过度煽情
-- 不做廉价的催泪处理
-- 尊重逝去者的尊严和家人的感受
-- 不编造任何具体事实
+## 输出
+
+标准 `MemoryArtifact`（不走 GrowthMemoryArtifact）
+
+包含：
+- narrative：title / keywords / summary / timeline / longFormText / socialPosts
+- graph：title / subtitle / centerDescription / nodes
+- extensions：sourceTrace / qualityReview

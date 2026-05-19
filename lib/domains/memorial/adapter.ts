@@ -1,13 +1,11 @@
 // lib/domains/memorial/adapter.ts
-// memorial mode 的 domain adapter（占位）。
+// memorial mode 的 domain adapter。
 //
 // 定位：
-// - 用于纪念馆、逝者回忆、家族记忆传承
-// - 帮助家人整理关于逝去之人的故事、声音与精神
+// - 用于纪念册整理，帮助家人保存关于挚爱之人的人生故事与记忆
+// - 文案和注释保持克制与尊重
 //
-// 当前阶段：只做类型定义和 adapter 实现，不接入 UI / API，不生成任何纪念内容。
-//
-// 文案和注释保持克制与尊重。
+// Phase 11.2 起接入 memorial 真实 AI 生成。
 
 import type { MemoryRawMaterial } from "@/lib/memory-core/types";
 
@@ -20,7 +18,7 @@ export type MemorialRawInput = {
   relationship?: string;
   /** 时间跨度，描述被纪念者的生命或记忆片段 */
   timeRange: string;
-  style: "documentary" | "warm" | "solemn" | "literary";
+  style: "documentary" | "warm" | "solemn" | "family";
   /** 照片数量（本地预览，不上传） */
   photoCount?: number;
   qaList: { question: string; answer: string }[];

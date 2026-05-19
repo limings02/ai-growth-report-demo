@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 11.1 已完成  
+> 当前阶段：Phase 11.2 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -14,7 +14,7 @@
 - family：available，真实 AI 生成（GrowthMemoryArtifact 兼容链路）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
-- memorial：preview，前端可体验 mock 结果，不调用 AI（Phase 11.1 已完成）
+- memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
 
 ---
 
@@ -84,6 +84,14 @@
 - `components/memorial/MemorialMemoryApp.tsx`：input/result 状态机，复用 MemoryArtifactPreview，不调用 AI
 - `app/page.tsx`：新增 memorial-landing / memorial-app 路由，不再走 coming-soon
 
+### Phase 11.2（memorial 真实 AI 生成 MVP）
+- `lib/memory-core/modes.ts`：memorial preview → available
+- `lib/domains/memorial/adapter.ts`：style 类型统一（family 替换 literary），注释更新
+- `app/api/generate-memorial-memory/route.ts`：新增 memorial 专用 API（字段校验/null-safe/长度兜底）
+- `.skills/memorial-memory/`：全部 4 个 prompt 从占位升级为真实 skill pack（严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗）
+- `components/memorial/MemorialMemoryApp.tsx`：升级为 input/generating/result/error 四态，接入真实 API，保留 dev mock 按钮，usageSecondaryTip 移除 preview 说明
+- **已验证**：`deepseek-v4-pro` + `thinking: disabled` 通过 `/api/generate-memorial-memory` 真实调用成功，安全边界 PASS
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -97,6 +105,7 @@
 - [x] ~~Phase 10.3：personal 真实生成质量评测与 prompt 打磨~~（已完成）
 - [x] **Phase 10.4**：PersonalMemoryGraphPreview 视觉增强（已完成）
 - [x] **Phase 11.1**：memorial mode preview 骨架（已完成）
+- [x] **Phase 11.2**：memorial 真实 AI 生成 MVP（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -202,10 +211,10 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 11.2 - memorial 真实 AI 生成
-- 完善 `.skills/memorial-memory/prompts/`（01_task / 02_output_contract / 03_quality_rules）
-- 新增 `app/api/generate-memorial-memory/route.ts`（参考 generate-personal-memory）
-- `MemorialMemoryApp` 增加 generating / error 状态，接入真实 API
+### 优先级 1：Phase 11.3 - memorial 真实生成质量打磨
+- 测试真实生成结果（丰富/稀疏/敏感内容等样例）
+- 根据输出质量调整 `.skills/memorial-memory/prompts/`
+- 重点验证安全边界：不出现逝者第一人称，不编造事实
 
 ### 优先级 2：Phase 10.5 - personal 文案与视觉微调（可选）
 - PersonalLandingPage 情绪表达打磨
@@ -225,11 +234,11 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 11.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 11.2 已完成，工作区干净，lint + build 零错误。
 
 已完成：
-- family / couple / personal 三个 mode 均可真实 AI 生成
-- memorial mode preview 骨架（Phase 11.1，不调用 AI，mock 结果）
+- family / couple / personal / memorial 四个 mode 均可真实 AI 生成
+- memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

@@ -82,10 +82,10 @@ export const MEMORY_MODES: MemoryModeConfig[] = [
     id: "memorial",
     title: "纪念册",
     subtitle: "人生故事 · 家族记忆传承",
-    description: "把关于一个人的记忆材料——故事、照片数量、问答、自由文字——整理成一份可保存的家族纪念册，留给后辈也留给自己。",
+    description: "填写被纪念者称呼、关系、时间跨度、回忆问答和自由记录，AI 帮你整理人生片段时间线、关键词、纪念文和记忆图谱。",
     emoji: "🕯️",
-    status: "preview",
-    primaryUseCase: "把对家人或挚友的回忆，整理成一份克制、有温度的人生故事",
+    status: "available",
+    primaryUseCase: "把对家人或挚友的回忆，整理成一份克制、有温度、可保存的家族纪念册",
   },
 ];
 

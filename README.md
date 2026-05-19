@@ -8,9 +8,8 @@
 - `family mode`：家庭亲子记忆 / 孩子成长礼物（第一个上线的场景）
 - `couple mode`：恋爱纪念册 MVP，AI 生成恋爱时间线、关系关键词、周年信和 Relationship Galaxy 星图
 - `personal mode`：个人人生 Wiki / 自我回忆录 MVP，AI 生成人生阶段时间线、关键词、写给未来自己的信和个人记忆图谱
+- `memorial mode`：家族纪念册 MVP，AI 整理人生片段时间线、关键词、纪念文和记忆图谱（不模拟逝者说话，只整理家人提供的材料）
 
-**当前预览模式：**
-- `memorial mode`：纪念册 / 人生故事整理 / 家族记忆传承（preview 骨架，不调用 AI，展示 mock 结果）
 
 ---
 
@@ -60,7 +59,7 @@ npm run dev
 - `family mode` 可用，点击进入孩子成长 landing
 - `couple mode` 可用，点击进入恋爱纪念册流程（介绍页 → 输入页 → 生成结果）
 - `personal mode` available，点击进入 PersonalLandingPage → PersonalMemoryApp → AI 生成结果页
-- `memorial mode` preview，点击进入 MemorialLandingPage → MemorialMemoryApp → mock 结果页
+- `memorial mode` available，点击进入 MemorialLandingPage → MemorialMemoryApp → AI 生成结果页
 
 #### Family mode
 - 孩子信息表单（昵称、年龄、总结年份、父母称呼、文案风格）
@@ -98,8 +97,9 @@ npm run dev
 - 开发环境 mock 预览不会调用 DeepSeek，也不会发送当前表单内容
 - personal mode 不上传照片，只处理用户主动填写的文字内容
 - 开发环境下 personal 输入页提供 mock 结果预览按钮，方便不调用 DeepSeek 调试结果页；生产环境不显示
-- memorial mode 当前只做 preview，不调用 AI，不发送填写内容；展示 mock 结果用于体验展示层
-- 不使用「AI 复活」「与逝者对话」等表达，定位为人生故事整理与家族记忆传承
+- memorial mode 不上传照片，只处理用户主动填写的文字内容
+- 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
+- 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 
 ---
@@ -164,7 +164,7 @@ npm run dev
 | `family` | available |
 | `couple` | available |
 | `personal` | available |
-| `memorial` | preview（Phase 11.1 骨架，不调用 AI） |
+| `memorial` | available |
 
 ### 输入层：MemoryRawMaterial
 
@@ -254,6 +254,8 @@ app/
       route.ts                     # couple 生成 API（返回 MemoryArtifact）
     generate-personal-memory/
       route.ts                     # personal 生成 API（返回 MemoryArtifact）
+    generate-memorial-memory/
+      route.ts                     # memorial 生成 API（返回 MemoryArtifact）
 
 components/
   MemoryModeHome.tsx               # 全局首页（记忆主题选择）
@@ -336,7 +338,7 @@ lib/
   growth-memory/                   # 旧 skill，保留为 fallback
   couple-memory/                   # couple mode 真实 skill pack（Phase 8.2）
   personal-memory/                 # 当前可用（Phase 10.2）
-  memorial-memory/                 # 占位
+  memorial-memory/                 # 当前可用（Phase 11.2）
 
 docs/
   architecture/
