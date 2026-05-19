@@ -119,13 +119,17 @@ cp .env.local.example .env.local
 ```
 DEEPSEEK_API_KEY=你的 DeepSeek API Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MODEL=deepseek-v4-pro
+DEEPSEEK_THINKING=disabled
 DEEPSEEK_JSON_MODE=true
+DEEPSEEK_MAX_TOKENS=8192
 ```
 
 **注意：**
 - `.env.local` 不会被提交到 Git，请勿分享给他人
 - 当前版本**只传递文本内容**给 DeepSeek，照片继续只在本地预览
+- `deepseek-v4-pro` 是 thinking 模型，设置 `DEEPSEEK_THINKING=disabled` 可确保最终 JSON 回到 `message.content` 字段，适合本项目的结构化 JSON 生成任务
+- 项目不会读取或展示 `reasoning_content`（推理过程）
 - 如果遇到 `response_format` 相关报错，将 `DEEPSEEK_JSON_MODE` 改为 `false`
 
 ### 第二步：确认 AI 生成器已启用
@@ -335,6 +339,7 @@ docs/
     current-transition-state.md   # 当前过渡态说明
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
+    deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
 ```
 
 ---

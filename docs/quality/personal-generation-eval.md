@@ -17,15 +17,20 @@ Phase 10.2 已接入真实 AI 生成。本次评测目标：
 
 ---
 
-## 2. 已知配置问题（重要）
+## 2. 评测时发现的 runtime 兼容问题（已在 Phase 10.3.1 修复）
 
-**问题**：`.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 是推理模型（reasoning model），其输出在 `reasoning_content` 字段而非 `content` 字段。`callDeepSeek` 只读取 `choices[0].message.content`，因此对这个模型始终得到空响应，触发兜底错误。
+**Phase 10.3 评测时发现**：`deepseek-v4-pro` 在 thinking mode 下，最终内容在 `reasoning_content` 字段而非 `content`，导致 `callDeepSeek` 读取到空字符串并抛出错误。
 
-**表现**：通过 `/api/generate-personal-memory` 调用时，所有请求均返回 500 错误或 fallback artifact（`voice: "fallback"`）。
+**表现**：通过 `/api/generate-personal-memory` 调用时，返回 500 或 fallback artifact（`voice: "fallback"`）。
 
-**本次评测解决方法**：直接使用 `deepseek-chat` 模型调用 prompt，绕过 dev server，验证 prompt 本身的质量。
+**本次评测解决方法**：直接使用 `deepseek-chat` 绕过 dev server，验证 prompt 本身的质量（prompt 质量本身已验证通过，见下方各样例）。
 
-**修复建议**：在 `.env.local` 中将 `DEEPSEEK_MODEL` 改为 `deepseek-chat`（或其他非推理模型）。这是配置问题，不是代码 bug。
+**Phase 10.3.1 修复方式**（不要求用户改模型）：
+- `lib/server/deepseekClient.ts` 新增 `thinking` 配置支持
+- 对 `deepseek-v4-pro` / `deepseek-v4-flash` 默认注入 `"thinking": { "type": "disabled" }`
+- 这样最终 JSON 回到 `message.content` 字段，无需更换模型
+- 配置方式：在 `.env.local` 中加 `DEEPSEEK_THINKING=disabled`（已是默认值）
+- 详见 `docs/quality/deepseek-v4-pro-compat.md`
 
 ---
 
@@ -188,17 +193,17 @@ RISK: low | TONE: 温暖、内省、安静
 
 ### 整体评价
 
-`deepseek-chat` + personal prompt 组合的生成质量在**材料丰富时表现优秀**：
+personal prompt 的生成质量在**材料丰富时表现优秀**（以 `deepseek-chat` 验证）：
 
 - 事实忠实度高（三组均无编造）
 - keywords 具体（样例1/3 均来自原始材料）
 - 鸡汤化程度低（主要问题是信件中的评价词，已修正 prompt）
 
-**主要问题**：
+**主要问题及状态**：
 
 | 问题 | 严重度 | 状态 |
 |------|--------|------|
-| `deepseek-v4-pro` 是推理模型，空响应 | 🔴 高 | 配置问题，需用户修改 .env.local |
+| `deepseek-v4-pro` thinking mode 导致 content 为空 | 🔴 高 | **Phase 10.3.1 已修复**（默认 thinking disabled） |
 | 稀疏材料时 riskOfFabrication 偏低 | 🟡 中 | 已修正 prompt |
 | 信件中轻微评价词（「坚韧」） | 🟡 中 | 已修正 prompt |
 | suggestionsForBetterInput 不够具体 | 🟡 中 | 已修正 prompt |
@@ -206,6 +211,5 @@ RISK: low | TONE: 温暖、内省、安静
 
 ### 下一步建议
 
-1. **立即处理**：用户需将 `.env.local` 中 `DEEPSEEK_MODEL` 改为 `deepseek-chat`
+1. **Phase 10.3.1 已修复 v4-pro 兼容**：用户无需更换模型，在 `.env.local` 中加 `DEEPSEEK_THINKING=disabled` 即可（已是新的默认推荐值）
 2. **Phase 10.4**：考虑升级 PersonalMemoryGraphPreview 为 SVG 星图
-3. **可选**：在 `callDeepSeek` 中增加对 `reasoning_content` 的 fallback 读取，提升对推理模型的兼容性（但这属于 runtime 改动，需要单独阶段）

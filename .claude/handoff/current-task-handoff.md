@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 10.3 已完成  
+> 当前阶段：Phase 10.3.1 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -47,17 +47,26 @@
 
 ### Phase 10.3（personal 真实生成质量评测与 prompt 打磨）
 - 真实调用 `deepseek-chat` 完成 3 组虚构样例评测（丰富/稀疏/低谷转折）
-- 发现关键配置问题：`.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 是推理模型，`content` 字段为空，导致所有 API 调用失败。需将其改为 `deepseek-chat`
-- 发现 prompt 问题：riskOfFabrication 在稀疏材料时评估偏低；信件中出现轻微评价词（「坚韧」）；suggestions 不够具体
-- `.skills/personal-memory/prompts/03_quality_rules.md`：三项小幅修正（见评测文档）
+- 发现 `deepseek-v4-pro` thinking mode 导致 content 为空（Phase 10.3.1 已修复）
+- `.skills/personal-memory/prompts/03_quality_rules.md`：三项小幅修正
 - 新增 `docs/quality/personal-generation-eval.md`：完整评测报告
+
+### Phase 10.3.1（DeepSeek V4 Pro 兼容修复）
+- `lib/server/deepseekClient.ts`：扩展响应类型，支持 `reasoning_content`；新增 `DEEPSEEK_THINKING` 环境变量；v4-pro/v4-flash 默认 thinking disabled；max_tokens 改为 DEEPSEEK_MAX_TOKENS 可配置；content 为空时给出更准确的错误诊断
+- `.env.local.example`：推荐 `deepseek-v4-pro` + `DEEPSEEK_THINKING=disabled` 配置
+- `README.md`：更新 DeepSeek 配置说明，推荐 v4-pro
+- `docs/quality/personal-generation-eval.md`：修正对 v4-pro 的定性（不再建议改模型）
+- `docs/quality/deepseek-v4-pro-compat.md`：新增兼容说明文档
+- **已验证**：`deepseek-v4-pro` + `thinking: disabled` 通过 `/api/generate-personal-memory` 真实调用成功生成完整 MemoryArtifact
 
 ---
 
 ## 3. 还没完成的 TODO
 
-### 紧急（用户配置）
-- [ ] 将 `.env.local` 中 `DEEPSEEK_MODEL=deepseek-v4-pro` 改为 `deepseek-chat`（推理模型 content 字段为空，导致所有 personal 生成失败）
+### 紧急（用户配置）- 已通过 Phase 10.3.1 修复
+- [x] ~~将 DEEPSEEK_MODEL 改为 deepseek-chat~~（不需要了，代码已适配）
+- [ ] 在 `.env.local` 中加 `DEEPSEEK_THINKING=disabled`（如果尚未添加）
+- [ ] 在 `.env.local` 中加 `DEEPSEEK_MAX_TOKENS=8192`（可选，提升长 JSON 输出稳定性）
 
 ### 短期（优先级 1）
 - [x] ~~Phase 10.3：personal 真实生成质量评测与 prompt 打磨~~（已完成）
@@ -179,16 +188,20 @@ package.json
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 10.3 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 10.3.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal 三个 mode 均可真实 AI 生成
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
-- docs/quality/personal-generation-eval.md：3 组虚构样例评测报告
+- Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
+- docs/quality/：personal 评测报告 + v4-pro 兼容说明
 
-重要配置问题：.env.local 中 DEEPSEEK_MODEL=deepseek-v4-pro 是推理模型，
-导致 content 字段为空响应。需用户将其改为 deepseek-chat。
+推荐 .env.local 配置：
+  DEEPSEEK_MODEL=deepseek-v4-pro
+  DEEPSEEK_THINKING=disabled
+  DEEPSEEK_JSON_MODE=true
+  DEEPSEEK_MAX_TOKENS=8192
 
 核心约束（不可修改）：
 - family API / runtime / .skills/family-memory / .skills/couple-memory
