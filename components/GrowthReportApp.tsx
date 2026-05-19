@@ -14,6 +14,12 @@ import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
 import ReportPreview from "./ReportPreview";
+// ── Phase 12.3 dev-only shadow preview ────────────────────────────
+// 仅在 development 环境下可用，生产环境完全不显示。
+// 使用 growthArtifactToMemoryArtifact 把当前结果本地转换为 MemoryArtifact，
+// 再用 FamilyArtifactPreview 预览，不重新调用 AI，不改变主链路。
+import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
+import { growthArtifactToMemoryArtifact } from "@/lib/domains/family/artifactAdapter";
 
 function makeDefaultQuestions(): InterviewQuestion[] {
   const labels = [
@@ -52,6 +58,10 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [rawMaterial, setRawMaterial] = useState<RawMaterial | null>(null);
   const [artifact, setArtifact] = useState<GrowthMemoryArtifact | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+
+  // Phase 12.3 dev-only shadow preview：仅 development 环境可用
+  const isDev = process.env.NODE_ENV === "development";
+  const [showMemoryArtifactPreview, setShowMemoryArtifactPreview] = useState(false);
 
   // 始终持有最新 photos 引用，供卸载清理使用
   const photosRef = useRef(formData.photos);
@@ -105,13 +115,53 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   }
 
   if (appState === "result" && artifact && rawMaterial) {
+    // Phase 12.3 dev-only shadow preview：本地转换并预览 FamilyArtifactPreview
+    if (isDev && showMemoryArtifactPreview) {
+      const memoryArtifact = growthArtifactToMemoryArtifact(artifact);
+      return (
+        <FamilyArtifactPreview
+          artifact={memoryArtifact}
+          onBackToEdit={() => setShowMemoryArtifactPreview(false)}
+          onCreateAnother={() => {
+            setShowMemoryArtifactPreview(false);
+            setArtifact(null);
+            setRawMaterial(null);
+            setFormData(defaultFormData);
+            setAppState("input");
+          }}
+          onBackToHome={onBackToLanding}
+        />
+      );
+    }
+
     return (
-      <ReportPreview
-        artifact={artifact}
-        rawMaterial={rawMaterial}
-        photos={formData.photos}
-        onBack={() => setAppState("input")}
-      />
+      <>
+        <ReportPreview
+          artifact={artifact}
+          rawMaterial={rawMaterial}
+          photos={formData.photos}
+          onBack={() => setAppState("input")}
+        />
+        {/* Phase 12.3 dev-only 入口：生产环境不渲染 */}
+        {isDev && (
+          <div
+            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1"
+            style={{ maxWidth: "260px" }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowMemoryArtifactPreview(true)}
+              className="text-xs px-3 py-1.5 rounded-full cursor-pointer shadow-md transition-all hover:shadow-lg"
+              style={{ background: "#e0f2fe", color: "#0369a1", border: "1px dashed #7dd3fc" }}
+            >
+              🔬 开发预览：查看 MemoryArtifact 版成长册
+            </button>
+            <p className="text-xs text-right" style={{ color: "#9ca3af", fontSize: "10px" }}>
+              本地转换，不重新调用 AI，不改变主链路
+            </p>
+          </div>
+        )}
+      </>
     );
   }
 

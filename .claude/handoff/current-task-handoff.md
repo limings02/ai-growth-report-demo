@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 12.2 已完成  
+> 当前阶段：Phase 12.3 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -112,6 +112,13 @@
 - GrowthReportApp / ReportPreview / /api/generate-report 均未修改
 - family 主链路仍走旧 `GrowthMemoryArtifact` 链路
 
+### Phase 12.3（dev-only shadow preview）
+- `GrowthReportApp` 新增 `showMemoryArtifactPreview` state + `isDev` 判断
+- 开发环境结果页右下角出现「🔬 开发预览：查看 MemoryArtifact 版成长册」浮动按钮
+- 点击后用 `growthArtifactToMemoryArtifact` 本地转换，渲染 `FamilyArtifactPreview`
+- 生产环境 `isDev = false`，浮动按钮和 shadow preview 分支均不渲染
+- `/api/generate-report`、`ReportPreview` 默认路径均未修改
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -129,6 +136,7 @@
 - [x] **Phase 11.3**：memorial 真实生成质量评测与 prompt 打磨（已完成）
 - [x] **Phase 12.1**：family MemoryArtifact 泛化迁移前置审计（已完成，仅文档）
 - [x] **Phase 12.2**：新增 FamilyArtifactPreview wrapper（已完成，未接主链路）
+- [x] **Phase 12.3**：dev-only shadow preview（已完成，生产不显示）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -161,10 +169,13 @@ components/
     PersonalLandingPage.tsx
     PersonalMemoryApp.tsx                    # 真实 API 状态机【Phase 10.2 升级】
     PersonalMemoryGraphPreview.tsx
-  family/                                    # 【禁止修改】
-  GrowthReportApp.tsx                        # 【禁止修改】
-  ReportPreview.tsx                          # 【禁止修改】
-  LifeGraphPreview.tsx                       # 【禁止修改】
+  family/
+    FamilyLandingPage.tsx                    # 【禁止修改】
+    FamilyArtifactPreview.tsx                # 迁移准备组件（Phase 12.2 新增，可按 phase 修改）
+    FamilyMemoryGraphPreview.tsx             # 迁移准备组件（Phase 12.2 新增，可按 phase 修改）
+  GrowthReportApp.tsx                        # Phase 12.3 已加 dev-only shadow preview；生产主链路禁止替换
+  ReportPreview.tsx                          # 【禁止修改，生产主链路】
+  LifeGraphPreview.tsx                       # 【禁止修改，生产主链路】
 
 lib/
   memory-core/
@@ -195,10 +206,11 @@ lib/memory-core/runMemorySkill.ts
 lib/memory-core/buildMemoryPrompt.ts
 lib/memory-core/parseMemoryArtifact.ts
 lib/skill-runtime/runGrowthMemorySkill.ts
-components/GrowthReportApp.tsx
 components/ReportPreview.tsx
 components/LifeGraphPreview.tsx
-components/family/**
+components/family/FamilyLandingPage.tsx
+# 注意：GrowthReportApp.tsx Phase 12.3 已加 dev-only shadow preview，生产主链路逻辑不可替换
+# 注意：components/family/FamilyArtifactPreview.tsx 和 FamilyMemoryGraphPreview.tsx 是迁移准备组件，可按 phase 修改
 .skills/family-memory/**
 .skills/growth-memory/**
 .skills/couple-memory/**
@@ -234,10 +246,10 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.3 - dev-only shadow compare（不替换主链路）
-- 在 `GrowthReportApp` 加 dev-only 切换按钮，用 `growthArtifactToMemoryArtifact` 将当前生成结果转换为 `MemoryArtifact`，渲染 `FamilyArtifactPreview` 预览
-- 仍不替换默认 UI，让开发者对比新旧展示
-- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.3 节
+### 优先级 1：Phase 12.4 - family UI 正式迁移（不直接改 API）
+- 评估 shadow preview 效果后，`GrowthReportApp` 将默认展示 `FamilyArtifactPreview`
+- 需处理 rawMaterial 原始记录标签页 + 照片预览（ReportPreview 特有功能，不能丢失）
+- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.4 节
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -261,14 +273,15 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.2 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.3 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
 - memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
 - Phase 12.1：family 链路泛化前置审计完成
 - Phase 12.2：FamilyArtifactPreview + FamilyMemoryGraphPreview 已新增（未接主链路）
-- 下一步：Phase 12.3 dev-only shadow compare（不替换主链路）
+- Phase 12.3：GrowthReportApp dev-only shadow preview（生产不显示，不改主链路）
+- 下一步：Phase 12.4 评估 family UI 正式迁移
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

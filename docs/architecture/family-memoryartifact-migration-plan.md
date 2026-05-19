@@ -160,16 +160,18 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.3：在 /api/generate-report 增加 shadow 对比路径（可选）
+### Phase 12.3：dev-only shadow preview（已完成）
 
-**目标**：在 server 端同时生成 `MemoryArtifact`，与 `GrowthMemoryArtifact` 做字段对比，不影响 UI 返回值。
+**目标**：开发环境下，GrowthReportApp 结果页增加 dev-only 切换按钮，本地转换并用 `FamilyArtifactPreview` 预览；生产环境不显示。
 
-**操作**：
-- 在 `runGrowthMemorySkill` 或 API 中，额外记录 `memoryArtifact` 到 server log
-- 比较关键字段是否等价（title/keywords/summary 等）
-- **前端仍接收 GrowthMemoryArtifact**
+**已完成（Phase 12.3）**：
+- `GrowthReportApp` 新增 `showMemoryArtifactPreview` state 和 `isDev` 判断
+- 当 `isDev && showMemoryArtifactPreview` 时，用 `growthArtifactToMemoryArtifact` 本地转换当前结果并渲染 `FamilyArtifactPreview`
+- 旧 `ReportPreview` 右下角（`fixed bottom-4 right-4`）出现 dev-only 浮动按钮：「🔬 开发预览：查看 MemoryArtifact 版成长册」
+- 生产 build 中 `isDev = false`，浮动按钮和 shadow preview 分支均不渲染
+- `/api/generate-report` 未修改，默认 `ReportPreview` 渲染逻辑未修改
 
-**验收**：server log 可见对比结果，UI 体验无变化。
+**验收**：lint/build 通过，dev 下可见 dev-only 按钮，生产 build 不渲染。
 
 ---
 
