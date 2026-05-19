@@ -121,6 +121,9 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
       return (
         <FamilyArtifactPreview
           artifact={memoryArtifact}
+          rawMaterial={rawMaterial}
+          photos={formData.photos}
+          backLabel="← 返回旧版预览"
           onBackToEdit={() => setShowMemoryArtifactPreview(false)}
           onCreateAnother={() => {
             setShowMemoryArtifactPreview(false);
@@ -157,7 +160,8 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
               🔬 开发预览：查看 MemoryArtifact 版成长册
             </button>
             <p className="text-xs text-right" style={{ color: "#9ca3af", fontSize: "10px" }}>
-              本地转换，不重新调用 AI，不改变主链路
+              本地转换，不重新调用 AI，不改变主链路。
+              用于迁移验收：检查新版是否承接照片、原始记录、图谱和打印体验。
             </p>
           </div>
         )}

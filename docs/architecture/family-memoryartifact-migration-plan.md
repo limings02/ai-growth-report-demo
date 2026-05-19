@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：审计阶段，不是迁移阶段。本文档只用于规划，不代表已修改任何功能代码。
+> 当前状态：Phase 12.3.1 dev-only shadow preview 补齐已完成，仍处于低风险迁移验证阶段，生产主链路尚未替换。
 
 ---
 
@@ -175,19 +175,37 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.4：family 前端迁移到 MemoryArtifactPreview
+### Phase 12.4A：family 前端 UI 默认切换，不改 API
 
-**目标**：GrowthReportApp 改为接收 `MemoryArtifact`，使用 `FamilyArtifactPreview`。
+**目标**：
+- `/api/generate-report` 仍返回 `GrowthMemoryArtifact`
+- `GrowthReportApp` 仍接收 `GrowthMemoryArtifact`
+- 但在 result 阶段默认将 `GrowthMemoryArtifact` 本地转换成 `MemoryArtifact`，然后默认渲染 `FamilyArtifactPreview`
+- 保留 dev-only legacy fallback（可一键切回旧 ReportPreview 查看）
+- 不修改 skill prompt，不修改 server API 返回格式
+
+**禁止（12.4A 阶段）**：
+- **不修改 `/api/generate-report` 返回结构**
+- **不修改 `.skills/family-memory` 输出合约**
+- 不在未承接 rawMaterial/photos 前删除 ReportPreview
+
+**验收**：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱/打印均可用；可一键切回旧 ReportPreview；体验不回归。
+
+---
+
+### Phase 12.4B：family API 返回 MemoryArtifact
+
+**目标**：在 12.4A 稳定后，让 `/api/generate-report` 直接返回 `MemoryArtifact`。
 
 **操作**：
-1. `GrowthReportApp` 修改 state 类型为 `MemoryArtifact`
-2. `aiReportGenerator` 修改返回类型为 `MemoryArtifact`
-3. `/api/generate-report` 改为返回 `MemoryArtifact`（这一步影响最大）
-4. 保留 `ReportPreview` 为可回滚路径
+1. `aiReportGenerator` 修改返回类型为 `MemoryArtifact`
+2. `GrowthReportApp` state 类型切换到 `MemoryArtifact`，去掉本地转换
+3. `/api/generate-report` 改为返回 `MemoryArtifact`（这步影响最大，需充分测试）
+4. 保留旧格式转换兜底作为回滚路径
 
-**注意**：`ReportPreview` 还包含 rawMaterial 原始记录标签页和照片预览，这些需要在 `FamilyArtifactPreview` 或 `MemoryArtifactPreview` 中单独考虑如何承接。
+**注意**：这一步必须在 12.4A 稳定运行后执行。
 
-**验收**：family 生成功能完整可用，不回归任何体验。
+**验收**：family 生成功能完整，API 返回字段结构正确，质量不低于迁移前。
 
 ---
 
@@ -201,7 +219,7 @@ MemoryArtifact（标准格式）
 3. `parseMemoryArtifact` 中 family 的 GrowthMemoryArtifact 识别路径可以保留但不再会被触发
 
 **注意**：
-- 这一步必须在 Phase 12.4 完成后执行
+- 这一步必须在 Phase 12.4B 完成后执行
 - `growth-memory` fallback 可以继续保留作为应急
 
 **验收**：生成结果字段完整，质量不低于迁移前。
@@ -235,9 +253,11 @@ MemoryArtifact（标准格式）
 
 | 阶段 | 验收标准 |
 |------|---------|
-| Phase 12.2 | FamilyArtifactPreview 组件存在，lint/build 通过，family 现有功能不变 |
-| Phase 12.3 | Server log 有 MemoryArtifact 对比输出，UI 无变化 |
-| Phase 12.4 | family 生成功能完整（报告/星图/打印/原始记录标签），体验不回归 |
+| Phase 12.2 | FamilyArtifactPreview / FamilyMemoryGraphPreview 组件存在，lint/build 通过，family 现有功能不变 |
+| Phase 12.3 | development 环境可通过 shadow preview 查看 MemoryArtifact 版 family 结果页；production 不显示入口；默认 ReportPreview 主链路不变 |
+| Phase 12.3.1 | shadow preview 承接 rawMaterial/photos；backLabel 透传；照片区 / 原始记录区可见；迁移验收说明文字在开发环境显示 |
+| Phase 12.4A | family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱/打印均可用；可回退旧 ReportPreview；/api/generate-report 未修改 |
+| Phase 12.4B | /api/generate-report 返回 MemoryArtifact；GrowthReportApp state 切换；体验不回归 |
 | Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
 
@@ -246,18 +266,22 @@ MemoryArtifact（标准格式）
 ## 10. 禁止事项
 
 - 不要一次性替换整个 family 链路
-- 不要在 Phase 12.4 完成前修改 `.skills/family-memory/`
+- 不要在 Phase 12.4A 中修改 `/api/generate-report` 返回结构
+- 不要在 Phase 12.4A 中修改 `.skills/family-memory` 输出合约
+- 不要在 Phase 12.4B 完成前修改 `.skills/family-memory/`
 - 不要删除 `.skills/growth-memory/` 作为 fallback，直到 Phase 12.5 验证稳定后
+- 不要在未承接 rawMaterial/photos 前删除 ReportPreview
 - 不要忘记 `ReportPreview` 的"原始记录"标签页和照片预览——这些是 family mode 特有的功能，不能在迁移中丢失
 - 不要在没有回滚路径的情况下修改 `/api/generate-report`
+- 不要把 photos 传给 AI
 
 ---
 
 ## 附录：关键文件路径速查
 
 ```
-app/api/generate-report/route.ts              # family API（禁止在 Phase 12.4 之前修改）
-lib/skill-runtime/runGrowthMemorySkill.ts      # wrapper（Phase 12.4 之后可移除）
+app/api/generate-report/route.ts              # family API（禁止在 Phase 12.4B 之前修改）
+lib/skill-runtime/runGrowthMemorySkill.ts      # wrapper（Phase 12.4B 之后可移除）
 lib/skill-runtime/types.ts                    # GrowthMemoryArtifact 类型定义
 lib/skill-runtime/parseGrowthMemoryArtifact.ts # 旧格式解析
 lib/domains/family/adapter.ts                 # RawMaterial → MemoryRawMaterial

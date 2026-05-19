@@ -57,6 +57,10 @@ type Props = {
   // graph 渲染插槽（mode-specific 图谱组件由 caller 传入）
   graphSlot?: React.ReactNode;
 
+  // 顶部/底部"返回"按钮文案（默认"← 返回修改"）
+  // dev-only shadow preview 可传 "← 返回旧版预览"
+  backLabel?: string;
+
   className?: string;
 };
 
@@ -78,6 +82,7 @@ export default function MemoryArtifactPreview({
   usagePrimaryTip,
   usageSecondaryTip,
   graphSlot,
+  backLabel = "← 返回修改",
   className = "",
 }: Props) {
   const { narrative, extensions } = artifact;
@@ -106,7 +111,7 @@ export default function MemoryArtifactPreview({
             className="text-sm cursor-pointer hover:underline"
             style={{ color: "#9d7b72" }}
           >
-            ← 返回修改
+            {backLabel}
           </button>
           {onBackToHome && (
             <button
@@ -189,7 +194,7 @@ export default function MemoryArtifactPreview({
             className="flex-1 py-3 rounded-full text-sm font-medium cursor-pointer transition-all hover:shadow-md"
             style={{ background: "#fde8dc", color: "#c0674a" }}
           >
-            ← 返回修改
+            {backLabel}
           </button>
           <button
             onClick={onCreateAnother}

@@ -102,7 +102,8 @@ npm run dev
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 - family 仍默认走旧 ReportPreview 主链路；FamilyArtifactPreview 是 Phase 12.2 新增的迁移准备组件，尚未替换线上展示（Phase 12.4 完成后替换）
-- 开发环境下 family 结果页右下角可通过 dev-only 浮动按钮查看 MemoryArtifact 版成长册预览（Phase 12.3）；生产环境仍默认使用旧 ReportPreview
+- 开发环境下 family 结果页右下角可通过 dev-only 浮动按钮查看 MemoryArtifact 版成长册预览（Phase 12.3），新版预览承接照片和原始记录（Phase 12.3.1）；生产环境仍默认使用旧 ReportPreview
+- 下一阶段（Phase 12.4A）：family 前端 UI 将默认切换到 FamilyArtifactPreview，/api/generate-report 暂不修改
 
 ---
 
