@@ -147,15 +147,14 @@ MemoryArtifact（标准格式）
 - **旧 UI 在下一阶段验证稳定前保持可用**
 - **不一步到位**
 
-### Phase 12.2：创建 FamilyArtifactPreview，不替换主链路
+### Phase 12.2：创建 FamilyArtifactPreview，不替换主链路（已完成）
 
 **目标**：新增一个能消费 `MemoryArtifact` 的 family 结果页，复用 `MemoryArtifactPreview`，但不接入主链路。
 
-**操作**：
-- 新增 `components/family/FamilyArtifactPreview.tsx`
-- 输入：`MemoryArtifact`（不是 `GrowthMemoryArtifact`）
-- 传入 family-specific 文案配置 + 临时 graphSlot（可用简单节点列表）
-- **GrowthReportApp 和 /api/generate-report 不变**
+**已完成（Phase 12.2）**：
+- 新增 `components/family/FamilyArtifactPreview.tsx`：`MemoryArtifact` 输入，复用 `MemoryArtifactPreview`，传入 family-specific 文案
+- 新增 `components/family/FamilyMemoryGraphPreview.tsx`：轻量 SVG 成长星图（绿色配色，支持 12 节点 / 空状态 / 详情面板 / 打印摘要）
+- **GrowthReportApp 和 /api/generate-report 未修改**
 
 **验收**：lint/build 通过，不影响现有 family 功能。
 

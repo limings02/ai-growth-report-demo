@@ -101,6 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
+- family 仍默认走旧 ReportPreview 主链路；FamilyArtifactPreview 是 Phase 12.2 新增的迁移准备组件，尚未替换线上展示（Phase 12.4 完成后替换）
 
 ---
 
@@ -262,6 +263,8 @@ components/
   ComingSoonModePage.tsx            # coming soon 页面
   family/
     FamilyLandingPage.tsx          # family mode landing
+    FamilyArtifactPreview.tsx      # family 的 MemoryArtifactPreview wrapper（Phase 12.2 新增，未接主链路）
+    FamilyMemoryGraphPreview.tsx   # family 的成长星图 graphSlot（Phase 12.2 新增）
   couple/
     CoupleLandingPage.tsx          # couple mode landing
     CoupleMemoryApp.tsx            # couple 主状态机
