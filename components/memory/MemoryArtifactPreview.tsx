@@ -61,6 +61,10 @@ type Props = {
   // dev-only shadow preview 可传 "← 返回旧版预览"
   backLabel?: string;
 
+  // 额外 section 插槽：插入在 MemorySourceTraceDetails 之后、底部按钮之前
+  // family mode 用于注入照片预览区 + 原始记录折叠区，不影响其他 mode
+  extraSections?: React.ReactNode;
+
   className?: string;
 };
 
@@ -83,6 +87,7 @@ export default function MemoryArtifactPreview({
   usageSecondaryTip,
   graphSlot,
   backLabel = "← 返回修改",
+  extraSections,
   className = "",
 }: Props) {
   const { narrative, extensions } = artifact;
@@ -186,6 +191,9 @@ export default function MemoryArtifactPreview({
         />
 
         <MemorySourceTraceDetails sourceTrace={sourceTrace} />
+
+        {/* mode-specific 额外 section 插槽（family：照片区 + 原始记录区） */}
+        {extraSections}
 
         {/* 底部按钮（打印时隐藏） */}
         <div className="flex gap-3 print:hidden">

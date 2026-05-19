@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 12.3.1 已完成  
+> 当前阶段：Phase 12.4A 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -125,6 +125,12 @@
 - `GrowthReportApp.tsx`：shadow preview 传入 `rawMaterial`/`photos`/`backLabel="← 返回旧版预览"`；浮动按钮说明补充"用于迁移验收"文字
 - `family-memoryartifact-migration-plan.md`：修正顶部状态、Phase 12.3 验收标准、Phase 12.4 拆分为 12.4A/12.4B、禁止事项补充
 
+### Phase 12.4A（family 前端 UI 默认切换，不改 API）
+- `MemoryArtifactPreview.tsx`：新增 `extraSections` 插槽（在 sourceTrace 之后、底部按钮之前）
+- `FamilyArtifactPreview.tsx`：重构为单层 wrapper，照片区+原始记录区通过 `extraSections` 注入（均 print:hidden）
+- `GrowthReportApp.tsx`：result 分支默认渲染 FamilyArtifactPreview（本地转换 GrowthMemoryArtifact）；dev-only「🧪 查看旧版 ReportPreview」按钮；`onBackToEdit` 真正返回输入表单；生产不显示任何 legacy fallback
+- API / aiReportGenerator / .skills/family-memory 均未修改
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -144,6 +150,7 @@
 - [x] **Phase 12.2**：新增 FamilyArtifactPreview wrapper（已完成，未接主链路）
 - [x] **Phase 12.3**：dev-only shadow preview（已完成，生产不显示）
 - [x] **Phase 12.3.1**：shadow preview 补齐 rawMaterial/photos/backLabel + 迁移计划 12.4A/12.4B 拆分（已完成）
+- [x] **Phase 12.4A**：family 生产默认 UI 切换到 FamilyArtifactPreview（已完成，API 未修改）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -253,11 +260,11 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.4A - family 前端 UI 默认切换（不改 API）
-- `GrowthReportApp` 默认将 `GrowthMemoryArtifact` 本地转换为 `MemoryArtifact`，渲染 `FamilyArtifactPreview`
-- `/api/generate-report` 仍返回 `GrowthMemoryArtifact`，不改 API
-- 保留 dev-only legacy fallback（可一键切回旧 ReportPreview）
-- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.4A 节
+### 优先级 1：Phase 12.4B 前置验收（在改 API 之前）
+- 用 dev-only legacy fallback 对比新旧版，确认功能无遗漏
+- 逐项检查：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
+- 验收通过后再进入 Phase 12.4B（API 返回 MemoryArtifact）
+- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.4B 节
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -281,16 +288,17 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.3.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.4A 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
 - memorial mode 严格安全边界：不模拟逝者/不编造事实/不做哀伤治疗
 - Phase 12.1：family 链路泛化前置审计完成
-- Phase 12.2：FamilyArtifactPreview + FamilyMemoryGraphPreview 已新增（未接主链路）
-- Phase 12.3：GrowthReportApp dev-only shadow preview（生产不显示，不改主链路）
+- Phase 12.2：FamilyArtifactPreview + FamilyMemoryGraphPreview 已新增
+- Phase 12.3：GrowthReportApp dev-only shadow preview
 - Phase 12.3.1：shadow preview 补齐 rawMaterial/photos/backLabel；迁移计划 12.4A/12.4B 拆分
-- 下一步：Phase 12.4A - family 前端 UI 默认切换（不改 API）
+- Phase 12.4A：family 生产默认 UI 已切换为 FamilyArtifactPreview（API 未修改，前端本地转换）
+- 下一步：Phase 12.4B 前置验收，确认无功能回归后再改 API
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

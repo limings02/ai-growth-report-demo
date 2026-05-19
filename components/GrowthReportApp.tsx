@@ -14,10 +14,10 @@ import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
 import ReportPreview from "./ReportPreview";
-// ── Phase 12.3 dev-only shadow preview ────────────────────────────
-// 仅在 development 环境下可用，生产环境完全不显示。
-// 使用 growthArtifactToMemoryArtifact 把当前结果本地转换为 MemoryArtifact，
-// 再用 FamilyArtifactPreview 预览，不重新调用 AI，不改变主链路。
+// ── Phase 12.4A：FamilyArtifactPreview 现为 family 生产默认结果页 ──
+// GrowthReportApp state 仍持有 GrowthMemoryArtifact（API 不变），
+// result 阶段用 growthArtifactToMemoryArtifact 本地转换后渲染 FamilyArtifactPreview。
+// development 环境保留 legacy fallback 按钮可切回旧 ReportPreview。
 import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
 import { growthArtifactToMemoryArtifact } from "@/lib/domains/family/artifactAdapter";
 
@@ -59,9 +59,10 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   const [artifact, setArtifact] = useState<GrowthMemoryArtifact | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
-  // Phase 12.3 dev-only shadow preview：仅 development 环境可用
+  // Phase 12.4A：isDev 控制 dev-only legacy fallback 按钮
   const isDev = process.env.NODE_ENV === "development";
-  const [showMemoryArtifactPreview, setShowMemoryArtifactPreview] = useState(false);
+  // showLegacyReportPreview：仅 dev 环境可切回旧 ReportPreview 做对比，默认 false
+  const [showLegacyReportPreview, setShowLegacyReportPreview] = useState(false);
 
   // 始终持有最新 photos 引用，供卸载清理使用
   const photosRef = useRef(formData.photos);
@@ -115,53 +116,73 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
   }
 
   if (appState === "result" && artifact && rawMaterial) {
-    // Phase 12.3 dev-only shadow preview：本地转换并预览 FamilyArtifactPreview
-    if (isDev && showMemoryArtifactPreview) {
-      const memoryArtifact = growthArtifactToMemoryArtifact(artifact);
-      return (
-        <FamilyArtifactPreview
-          artifact={memoryArtifact}
-          rawMaterial={rawMaterial}
-          photos={formData.photos}
-          backLabel="← 返回旧版预览"
-          onBackToEdit={() => setShowMemoryArtifactPreview(false)}
-          onCreateAnother={() => {
-            setShowMemoryArtifactPreview(false);
-            setArtifact(null);
-            setRawMaterial(null);
-            setFormData(defaultFormData);
-            setAppState("input");
-          }}
-          onBackToHome={onBackToLanding}
-        />
-      );
-    }
+    // Phase 12.4A：本地转换 GrowthMemoryArtifact → MemoryArtifact（不重新调用 AI）
+    const memoryArtifact = growthArtifactToMemoryArtifact(artifact);
 
-    return (
-      <>
-        <ReportPreview
-          artifact={artifact}
-          rawMaterial={rawMaterial}
-          photos={formData.photos}
-          onBack={() => setAppState("input")}
-        />
-        {/* Phase 12.3 dev-only 入口：生产环境不渲染 */}
-        {isDev && (
+    // dev-only legacy fallback：仅 development 环境可切回旧 ReportPreview 对比
+    if (isDev && showLegacyReportPreview) {
+      return (
+        <>
+          <ReportPreview
+            artifact={artifact}
+            rawMaterial={rawMaterial}
+            photos={formData.photos}
+            onBack={() => setAppState("input")}
+          />
+          {/* Dev-only：返回新版 FamilyArtifactPreview */}
           <div
-            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1"
+            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1 print:hidden"
             style={{ maxWidth: "260px" }}
           >
             <button
               type="button"
-              onClick={() => setShowMemoryArtifactPreview(true)}
+              onClick={() => setShowLegacyReportPreview(false)}
               className="text-xs px-3 py-1.5 rounded-full cursor-pointer shadow-md transition-all hover:shadow-lg"
-              style={{ background: "#e0f2fe", color: "#0369a1", border: "1px dashed #7dd3fc" }}
+              style={{ background: "#dcfce7", color: "#15803d", border: "1px dashed #86efac" }}
             >
-              🔬 开发预览：查看 MemoryArtifact 版成长册
+              🌱 返回新版 FamilyArtifactPreview
             </button>
             <p className="text-xs text-right" style={{ color: "#9ca3af", fontSize: "10px" }}>
-              本地转换，不重新调用 AI，不改变主链路。
-              用于迁移验收：检查新版是否承接照片、原始记录、图谱和打印体验。
+              旧版 ReportPreview（dev-only 对比用）
+            </p>
+          </div>
+        </>
+      );
+    }
+
+    // 生产 + dev 默认：渲染新版 FamilyArtifactPreview
+    return (
+      <>
+        <FamilyArtifactPreview
+          artifact={memoryArtifact}
+          rawMaterial={rawMaterial}
+          photos={formData.photos}
+          onBackToEdit={() => setAppState("input")}
+          onCreateAnother={() => {
+            setArtifact(null);
+            setRawMaterial(null);
+            setFormData(defaultFormData);
+            setShowLegacyReportPreview(false);
+            setAppState("input");
+          }}
+          onBackToHome={onBackToLanding}
+        />
+        {/* Dev-only：切回旧 ReportPreview（生产环境不渲染）*/}
+        {isDev && (
+          <div
+            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1 print:hidden"
+            style={{ maxWidth: "260px" }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowLegacyReportPreview(true)}
+              className="text-xs px-3 py-1.5 rounded-full cursor-pointer shadow-md transition-all hover:shadow-lg"
+              style={{ background: "#fef9c3", color: "#a16207", border: "1px dashed #fde68a" }}
+            >
+              🧪 查看旧版 ReportPreview
+            </button>
+            <p className="text-xs text-right" style={{ color: "#9ca3af", fontSize: "10px" }}>
+              对比新旧两版，不重新调用 AI
             </p>
           </div>
         )}

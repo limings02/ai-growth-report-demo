@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.3.1 dev-only shadow preview 补齐已完成，仍处于低风险迁移验证阶段，生产主链路尚未替换。
+> 当前状态：Phase 12.4A 已完成。family 生产默认 UI 已切换为 FamilyArtifactPreview；API 仍返回 GrowthMemoryArtifact；前端本地转换；dev 环境可切回旧 ReportPreview。
 
 ---
 
@@ -175,25 +175,38 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.4A：family 前端 UI 默认切换，不改 API
+### Phase 12.4A：family 前端 UI 默认切换，不改 API（已完成）
 
 **目标**：
 - `/api/generate-report` 仍返回 `GrowthMemoryArtifact`
 - `GrowthReportApp` 仍接收 `GrowthMemoryArtifact`
-- 但在 result 阶段默认将 `GrowthMemoryArtifact` 本地转换成 `MemoryArtifact`，然后默认渲染 `FamilyArtifactPreview`
+- 在 result 阶段默认将 `GrowthMemoryArtifact` 本地转换成 `MemoryArtifact`，渲染 `FamilyArtifactPreview`
 - 保留 dev-only legacy fallback（可一键切回旧 ReportPreview 查看）
 - 不修改 skill prompt，不修改 server API 返回格式
+
+**已完成**：
+- `GrowthReportApp` 默认渲染 `FamilyArtifactPreview`（本地 `growthArtifactToMemoryArtifact` 转换）
+- `MemoryArtifactPreview` 新增 `extraSections` 插槽
+- `FamilyArtifactPreview` 使用 `extraSections` 注入照片区（print:hidden）+ 原始记录折叠区（print:hidden）
+- dev-only 浮动按钮「🧪 查看旧版 ReportPreview」可切回对比
+- 旧版 ReportPreview 可切回「🌱 返回新版 FamilyArtifactPreview」
+- production 不渲染 dev-only 按钮，不渲染旧 ReportPreview
 
 **禁止（12.4A 阶段）**：
 - **不修改 `/api/generate-report` 返回结构**
 - **不修改 `.skills/family-memory` 输出合约**
 - 不在未承接 rawMaterial/photos 前删除 ReportPreview
 
-**验收**：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱/打印均可用；可一键切回旧 ReportPreview；体验不回归。
+**验收**：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱/质量说明均可见；可一键切回旧 ReportPreview；`onBackToEdit` 真正返回输入表单；体验不回归。
 
 ---
 
 ### Phase 12.4B：family API 返回 MemoryArtifact
+
+**前置验收（进入 12.4B 前必须完成）**：
+- 至少做一次真实生成回归验收：填写表单、完整生成、逐项检查 FamilyArtifactPreview 是否承接旧版体验
+- 确认以下功能无回归：成长报告/时间线/信件/分享文案/图谱/质量说明/照片预览/原始记录/打印
+- 用 dev-only legacy fallback 对比新旧版差异，确认无遗漏
 
 **目标**：在 12.4A 稳定后，让 `/api/generate-report` 直接返回 `MemoryArtifact`。
 
@@ -256,7 +269,7 @@ MemoryArtifact（标准格式）
 | Phase 12.2 | FamilyArtifactPreview / FamilyMemoryGraphPreview 组件存在，lint/build 通过，family 现有功能不变 |
 | Phase 12.3 | development 环境可通过 shadow preview 查看 MemoryArtifact 版 family 结果页；production 不显示入口；默认 ReportPreview 主链路不变 |
 | Phase 12.3.1 | shadow preview 承接 rawMaterial/photos；backLabel 透传；照片区 / 原始记录区可见；迁移验收说明文字在开发环境显示 |
-| Phase 12.4A | family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱/打印均可用；可回退旧 ReportPreview；/api/generate-report 未修改 |
+| Phase 12.4A | ✅ 已完成：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱可见；dev-only 可切回旧 ReportPreview；/api/generate-report 未修改 |
 | Phase 12.4B | /api/generate-report 返回 MemoryArtifact；GrowthReportApp state 切换；体验不回归 |
 | Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
