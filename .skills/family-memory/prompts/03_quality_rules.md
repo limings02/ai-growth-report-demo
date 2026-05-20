@@ -32,12 +32,37 @@
 - visualSuggestion 要具体，让用户知道该用哪张照片或哪个画面
 - narration 要适合朗读，自然流畅
 - subtitle 可以比 narration 更简短，适合在视频上显示
+- **如果输入材料很少**，extensions.videoScript 要保持保守：
+  - 可以使用「照片翻页 / 文字字幕 / 温柔旁白 / 家庭日常画面」等泛化画面建议
+  - 不要编造用户没提到的地点、活动、服装、比赛、旅行、生日等具体画面
+  - `visualSuggestion` 可以写「使用一张孩子日常照片」或「使用父母提供的照片」，不要写不存在的具体场景
+  - `narration` 只能基于已提供材料做温和总结
 
 ### 质量自检规则
 
-- extensions.qualityReview.riskOfFabrication 要诚实评估：
-  - low：用户提供了丰富材料，内容有充分依据
-  - medium：材料一般，部分内容做了合理总结
-  - high：材料很少，大量内容是基于模板的总结
-- extensions.qualityReview.weaknesses 要诚实列出，不要为了好看而隐瞒不足
-- extensions.qualityReview.suggestionsForBetterInput 要具体，告诉父母下次可以多说哪些内容
+- `extensions.qualityReview.riskOfFabrication` 必须按材料数量和具体程度判断：
+
+  - **`low`**（严格条件）：
+    - 至少 5 条具体问答，或 3 条以上具体问答 + 较完整 freeNote；
+    - 输入中包含具体事件、行为、原话、场景或变化；
+    - 生成内容大部分都有明确材料依据。
+
+  - **`medium`**（最常见）：
+    - 只有 2-4 条问答；
+    - 或问答较短（每条不足 30 字），只能支撑概括性总结；
+    - 或没有 freeNote；
+    - 部分内容需要温和总结，但不能编造具体事实。
+
+  - **`high`**（材料极少）：
+    - 材料极少、回答空泛（如"挺好""长大了"之类）；
+    - 只有 1-2 条非常短的回答；
+    - 只能生成模板化内容；
+    - 必须在 weaknesses 中明确说明材料不足。
+
+- **硬性限制**：
+  - 如果输入只有 2 条短问答且 freeNote 为空，`riskOfFabrication` **不允许为 `low`**，至少应为 `medium`
+  - 如果没有具体事件、地点、原话、行为细节，不允许给 `low`
+  - risk 为 `medium` 或 `high` 时，`weaknesses` 必须说明材料不足的具体表现
+
+- `extensions.qualityReview.weaknesses` 要诚实列出，不要为了好看而隐瞒不足
+- `extensions.qualityReview.suggestionsForBetterInput` 要具体，告诉父母下次可以多说哪些内容

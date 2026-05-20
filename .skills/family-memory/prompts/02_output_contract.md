@@ -95,6 +95,7 @@
 - `mode` 必须是 `"family"`
 - `narrative` 必须存在，且包含 title / keywords / summary / timeline / longFormText / socialPosts
 - `narrative.longFormText.voice` 必须是 `"parent-letter"`
+- `narrative.longFormText.title` 优先使用「写给未来的{childName}」，不要长期固定为「给未来的信」
 - `extensions` 必须存在
 - `extensions.sourceTrace` 必须存在
 - `extensions.qualityReview` 必须存在

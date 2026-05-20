@@ -356,7 +356,8 @@ docs/
     memorial-generation-eval.md   # memorial 真实生成质量与安全边界评测（Phase 11.3）
     family-ui-migration-regression.md  # family 新旧 UI 回归验收（Phase 12.4A.2）
     family-api-memoryartifact-migration.md      # family API MemoryArtifact 迁移验证（Phase 12.4B）
-    family-memoryartifact-prompt-migration.md   # family-memory prompt 输出合约迁移验证（Phase 12.5）
+    family-memoryartifact-prompt-migration.md     # family-memory prompt 输出合约迁移验证（Phase 12.5）
+    family-memoryartifact-prompt-quality-tuning.md  # prompt 质量微调 + 兼容层引用审计（Phase 12.5.1）
 ```
 
 ---

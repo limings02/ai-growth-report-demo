@@ -57,7 +57,7 @@
   - title：简短事件标题（10 字以内）
   - description：2-3 句描述，有温度
 - **longFormText**：（对应旧 letter）
-  - title：建议为「写给未来的{childName}」或「给未来的信」
+  - title：优先使用「写给未来的{childName}」；如果 childName 缺失，才使用「给未来的信」
   - content：以 parentName 的身份写给孩子的信，至少 200 字，视角始终是父母；末尾用 parentName 署名并标注 reportYear 年；段落间用 \n\n 分隔
   - voice：固定为 "parent-letter"
 - **socialPosts**：3 条分享文案，标题分别为「温暖版」「走心版」「简洁版」，内容 50-150 字

@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.5 已完成。`.skills/family-memory` 直接输出标准 MemoryArtifact，三组样例验收通过。下一步 Phase 12.5.1 质量微调后再考虑 Phase 12.6 清理兼容层。
+> 当前状态：Phase 12.5.1 已完成。prompt 质量微调通过四组验收，允许进入 Phase 12.6A（清理计划与 dev fallback 取舍）。
 
 ---
 
@@ -244,14 +244,16 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.5.1：prompt 迁移后质量微调（建议下一步）
+### Phase 12.5.1：prompt 迁移后质量微调（已完成）
 
-**目标**：
-- 修正 Phase 12.5 发现的小问题（如最小输入时 risk 评估偏乐观）
-- 可选：优化 `narrative.longFormText.title` 使其动态包含 childName
-- 做 Phase 12.6 兼容层清理的最终前置验收
-
-**注意**：进入 Phase 12.6 删除兼容层之前，必须完成 Phase 12.5.1 验收。
+**已完成**：
+- `03_quality_rules.md`：riskOfFabrication 量化标准；videoScript 保守规则
+- `01_task.md`：longFormText.title 优先包含 childName
+- `02_output_contract.md`：补充 longFormText.title 建议
+- 四组样例（丰富/最小/长文本/极稀疏）验收通过
+- 最小输入 risk 从 low 修正为 medium ✅
+- 极稀疏输入 videoScript 使用泛化画面建议 ✅
+- Phase 12.6 清理候选引用审计完成（见 docs/quality/family-memoryartifact-prompt-quality-tuning.md）
 
 ---
 
@@ -289,6 +291,7 @@ MemoryArtifact（标准格式）
 | Phase 12.4B | ✅ 已完成：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换；API 格式验证通过 |
 | Phase 12.4B.1 | ✅ 已完成：旧注释清理；aiReportGenerator 结构防御；API 错误响应验证；12.4B.1 回归通过 |
 | Phase 12.5 | ✅ 已完成：family-memory 直接输出 MemoryArtifact，三组样例验收通过 |
+| Phase 12.5.1 | ✅ 已完成：riskOfFabrication 量化修正，videoScript 保守规则，四组验收通过，引用审计完成 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
 
 ---
