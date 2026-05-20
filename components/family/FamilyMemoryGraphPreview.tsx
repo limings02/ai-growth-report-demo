@@ -109,11 +109,6 @@ export default function FamilyMemoryGraphPreview({ graph }: Props) {
 
   return (
     <MemorySectionCard title="🌿 成长星图">
-      {graph.title && (
-        <p className="text-sm font-bold mb-0.5" style={{ color: "#15803d" }}>
-          {graph.title}
-        </p>
-      )}
       {graph.subtitle && (
         <p className="text-xs mb-1" style={{ color: "#6b7280" }}>
           {graph.subtitle}
@@ -225,7 +220,7 @@ export default function FamilyMemoryGraphPreview({ graph }: Props) {
                   fill="#15803d"
                   style={{ pointerEvents: "none", userSelect: "none" }}
                 >
-                  {truncate(node.label, 5)}
+                  {truncate(node.label, 8)}
                 </text>
               </g>
             );

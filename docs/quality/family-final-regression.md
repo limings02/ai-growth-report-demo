@@ -3,7 +3,8 @@
 ## 1. 背景
 
 - Phase 12.6D 已完成 family MemoryArtifact 迁移全部清理。
-- 本阶段验证 family 主链路的 API 质量 + 产品体验代码审计。
+- Phase 12.7A.1：3 组 API 样例验收 + 代码审计 + P1 小修。
+- Phase 12.7B：照片区前移、图谱双标题修复、节点截断放宽、按钮文案统一。
 - 重点从"架构正确"转向"产品是否像一份成长礼物"。
 
 ---
@@ -14,10 +15,10 @@
 |------|------|
 | 日期 | 2026-05-20 |
 | 模型 | deepseek-v4-pro + DEEPSEEK_THINKING=disabled |
-| npm run lint | ✅ 零错误 |
-| npm run build | ✅ TypeScript 零错误，6 个 route 正常编译 |
+| npm run lint（Phase 12.7B 后）| ✅ 零错误 |
+| npm run build（Phase 12.7B 后）| ✅ TypeScript 零错误，6 个 route 正常编译 |
 | npm run dev | ✅ 正常启动 |
-| 真实 DeepSeek API 调用 | ✅（3 组样例全部真实调用）|
+| 真实 DeepSeek API 调用 | ✅（3 组样例全部真实调用，Phase 12.7A.1）|
 | 真实浏览器交互验证 | **未完成**（需人工操作浏览器）|
 
 ---
@@ -64,8 +65,8 @@
 | graph.centerDescription | ✅ | "豆豆的2024年" |
 | qualityReview.risk | ✅ | low（丰富输入）|
 | videoScript | ✅ | 有标题，extensions 中存在 |
-| 照片区展示 | **未浏览器验证** | 代码确认：3x2 grid，print:hidden |
-| 原始记录折叠区 | **未浏览器验证** | 代码确认：默认折叠，可展开 |
+| 照片区展示 | **未浏览器验证** | Phase 12.7B 代码：位置已前移至封面后 |
+| 原始记录折叠区 | **未浏览器验证** | Phase 12.7B 代码：仍在页面底部 |
 
 **结论**：丰富输入下 AI 内容质量明显更好，letter 开头很有礼物感，timeline 具体到月份。
 
@@ -88,114 +89,98 @@
 | graph_nodes | ✅ | 6 个 |
 | qualityReview.risk | ✅ | low（内容扎实）|
 | weaknesses | ✅ | "timeline 时间节点不够精确，只能写上半年/夏天"——诚实说明 |
-| 打印预览 | **未浏览器验证** | 代码确认：quality/sourceTrace 会打印（见 P1 问题）|
+| 打印预览 | **未浏览器验证** | Phase 12.7A.1 已修：quality/sourceTrace print:hidden |
 
-**结论**：literary 风格正常工作，AI 能感知风格差异。长文本不会造成字段截断（API层）。
-
----
-
-## 6. 产品体验评分（代码审计 + API 输出质量）
-
-| 维度 | 分数 | 备注 |
-|---|---:|---|
-| 情绪感染力 | 4/5 | letter 开头、cover 渐变和词云有礼物感；summary 有时过于 AI 腔 |
-| 事实可信度 | 4/5 | 丰富输入时高度贴近原文；最小输入时有概括填充 |
-| 视觉完整度 | 3/5 | 暖色调 cover 好；质量说明/溯源 section 太技术感，破坏整体氛围 |
-| 图谱价值 | 3/5 | 概念成立，节点有惊喜感；但最小输入时节点稀少，中心文字截断 |
-| 照片融合度 | 3/5 | 照片区样式简洁，位置靠后（在 sourceTrace 之后）；未参与打印 |
-| 原始记录价值 | 4/5 | 折叠区归档感好，不影响主流程 |
-| 打印 / 保存 PDF | 2/5 | **技术 section（幻觉风险、内容溯源）会打印**，不适合作为礼物 PDF |
-| 分享文案价值 | 4/5 | 三条文案风格各异，可直接复制 |
+**结论**：literary 风格正常工作，AI 能感知风格差异。
 
 ---
 
-## 7. 发现的问题
+## 6. 产品体验评分
 
-### P1：明显影响体验
-
-**P1-1：技术 section 会打印进 PDF（最影响礼物感）**
-
-- `MemoryQualityReviewPanel`（"📊 生成质量说明"）和 `MemorySourceTraceDetails`（"🔍 查看内容溯源"）未设 `print:hidden`，会出现在礼物 PDF 里
-- 父母把这份礼物打印给孩子，PDF 里会看到"幻觉风险：中"这种工程化标签，完全破坏礼物感
-
-**修复方案**：在 `MemoryArtifactPreview.tsx` 中将这两个 section 包裹在 `<div className="print:hidden">` 里  
-**风险**：极低，只加 CSS class，不改逻辑
-
-**P1-2："幻觉风险" 标签对普通父母太技术**
-
-- 父母看到"幻觉风险"会困惑或担心
-- 即便隐藏了打印，这个词在页面上也出现时会影响信任感
-
-**修复方案**：`MemoryQualityReviewPanel` 中将"幻觉风险"改为"参考可信度"，"📊 生成质量说明"改为"💡 内容参考说明"  
-**风险**：极低，纯文案改动
-
-### P2：可后续优化
-
-**P2-1：raw material 区显示 `style: warm` 而非中文**
-
-- "风格：warm"对父母来说是技术字段
-- `FamilyArtifactPreview.tsx` 应将 warm/literary/simple 等值转换为中文展示
-
-**P2-2：照片区位置靠后**
-
-- 照片区（`extraSections`）位于 sourceTrace 之后、底部按钮之前，用户需要滑动到很底部才能看到
-- 可以考虑提到 cover section 之后（但这需要改插槽位置，属于中等风险改动）
-
-**P2-3：graph title/subtitle 与 section card title 重复**
-
-- `MemorySectionCard title="🌿 成长星图"` 之后又显示 `graph.title`（例如"被爱点亮的这一年"），有双标题感
-
-**P2-4："首页" 按钮文案略短**
-
-- 顶部栏的 `首页` 按钮缺少"← 返回"前缀，和左边的"← 返回修改"不一致
-
-### P3：记录但不急
-
-**P3-1：节点标签截断到 5 个字**
-
-- `truncate(node.label, 5)` 在中文里很保守，5 字会截断"成人礼"这样的词
-- 可以考虑 8 个字
-
-**P3-2："再做一本"在顶部和底部文案微不一致**
-
-- 顶部："再做一本"（无 emoji）
-- 底部："再做一本 ✨"（有 emoji）
-- 统一即可
-
-**P3-3：video script 无 UI 展示**
-
-- AI 生成了 videoScript（见 Sample B），但前端没有展示入口
-- 这是功能缺失，不是 bug；是未来功能
+| 维度 | Phase 12.7A.1 前 | Phase 12.7B 后 | 备注 |
+|---|---:|---:|---|
+| 情绪感染力 | 4/5 | 4/5 | letter 开头礼物感好 |
+| 事实可信度 | 4/5 | 4/5 | 丰富输入时高度贴近原文 |
+| 视觉完整度 | 3/5 | 3/5 | 暖色调 cover 好；质量说明文案已软化 |
+| 图谱价值 | 3/5 | 3.5/5 | 双标题已去除；节点截断从 5 改为 8 |
+| 照片融合度 | 3/5 | 4/5 | 照片区已前移至封面后（代码确认）|
+| 原始记录价值 | 4/5 | 4/5 | 折叠区归档感好，位置不变 |
+| 打印 / 保存 PDF | 2/5 | 4/5 | quality/sourceTrace/photos/原始记录均 print:hidden |
+| 分享文案价值 | 4/5 | 4/5 | 三条文案可直接复制 |
 
 ---
 
-## 8. Phase 12.7A.1 小修实施（本阶段内）
+## 7. 问题状态总览
 
-本阶段直接修复 P1 问题：
+### 已修复（P1 + P2）
 
-| 修复项 | 文件 | 改动 |
+| 问题 | 修复阶段 | 说明 |
 |---|---|---|
-| quality + sourceTrace 加 print:hidden | `MemoryArtifactPreview.tsx` | 包裹在 `<div className="print:hidden">` |
-| "幻觉风险" → "参考可信度" | `MemoryQualityReviewPanel.tsx` | 文案改动 |
-| "📊 生成质量说明" → "💡 内容参考说明" | `MemoryQualityReviewPanel.tsx` | 文案改动 |
-| raw material style 转中文 | `FamilyArtifactPreview.tsx` | 加简单 lookup map |
+| quality/sourceTrace 出现在 PDF | Phase 12.7A.1 | 加 `print:hidden` |
+| "幻觉风险" 技术标签 | Phase 12.7A.1 | 改为"参考可信度" |
+| raw material style 显示英文值 | Phase 12.7A.1 | 加中文 lookup map |
+| "首页"按钮文案不一致 | Phase 12.7A.1 | 改为"← 返回首页" |
+| 照片区位置靠后 | Phase 12.7B | 前移至封面后（`afterCoverSections`）|
+| 图谱双标题 | Phase 12.7B | 去掉 `graph.title` 展示 |
+| 节点标签截断 5 字 | Phase 12.7B | 改为 8 字 |
+| "再做一本"文案不一致 | Phase 12.7B | 顶部/底部统一为"再做一本" |
+
+### 仍开放（P2）
+
+| 问题 | 优先级 | 建议处理 |
+|---|---|---|
+| 照片未纳入 PDF 打印 | P2 | Phase 12.7C 专门设计打印 layout |
+
+### 记录（P3）
+
+| 问题 | 说明 |
+|---|---|
+| video script 无 UI 展示 | 功能缺失，不是 bug；Phase 13+ 规划 |
 
 ---
 
-## 9. Phase 12.7B 建议
+## 8. Phase 12.7B 实施记录
 
-**建议进入 Phase 12.7B：family 礼物感体验优化**
+### 代码改动
 
-优先优化项（产品价值 > 技术代价）：
+| 文件 | 改动 |
+|---|---|
+| `MemoryArtifactPreview.tsx` | 新增 `afterCoverSections` 可选 prop；插入到 cover 之后、timeline 之前；底部"再做一本 ✨"→"再做一本" |
+| `FamilyArtifactPreview.tsx` | 照片区 → `afterCoverSections`；原始记录 → `extraSections`（不变）；更新注释 |
+| `FamilyMemoryGraphPreview.tsx` | 去掉 `graph.title` 展示；节点截断 5 → 8 |
 
-1. 照片区位置前移（移到 cover 之后）——用户应该在第一屏或第二屏就看到照片
-2. 图谱双标题问题（去掉 graph.title 在 section card 内的重复显示）
-3. graph 节点截断调整（5 → 8 字）
+### lint / build
 
-不建议做的项：
+| 命令 | 结果 |
+|------|------|
+| `npm run lint` | ✅ 零错误 |
+| `npm run build` | ✅ TypeScript 零错误 |
 
-- 重写 MemoryArtifactPreview 布局（影响所有 4 个 mode）
-- 改变打印 layout（需专门设计，不是小修）
-- 新增 video script 展示（功能规划，不是体验打磨）
+### 真实浏览器验证
 
-**更大方向**：family 产品稳定后，可考虑 Phase 13 人生 Wiki 数据层 / 多次生成历史保存。
+**未完成**（需人工操作浏览器）
+
+代码静态分析确认：
+- `afterCoverSections` prop 正确传递，在 cover 和 timeline 之间渲染
+- `extraSections` 位置不变（usage tips 之后）
+- couple / personal / memorial 不传 `afterCoverSections`，不受影响
+- 图谱：`graph.subtitle` 仍显示，`graph.title` 不再显示
+- 节点 label：`truncate(node.label, 8)`
+- 顶部和底部"再做一本"文案一致
+
+---
+
+## 9. 结论
+
+| 检查项 | 状态 |
+|--------|------|
+| lint | ✅ |
+| build | ✅ |
+| P1 问题全部修复 | ✅ |
+| P2 主要问题（照片位置、图谱标题）修复 | ✅ |
+| 未修改 API / runtime / prompt 合约 | ✅ |
+| 未恢复任何旧兼容层 | ✅ |
+| couple / personal / memorial 不受影响 | ✅（afterCoverSections 为可选 prop）|
+| 是否建议进入下一阶段 | ✅ **建议进入 Phase 12.7C 或 Phase 13** |
+
+Phase 12.7B 完成后，family 结果页主要体验问题已全部处理。剩余唯一开放 P2 项是照片打印，需要专门的 print layout 设计。

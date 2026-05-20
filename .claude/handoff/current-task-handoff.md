@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-20  
-> 当前阶段：Phase 12.7A.1 已完成（family 最终回归 + P1 体验小修）  
+> 当前阶段：Phase 12.7B 已完成（family 照片前移 + 图谱优化 + 按钮统一）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -11,7 +11,7 @@
 这是一个多阶段架构重构项目，目标是把单一孩子成长报告 demo 演化为 **multi-mode Memory Product**，支持 family / couple / personal / memorial 四种记忆主题。
 
 **当前状态：**
-- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.6D 全部完成；Phase 12.7A.1 体验小修已完成）
+- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.7B 体验优化完成；照片区前移、图谱双标题修复、print:hidden、按钮统一）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
 - memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
@@ -210,13 +210,16 @@
 ### Phase 12.7A.1（family 最终回归 + P1 体验小修）
 - 3 组 API 样例验收（最小/丰富/长文本）：全部返回标准 MemoryArtifact ✅
 - 产品体验代码审计：P1/P2/P3 问题分类，见 `docs/quality/family-final-regression.md`
-- **P1 小修**（直接实施）：
-  - `MemoryArtifactPreview.tsx`：质量说明 + 溯源 section 加 `print:hidden`（不出现在礼物 PDF）
-  - `MemoryQualityReviewPanel.tsx`："幻觉风险" → "参考可信度"；"📊 生成质量说明" → "💡 内容参考说明"
-  - `FamilyArtifactPreview.tsx`：raw material 风格字段 warm/literary/simple → 中文名
-  - `MemoryArtifactPreview.tsx`："首页" → "← 返回首页"
+- P1 小修：quality/sourceTrace print:hidden；"幻觉风险"→"参考可信度"；style 中文化；"首页"→"← 返回首页"
 - lint/build ✅
-- 新增 `docs/quality/family-final-regression.md`：3 组样例结果 + 体验评分 + P1/P2/P3 问题列表 + Phase 12.7B 建议
+
+### Phase 12.7B（family 照片前移 + 图谱优化 + 按钮统一）
+- `MemoryArtifactPreview.tsx`：新增 `afterCoverSections` 可选 prop（cover 后、timeline 前）；底部"再做一本 ✨"→"再做一本"
+- `FamilyArtifactPreview.tsx`：照片区 → `afterCoverSections`（封面后）；原始记录 → `extraSections`（底部不变）
+- `FamilyMemoryGraphPreview.tsx`：去掉 `graph.title` 展示（保留 subtitle）；节点截断 5 → 8 字
+- couple / personal / memorial 不传 `afterCoverSections`，不受影响
+- lint/build ✅
+- 体验评分：照片融合度 3→4，图谱价值 3→3.5，打印 PDF 2→4
 
 ---
 
@@ -249,6 +252,7 @@
 - [x] **Phase 12.6C**：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact）（已完成）
 - [x] **Phase 12.6D**：归档 rollback path（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等）（已完成）
 - [x] **Phase 12.7A.1**：family 最终回归 + P1 体验小修（已完成）
+- [x] **Phase 12.7B**：family 照片区前移 + 图谱双标题修复 + 节点截断放宽 + 按钮文案统一（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -334,7 +338,7 @@ package.json
 |--------|------|
 | `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
 | `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
-| 真实浏览器交互验证 | 未完成（API 3 组验证通过；P1 小修代码验证通过）|
+| 真实浏览器交互验证 | 未完成（API 3 组验证通过；Phase 12.7A.1+12.7B 代码验证通过）|
 
 ---
 
@@ -352,16 +356,13 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.7B - family 礼物感体验优化（P1 已修，P2 待做）
+### 优先级 1：Phase 12.7C - 照片打印 layout（可选，按需规划）
 
-当前 P1 问题已修复，P2 问题建议作为 Phase 12.7B 执行：
-- **照片区位置前移**：将 `extraSections`（照片 + 原始记录）移到 cover section 之后，而不是当前的页面最底部（中等风险，影响 MemoryArtifactPreview 插槽顺序）
-- **图谱双标题问题**：在 `FamilyMemoryGraphPreview` 中隐藏 `graph.title`（因为 MemorySectionCard 标题已显示"🌿 成长星图"）
-- **节点截断放宽**：`truncate(node.label, 5)` → `truncate(node.label, 8)`
+唯一剩余 P2 问题：照片未纳入礼物 PDF 打印。需要专门设计打印排版，不是小修。
 
 ### 优先级 2：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
 
-family 产品稳定后，可以开始设计多次生成历史保存系统。
+family 产品体验已达到可分享礼物标准，可以切换到新功能开发：多次生成历史保存、本地持久化、或 Life Archive 数据层设计。
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -386,7 +387,7 @@ family 产品稳定后，可以开始设计多次生成历史保存系统。
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.7A.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.7B 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -402,8 +403,9 @@ family 产品稳定后，可以开始设计多次生成历史保存系统。
 - Phase 12.6B：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph/graph types），lint/build ✅
 - Phase 12.6C：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact），lint/build ✅
 - Phase 12.6D：rollback path 全部清理，lint/build ✅，API ✅
-- Phase 12.7A.1：3 组 API 样例验证 ✅，产品体验审计完成，P1 小修已实施（print:hidden / 文案软化 / 风格中文化 / 首页按钮文案）
-- 下一步：Phase 12.7B（照片区位置 / 图谱标题 / 节点截断）或 Phase 13（数据保存）
+- Phase 12.7A.1：3 组 API 验证 ✅，P1 小修（print:hidden / 文案软化 / 风格中文化 / 首页按钮）
+- Phase 12.7B：照片区前移（afterCoverSections）/ 图谱双标题修复 / 节点截断 8 / 按钮统一 ✅
+- family 体验优化全部完成，下一步：Phase 12.7C（照片打印）或 Phase 13（数据保存）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

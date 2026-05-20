@@ -102,7 +102,7 @@ npm run dev
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 - **family MemoryArtifact 迁移已完成**（Phase 12.6D）：旧 UI fallback、parse fallback、rollback path 均已清理；`.skills/growth-memory` 已归档；family 链路完全使用 `MemoryArtifact`
-- **family 体验优化**（Phase 12.7A.1）：质量说明/内容溯源 section 加 `print:hidden`（不出现在礼物 PDF）；"幻觉风险"改为"参考可信度"；raw material 风格字段显示中文名称
+- **family 体验优化**（Phase 12.7B）：照片区已前移至封面后；成长星图去掉双标题、节点截断从 5 字放宽到 8 字；质量/溯源 section 不出现在礼物 PDF；按钮文案已统一
 
 ---
 

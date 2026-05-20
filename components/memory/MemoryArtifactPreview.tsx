@@ -3,22 +3,23 @@
 // components/memory/MemoryArtifactPreview.tsx
 // 通用 MemoryArtifact 展示容器。
 //
-// 包含完整页面 shell：
-// - 顶部操作栏（返回/首页/保存PDF/再做一本）
+// 页面结构（从上到下）：
+// - 顶部操作栏（打印时隐藏）
 // - 打印专用标题区
 // - fallback 提示
-// - 封面区
+// - 封面区（标题/关键词/总结）
+// - afterCoverSections 插槽（family：照片区）
 // - 时间线
 // - 长文/信件
 // - 分享文案
-// - graph 插槽（由 caller 传入 mode-specific 图谱组件）
-// - 质量说明
+// - graph 插槽（mode-specific 图谱）
+// - 质量说明 + 溯源（print:hidden）
 // - 使用建议
-// - 溯源折叠
-// - 底部按钮
+// - extraSections 插槽（family：原始记录区）
+// - 底部按钮（打印时隐藏）
 //
 // couple mode 通过 CoupleArtifactPreview 使用；
-// personal / memorial mode 将来复用本组件，各自传入 graphSlot。
+// personal / memorial mode 复用本组件，各自传入 graphSlot。
 
 import type { MemoryArtifact, MemorySourceTrace, MemoryQualityReview } from "@/lib/memory-core/types";
 import MemoryPrintButton from "./MemoryPrintButton";
@@ -61,8 +62,12 @@ type Props = {
   // dev-only shadow preview 可传 "← 返回旧版预览"
   backLabel?: string;
 
-  // 额外 section 插槽：插入在 MemorySourceTraceDetails 之后、底部按钮之前
-  // family mode 用于注入照片预览区 + 原始记录折叠区，不影响其他 mode
+  // 封面后插槽：插入在 MemoryCoverSection 之后、MemoryTimelineSection 之前
+  // family mode 用于在封面紧接着展示照片区，增强第一屏礼物感
+  afterCoverSections?: React.ReactNode;
+
+  // 底部额外 section 插槽：插入在 usage tips 之后、底部按钮之前
+  // family mode 用于注入原始记录折叠区
   extraSections?: React.ReactNode;
 
   className?: string;
@@ -87,6 +92,7 @@ export default function MemoryArtifactPreview({
   usageSecondaryTip,
   graphSlot,
   backLabel = "← 返回修改",
+  afterCoverSections,
   extraSections,
   className = "",
 }: Props) {
@@ -163,6 +169,9 @@ export default function MemoryArtifactPreview({
           emptyKeywordsHint={emptyKeywordsHint}
         />
 
+        {/* 封面后插槽（family：照片区紧接封面，增强礼物感）*/}
+        {afterCoverSections}
+
         <MemoryTimelineSection
           timeline={narrative.timeline}
           title={timelineTitle}
@@ -211,7 +220,7 @@ export default function MemoryArtifactPreview({
             className="flex-1 py-3 rounded-full text-sm font-semibold text-white cursor-pointer transition-all shadow-md hover:shadow-lg"
             style={{ background: "linear-gradient(135deg, #e8836a, #e07a5f)" }}
           >
-            再做一本 ✨
+            再做一本
           </button>
         </div>
       </div>
