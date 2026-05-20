@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 12.5.1 已完成  
+> 当前阶段：Phase 12.6A 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -179,6 +179,14 @@
 - 新增 `docs/quality/family-memoryartifact-prompt-quality-tuning.md`
 - **允许进入 Phase 12.6A**（清理计划与 dev fallback 取舍）
 
+### Phase 12.6A（兼容层清理计划与 dev fallback 取舍）
+- 真实引用审计：10 个符号，均无生产主路径引用
+- 新增 `docs/architecture/family-legacy-cleanup-plan.md`：清理计划、引用审计表、清理顺序
+- API 验证：`/api/generate-report` 返回标准 MemoryArtifact ✅
+- 决策：推荐方案 B（删除 dev fallback），分三步（12.6B→12.6C→12.6D）
+- 清理过时文档 TODO（handoff 优先级 2、migration plan Phase 12.6 细化）
+- **允许进入 Phase 12.6B**（删除 dev legacy UI fallback）
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -205,6 +213,7 @@
 - [x] **Phase 12.4B.1**：API 迁移回归验收 + aiReportGenerator 结构防御 + 旧注释清理（已完成）
 - [x] **Phase 12.5**：family-memory prompt 直接输出 MemoryArtifact，三组验收通过（已完成）
 - [x] **Phase 12.5.1**：prompt 质量微调，四组验收，引用审计完成（已完成，允许进入 12.6A）
+- [x] **Phase 12.6A**：清理计划文档 + 引用审计 + dev fallback 取舍决策（已完成，允许进入 12.6B）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -314,11 +323,12 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.6A - 兼容层清理计划与 dev fallback 取舍
-- 核心决策：是否保留 dev-only legacy ReportPreview fallback（建议在生产稳定后删除）
-- 制定清理顺序：dev fallback → ReportPreview → LifeGraphPreview → buildLifeGraph → runGrowthMemorySkill → parseGrowthMemoryArtifact → GrowthMemoryArtifact 类型
-- 见 `docs/quality/family-memoryartifact-prompt-quality-tuning.md` 第 6 节的清理路径建议
-- **不要直接在 12.6A 删除文件，先制定计划并得到确认**
+### 优先级 1：Phase 12.6B - 删除 dev legacy UI fallback
+- 从 `GrowthReportApp.tsx` 移除 `showLegacyReportPreview` 状态、`ReportPreview` import、dev 浮动按钮
+- 删除 `components/ReportPreview.tsx`
+- 删除 `components/LifeGraphPreview.tsx`
+- 删除 `lib/graph/buildLifeGraph.ts`、`lib/graph/types.ts`
+- 详见 `docs/architecture/family-legacy-cleanup-plan.md` Phase 12.6B 节
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -328,9 +338,10 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - PersonalLandingPage 情绪表达打磨
 - personal 结果页 usage tips 等文案优化
 
-### 优先级 2：family 链路泛化
-- family-memory prompt 改为直接输出 MemoryArtifact
-- ReportPreview 迁移为消费 MemoryArtifact + MemoryArtifactPreview
+### 优先级 2：family 清理与体验优化
+- 兼容层清理：Phase 12.6B（UI fallback）→ Phase 12.6C（parse fallback）→ Phase 12.6D（rollback path）
+- 照片打印与原始记录打印优化（当前 print:hidden，待后续评估）
+- `FamilyArtifactPreview` 视觉细节打磨
 
 
 
@@ -342,7 +353,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.5.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.6A 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -353,8 +364,9 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 12.4B：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换
 - Phase 12.4B.1：API 迁移回归验收通过；aiReportGenerator 结构防御；旧注释清理
 - Phase 12.5：family-memory prompt 直接输出 MemoryArtifact，三组验收通过
-- Phase 12.5.1：prompt 质量微调，四组验收通过，兼容层引用审计完成，允许进入 12.6A
-- 下一步：Phase 12.6A - 制定兼容层清理计划与 dev fallback 取舍（不直接删除文件）
+- Phase 12.5.1：prompt 质量微调，四组验收通过，兼容层引用审计完成
+- Phase 12.6A：清理计划文档 + 引用审计 + dev fallback 取舍决策（推荐删除，方案 B）
+- 下一步：Phase 12.6B - 删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

@@ -101,7 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family MemoryArtifact 迁移完整链路已完成**（Phase 12.5）：`/api/generate-report` 返回标准 `MemoryArtifact`；`.skills/family-memory` 直接输出 MemoryArtifact；旧 GrowthMemoryArtifact fallback 路径保留；dev-only legacy `ReportPreview` 仍可对比
+- **family MemoryArtifact 迁移完整链路已完成，进入清理阶段**（Phase 12.6A）：`/api/generate-report` 返回标准 `MemoryArtifact`；prompt 直接输出 MemoryArtifact；Phase 12.6B 将删除 dev-only legacy `ReportPreview` fallback；旧 parse fallback 路径仍保留待后续清理
 - 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
 
 ---
@@ -350,6 +350,7 @@ docs/
     next-couple-mode-plan.md       # couple MVP 规划
     current-transition-state.md              # 当前过渡态说明
     family-memoryartifact-migration-plan.md  # family 旧链路迁移到 MemoryArtifact 的阶段计划
+    family-legacy-cleanup-plan.md            # family 兼容层清理计划（Phase 12.6A）
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
