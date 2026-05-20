@@ -54,7 +54,7 @@ class AiReportGenerator {
       throw new Error(maybeError?.error ?? `服务器错误 ${res.status}`);
     }
 
-    // 结构防御：若 API 返回旧格式（如旧 GrowthMemoryArtifact）或异常结构，给出明确错误
+    // 结构防御：若 API 返回异常结构，给出明确错误
     if (!isMemoryArtifactLike(data)) {
       throw new Error(
         "服务器返回的 family 结果不是 MemoryArtifact 格式，请检查 API 版本是否一致"

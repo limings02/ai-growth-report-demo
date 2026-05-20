@@ -4,12 +4,9 @@
 //
 // 目录约定：.skills/{skillDir}/prompts/
 // - 00_system_role.md
-// - 01_task.md              （新格式）
-// - 01_growth_memory_task.md（旧 growth-memory 兼容文件名）
+// - 01_task.md
 // - 02_output_contract.md
 // - 03_quality_rules.md
-//
-// task prompt 查找顺序：01_task.md → 01_growth_memory_task.md
 
 import fs from "fs";
 import path from "path";
@@ -37,31 +34,11 @@ function readPromptFile(filePath: string): string {
 
 function resolveSkillDir(mode: MemoryMode): string {
   const config = getMemorySkillConfig(mode);
-  const primaryDir = path.join(process.cwd(), ".skills", config.skillDir);
-  if (fileExists(primaryDir)) return primaryDir;
-
-  if (config.fallbackSkillDir) {
-    const fallbackDir = path.join(process.cwd(), ".skills", config.fallbackSkillDir);
-    if (fileExists(fallbackDir)) return fallbackDir;
-  }
-
+  const skillDir = path.join(process.cwd(), ".skills", config.skillDir);
+  if (fileExists(skillDir)) return skillDir;
   throw new Error(
-    `[memory-core] 找不到 mode=${mode} 对应的 skill 目录：${primaryDir}`
+    `[memory-core] 找不到 mode=${mode} 对应的 skill 目录：${skillDir}`
   );
-}
-
-function resolveTaskPromptPath(promptsDir: string): string {
-  const candidates = [
-    path.join(promptsDir, "01_task.md"),
-    path.join(promptsDir, "01_growth_memory_task.md"),
-  ];
-  const found = candidates.find(fileExists);
-  if (!found) {
-    throw new Error(
-      `[memory-core] 找不到 task prompt 文件。已尝试：${candidates.join(", ")}`
-    );
-  }
-  return found;
 }
 
 export function loadMemorySkillPrompts(
@@ -72,7 +49,7 @@ export function loadMemorySkillPrompts(
 
   return {
     systemRole: readPromptFile(path.join(promptsDir, "00_system_role.md")),
-    taskDescription: readPromptFile(resolveTaskPromptPath(promptsDir)),
+    taskDescription: readPromptFile(path.join(promptsDir, "01_task.md")),
     outputContract: readPromptFile(path.join(promptsDir, "02_output_contract.md")),
     qualityRules: readPromptFile(path.join(promptsDir, "03_quality_rules.md")),
   };

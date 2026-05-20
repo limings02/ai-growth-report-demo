@@ -9,11 +9,7 @@
 //     → MemoryArtifact
 //
 // 注意：
-// - 不再调用 memoryArtifactToGrowthArtifact，直接返回 MemoryArtifact
 // - 不修改 .skills/family-memory
-// - family-memory 仍可能输出旧 GrowthMemoryArtifact 格式
-//   parseMemoryArtifact 会识别并兼容转换为标准 MemoryArtifact
-// - runGrowthMemorySkill 保留作为 legacy wrapper / rollback path，不删除
 
 import type { RawMaterial } from "@/lib/types";
 import type { MemoryArtifact } from "@/lib/memory-core/types";

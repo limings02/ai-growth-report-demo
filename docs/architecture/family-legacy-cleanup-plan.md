@@ -1,8 +1,8 @@
 # Family Legacy Cleanup Plan - Phase 12.6A
 
 > 文档创建：Phase 12.6A（2026-05-20）  
-> 更新：Phase 12.6C（2026-05-20）  
-> 状态：Phase 12.6B（UI fallback）和 Phase 12.6C（parse fallback）均已完成。允许进入 Phase 12.6D（归档 rollback path）。
+> 更新：Phase 12.6D（2026-05-20）  
+> 状态：Phase 12.6B / 12.6C / 12.6D 全部完成。family MemoryArtifact 迁移全部完成，GrowthMemoryArtifact 兼容层已彻底清理。
 
 ---
 
@@ -102,14 +102,16 @@ grep 结果：`parseGrowthMemoryArtifact` 0；`growthArtifactToMemoryArtifact` �
 
 lint ✅ | build ✅ | API 验证 ✅（标准 MemoryArtifact，无 report 字段）
 
-### Phase 12.6D：归档 rollback path
+### Phase 12.6D：归档 rollback path（已完成，2026-05-20）
 
-处理内容：
-- `lib/skill-runtime/runGrowthMemorySkill.ts`：确认无生产调用后，注释/归档或删除
-- `lib/skill-runtime/buildGrowthMemoryPrompt.ts`（如有）
-- `lib/skill-runtime/types.ts`：清理 `GrowthMemoryArtifact` 类型（需确认无引用）
-- `.skills/growth-memory/`：归档，不急删
-- `lib/domains/family/artifactAdapter.ts`：清理 `memoryArtifactToGrowthArtifact` 函数（已无引用后）
+已处理：
+- 删除 `lib/skill-runtime/runGrowthMemorySkill.ts`、`buildGrowthMemoryPrompt.ts`、`loadSkillPrompt.ts`、`types.ts`
+- 删除 `lib/domains/family/artifactAdapter.ts`（含 `memoryArtifactToGrowthArtifact`）
+- 删除 `components/SkillReviewPanel.tsx`（孤立 dev panel）
+- 清理 `buildMemoryPrompt.ts` `legacyFamilyInput`、`skillRegistry.ts` `fallbackSkillDir`、`loadMemorySkillPrompt.ts` fallback 逻辑
+- 清理多个文件过渡注释
+- `.skills/growth-memory/README.md` 更新为 ARCHIVED 说明
+- grep 全量：所有 rollback 符号代码引用 0；lint/build ✅；API ✅
 
 ---
 

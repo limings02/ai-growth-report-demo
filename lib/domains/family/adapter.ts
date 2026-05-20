@@ -4,10 +4,6 @@
 // 职责：
 // 将当前孩子成长功能使用的 RawMaterial（family-only 字段）
 // 转换成跨 mode 的通用 MemoryRawMaterial。
-//
-// 当前阶段：只新增 adapter，不替换旧链路。
-// 旧链路（GrowthReportApp → extractRawMaterial → runGrowthMemorySkill）保持不变。
-// 未来阶段：skill runtime 可选择接受 MemoryRawMaterial 替代 RawMaterial。
 
 import type { RawMaterial } from "@/lib/types";
 import type { MemoryRawMaterial } from "@/lib/memory-core/types";

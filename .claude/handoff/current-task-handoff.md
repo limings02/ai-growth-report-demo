@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-20  
-> 当前阶段：Phase 12.6C 已完成  
+> 当前阶段：Phase 12.6D 已完成（family MemoryArtifact 迁移全部完成）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -11,7 +11,7 @@
 这是一个多阶段架构重构项目，目标是把单一孩子成长报告 demo 演化为 **multi-mode Memory Product**，支持 family / couple / personal / memorial 四种记忆主题。
 
 **当前状态：**
-- family：available，真实 AI 生成（MemoryArtifact 链路；dev UI fallback 和 parse fallback 均已删除；rollback path 保留待 Phase 12.6D）
+- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.6B/C/D 全部完成，GrowthMemoryArtifact 兼容层已彻底清理）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
 - memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
@@ -194,14 +194,21 @@
 - **允许进入 Phase 12.6C**
 
 ### Phase 12.6C（删除旧格式 parse fallback）
-- `lib/memory-core/parseMemoryArtifact.ts`：删除 `parseGrowthMemoryArtifact` import、`growthArtifactToMemoryArtifact` import、`childName`/`reportYear` 提取、family JSON 失败 fallback、`parsed.report` 分支；更新顶部注释
+- `parseMemoryArtifact.ts`：删除旧 GrowthMemoryArtifact parse 路径；`artifactAdapter.ts`：删除 `growthArtifactToMemoryArtifact`
 - 删除 `lib/skill-runtime/parseGrowthMemoryArtifact.ts`
-- `lib/domains/family/artifactAdapter.ts`：删除 `growthArtifactToMemoryArtifact` 函数和 `toMemoryGraphNodeType` helper；更新顶部注释
-- grep 验证：`parseGrowthMemoryArtifact` 0；`growthArtifactToMemoryArtifact` 代码引用 0；`parsed.report` 0
-- API 验证：最小输入 → mode=family，has_narrative=True，has_report=False，voice=parent-letter ✅
-- lint/build 通过，TypeScript 零错误
-- 新增 `docs/quality/family-parse-fallback-removal.md`：Phase 12.6C 验收报告
-- **允许进入 Phase 12.6D**（归档 rollback path）
+- lint/build ✅，API 验证 ✅
+
+### Phase 12.6D（归档 rollback path）
+- 删除 `lib/skill-runtime/runGrowthMemorySkill.ts`、`buildGrowthMemoryPrompt.ts`、`loadSkillPrompt.ts`、`types.ts`
+- 删除 `lib/domains/family/artifactAdapter.ts`（`memoryArtifactToGrowthArtifact`）
+- 删除 `components/SkillReviewPanel.tsx`（孤立 dev panel）
+- 清理 `buildMemoryPrompt.ts` `legacyFamilyInput`、`skillRegistry.ts` `fallbackSkillDir`、`loadMemorySkillPrompt.ts` fallback 逻辑
+- 清理多个文件过渡注释（types.ts / runMemorySkill / adapter / types / aiReportGenerator）
+- `.skills/growth-memory/README.md` 更新为 ARCHIVED 归档说明
+- grep 全量：所有 rollback 符号代码引用 0
+- lint/build ✅，API 验证 ✅
+- 新增 `docs/quality/family-rollback-path-removal.md`
+- **Phase 12.6 完成：family MemoryArtifact 迁移全部完成**
 
 ---
 
@@ -231,7 +238,8 @@
 - [x] **Phase 12.5.1**：prompt 质量微调，四组验收，引用审计完成（已完成，允许进入 12.6A）
 - [x] **Phase 12.6A**：清理计划文档 + 引用审计 + dev fallback 取舍决策（已完成，允许进入 12.6B）
 - [x] **Phase 12.6B**：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph）（已完成，允许进入 12.6C）
-- [x] **Phase 12.6C**：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact）（已完成，允许进入 12.6D）
+- [x] **Phase 12.6C**：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact）（已完成）
+- [x] **Phase 12.6D**：归档 rollback path（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等）（已完成，family MemoryArtifact 迁移全部完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -316,9 +324,7 @@ package.json
 | 过渡态 | 说明 |
 |--------|------|
 | `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
-| `runGrowthMemorySkill` 仍保留 | rollback path，不被 API 调用（Phase 12.6D 处理）|
-| `memoryArtifactToGrowthArtifact` 仍保留 | `runGrowthMemorySkill` 仍使用（Phase 12.6D 处理）|
-| `.skills/growth-memory` 保留 | 作为 family 的 fallback（后续归档）|
+| `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
 
 ---
 
@@ -336,13 +342,10 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.6D - 归档 rollback path（已完成 12.6C，下一步）
-- 处理 `lib/skill-runtime/runGrowthMemorySkill.ts`（归档/删除，确认无生产调用）
-- 清理 `lib/skill-runtime/buildGrowthMemoryPrompt.ts`（如无其他引用）
-- `lib/skill-runtime/types.ts`：清理 `GrowthMemoryArtifact` 类型（需确认无引用后）
-- `lib/domains/family/artifactAdapter.ts`：清理 `memoryArtifactToGrowthArtifact` 函数（无引用后删除）
-- `.skills/growth-memory/`：归档，不急删
-- 详见 `docs/architecture/family-legacy-cleanup-plan.md` Phase 12.6D 节
+### 优先级 1：Phase 12.7 - family 最终回归与体验优化（Phase 12.6 全部完成，下一步）
+- family MemoryArtifact 迁移已全部完成，可进行体验打磨
+- 可选方向：FamilyArtifactPreview 视觉细节打磨、照片区/原始记录打印支持、成长星图节点交互优化
+- 无硬性代码债务，按需规划
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -367,7 +370,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.6C 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.6D 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -381,8 +384,10 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 12.5.1：prompt 质量微调，四组验收通过，兼容层引用审计完成
 - Phase 12.6A：清理计划文档 + 引用审计 + dev fallback 取舍决策（推荐删除，方案 B）
 - Phase 12.6B：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph/graph types），lint/build ✅
-- Phase 12.6C：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact），lint/build ✅，API 验证 ✅
-- 下一步：Phase 12.6D - 归档 rollback path（runGrowthMemorySkill / memoryArtifactToGrowthArtifact / GrowthMemoryArtifact 类型）
+- Phase 12.6C：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact），lint/build ✅
+- Phase 12.6D：rollback path 全部清理（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等），lint/build ✅，API ✅
+- family MemoryArtifact 迁移全部完成（Phase 12.1 → 12.6D）
+- 下一步：Phase 12.7 - family 体验优化（按需规划）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

@@ -1,56 +1,38 @@
-# Growth Memory Skill Pack
+# growth-memory skill pack — ARCHIVED
 
-这是「给未来的你｜孩子的成长礼物」项目的核心 skill pack。
+> **归档状态**：此 skill pack 已在 Phase 12.6D 归档，不再被任何运行时路径调用。
 
-## 结构
+## 历史用途
 
-```
-growth-memory/
-  SKILL.md              # Skill 定义：输入、输出、原则、工作流
-  README.md             # 本文件
-  prompts/
-    00_system_role.md   # 模型角色定义
-    01_growth_memory_task.md  # 输入格式 + 任务说明
-    02_output_contract.md     # 输出格式合约（严格 JSON）
-    03_quality_rules.md       # 质量规则
-  schemas/
-    raw_material.schema.json          # 输入 schema
-    growth_memory_artifact.schema.json # 输出 schema
-  examples/
-    input.example.json   # 输入示例
-    output.example.json  # 输出示例
-  tests/
-    minimal_input.json   # 最小输入（只有必填字段）
-    rich_input.json      # 丰富输入（所有字段都有内容）
-    sparse_input.json    # 稀疏输入（大部分问题未回答）
-```
+这是 family mode 的原始 skill pack，输出格式为旧 `GrowthMemoryArtifact` JSON。
 
-## 运行时
-
-Skill 通过 `lib/skill-runtime/` 调用：
+### 旧运行时链路（已删除）
 
 ```
 RawMaterial
-  → buildGrowthMemoryPrompt()   # 读取 prompts/ + 注入材料
-  → callDeepSeek()              # 调用 LLM
-  → parseGrowthMemoryArtifact() # 解析 + 验证 + fallback
-  → GrowthMemoryArtifact
+  → buildGrowthMemoryPrompt()   # lib/skill-runtime/buildGrowthMemoryPrompt.ts（已删除）
+  → callDeepSeek()
+  → parseGrowthMemoryArtifact() # lib/skill-runtime/parseGrowthMemoryArtifact.ts（已删除）
+  → GrowthMemoryArtifact        # lib/skill-runtime/types.ts（已删除）
 ```
 
-## 当前版本（v0.4）
+## 当前 family mode 链路
 
-- **一次 LLM 调用**生成完整 artifact
-- prompt 从 `.skills/growth-memory/prompts/` 运行时读取（fs.readFileSync）
-- 修改 prompt 不需要重新 build
+```
+RawMaterial
+  → familyRawMaterialToMemoryRawMaterial
+  → runMemorySkill → .skills/family-memory
+  → MemoryArtifact
+```
 
-## 后续演进
+family mode 使用 `.skills/family-memory/` 作为当前 skill pack（自 Phase 12.5 起直接输出 MemoryArtifact）。
 
-可以把 7 个步骤拆成独立 agent skill：
+## 归档原因
 
-| Phase | Skills（可并行） |
-|-------|----------------|
-| 1 | keywordSkill, summarySkill, timelineSkill |
-| 2 | letterSkill, socialPostSkill |
-| 3 | videoScriptSkill, wikiSourceSkill |
+- Phase 12.4B：`/api/generate-report` 改为调用 `runFamilyMemorySkill`，不再使用此 skill pack
+- Phase 12.5：`.skills/family-memory` 已完全迁移到 MemoryArtifact 输出格式
+- Phase 12.6D：rollback path（`runGrowthMemorySkill`）已删除，此 skill pack 无任何引用
 
-拆分时机：当某个模块质量需要单独调优，或用户需要「重新生成某一部分」功能时。
+## 保留理由
+
+作为历史参考保留，不急于删除。如需恢复，可通过 git 历史找回对应的运行时代码。

@@ -112,7 +112,6 @@ export type MemoryRawMaterial = {
 
 // ─────────────────────────────────────────────────────────────────
 // 通用输出类型（Memory Engine 标准输出层）
-// 当前阶段只做类型定义，不替换 GrowthMemoryArtifact 或 ReportPreview
 // ─────────────────────────────────────────────────────────────────
 
 /**
@@ -252,14 +251,7 @@ export type MemoryQualityReview = {
 
 /**
  * 跨 mode 的统一生成结果（Memory Engine 标准输出层）。
- *
- * 当前阶段：
- * - 只新增类型，不替换旧 GrowthMemoryArtifact
- * - 不替换 ReportPreview 的 props
- *
- * 后续阶段：
- * - 通用 runMemorySkill 可以返回 MemoryArtifact
- * - family mode 通过 artifactAdapter 转回 GrowthMemoryArtifact，兼容旧 UI
+ * family / couple / personal / memorial 四个 mode 共享此类型。
  */
 export type MemoryArtifact = {
   artifactVersion: string;
@@ -267,10 +259,7 @@ export type MemoryArtifact = {
   narrative: MemoryNarrative;
   graph: MemoryGraphHints;
   extensions: {
-    /**
-     * 视频脚本（family mode 当前已支持，其他 mode 预留）。
-     * 使用 unknown 避免强耦合旧 VideoScript 类型。
-     */
+    /** 视频脚本（family mode 支持，其他 mode 预留）。 */
     videoScript?: unknown;
     sourceTrace?: MemorySourceTrace;
     qualityReview?: MemoryQualityReview;

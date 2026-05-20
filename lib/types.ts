@@ -95,14 +95,11 @@ export type ReportData = {
 
 // ─────────────────────────────────────────────────────────────
 // 生成器接口（Generator Interface）
-// v0.4 起生成器返回 GrowthMemoryArtifact，旧 ReportData 包含在 artifact.report 中
 // ─────────────────────────────────────────────────────────────
 
-// 避免循环引用：GrowthMemoryArtifact 定义在 lib/skill-runtime/types.ts
-// 这里用动态 import 方式在接口中引用
 export interface ReportGeneratorI {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  generate(material: RawMaterial): Promise<any>; // 实际返回 GrowthMemoryArtifact
+  generate(material: RawMaterial): Promise<any>; // 实际返回 MemoryArtifact
 }
 
 // ─────────────────────────────────────────────────────────────
