@@ -38,36 +38,50 @@
 
 ## 任务
 
-请生成一份孩子成长礼物，输出完整 GrowthMemoryArtifact JSON。
+请生成一份孩子成长礼物，输出完整 MemoryArtifact JSON。
+
+不要输出旧字段 report、yearlySummary、letter、skillStatus。
+不要把 videoScript、sourceTrace、qualityReview 放在顶层，它们必须放入 extensions。
 
 内容要求如下：
 
-### 1. report
+### 1. narrative
+
+生成 MemoryArtifact.narrative：
 
 - **title**：格式为「{childName}的 {reportYear} 成长礼物」，或自然的变体（如「写给三岁的{childName}」）
 - **keywords**：3-5 个关键词，必须从用户真实回答中提炼，不要写「成长」「爱」这种空洞词汇
-- **yearlySummary**：3-4 段年度总结，每段 2-4 句，合计至少 200 字，必须基于 qaList 和 freeNote 的真实回答；段落之间用 \n\n 分隔
+- **summary**：3-4 段年度总结，每段 2-4 句，合计至少 200 字，必须基于 qaList 和 freeNote 的真实回答；段落之间用 \n\n 分隔（对应旧 yearlySummary）
 - **timeline**：3-5 条重要瞬间，每条包含：
   - time：月份或季节，如 "3月"、"暑假"
   - title：简短事件标题（10 字以内）
   - description：2-3 句描述，有温度
-- **letter**：以 parentName 的身份写给孩子的信，至少 200 字，视角始终是父母；末尾用 parentName 署名并标注 reportYear 年；段落间用 \n\n 分隔
+- **longFormText**：（对应旧 letter）
+  - title：建议为「写给未来的{childName}」或「给未来的信」
+  - content：以 parentName 的身份写给孩子的信，至少 200 字，视角始终是父母；末尾用 parentName 署名并标注 reportYear 年；段落间用 \n\n 分隔
+  - voice：固定为 "parent-letter"
 - **socialPosts**：3 条分享文案，标题分别为「温暖版」「走心版」「简洁版」，内容 50-150 字
-- **skillStatus**：所有字段设为 "done"
 
 ### 2. graph
+
+生成 MemoryArtifact.graph：
 
 - **title**：8 字以内，有情感温度
 - **subtitle**：20 字以内，诗意
 - **centerDescription**：20 字以内，描述中心节点
 - **nodes**：3-8 个节点，每个节点包含：
-  - type：只能是 "keyword" | "event" | "letter" | "memory"
+  - type：只能是 MemoryGraphNodeType 中的合法类型之一
+    - family mode 推荐优先使用 "keyword" | "event" | "letter" | "memory" | "emotion"
+    - 也可使用 "subject" | "person" | "time" | "place" | "message"
+    - 禁止输出类型联合字符串（如 "keyword | event"）
   - label：5 字以内
   - description：20-30 字，有情感，不是简单事实
   - emotion：2-4 字的情绪词，如「温柔」「骄傲」「惊喜」
   - relatedTo：与其他节点 label 的关联（只填有真实关联的）
 
-### 3. videoScript
+### 3. extensions.videoScript
+
+生成 MemoryArtifact.extensions.videoScript：
 
 - **title**：视频标题
 - **duration**："30s" | "60s" | "90s"
@@ -75,14 +89,18 @@
 - **musicMood**：背景音乐建议
 - **endingLine**：结尾字幕
 
-### 4. sourceTrace
+### 4. extensions.sourceTrace
+
+生成 MemoryArtifact.extensions.sourceTrace：
 
 - **usedQuestions**：实际使用的问题列表
 - **usedFreeNote**：是否使用了 freeNote（布尔值）
 - **missingContext**：缺失哪些信息影响了质量
 - **groundingNotes**：哪些内容有直接依据，哪些是温和总结
 
-### 5. qualityReview
+### 5. extensions.qualityReview
+
+生成 MemoryArtifact.extensions.qualityReview：
 
 - **riskOfFabrication**："low" | "medium" | "high"
 - **emotionalTone**：情绪基调描述

@@ -101,7 +101,7 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family API + 前端已完成 MemoryArtifact 迁移，回归验收通过**（Phase 12.4B.1）：`/api/generate-report` 直接返回 `MemoryArtifact`；`aiReportGenerator` 有结构防御；dev-only legacy `ReportPreview` 通过 `memoryArtifactToGrowthArtifact` 支持；旧兼容层保留
+- **family MemoryArtifact 迁移完整链路已完成**（Phase 12.5）：`/api/generate-report` 返回标准 `MemoryArtifact`；`.skills/family-memory` 直接输出 MemoryArtifact；旧 GrowthMemoryArtifact fallback 路径保留；dev-only legacy `ReportPreview` 仍可对比
 - 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
 
 ---
@@ -211,7 +211,7 @@ Family form
 `.skills/family-memory/` 是当前真正运行的 family mode skill pack。
 
 - 输入：MemoryRawMaterial（含 legacyFamilyInput 兼容字段）
-- 输出：GrowthMemoryArtifact（暂时，为兼容旧前端）
+- 输出：标准 MemoryArtifact（Phase 12.5 迁移完成）
 - 用途：孩子成长记录 / 亲子成长礼物
 
 ### couple-memory
@@ -355,7 +355,8 @@ docs/
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
     memorial-generation-eval.md   # memorial 真实生成质量与安全边界评测（Phase 11.3）
     family-ui-migration-regression.md  # family 新旧 UI 回归验收（Phase 12.4A.2）
-    family-api-memoryartifact-migration.md  # family API MemoryArtifact 迁移验证（Phase 12.4B）
+    family-api-memoryartifact-migration.md      # family API MemoryArtifact 迁移验证（Phase 12.4B）
+    family-memoryartifact-prompt-migration.md   # family-memory prompt 输出合约迁移验证（Phase 12.5）
 ```
 
 ---

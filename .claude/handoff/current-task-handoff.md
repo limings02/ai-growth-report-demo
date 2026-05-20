@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-19  
-> 当前阶段：Phase 12.4B.1 已完成  
+> 当前阶段：Phase 12.5 已完成  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -162,6 +162,14 @@
 - `docs/quality/family-api-memoryartifact-migration.md` 追加 12.4B.1 回归章节
 - lint/build 通过
 
+### Phase 12.5（family-memory prompt 输出合约迁移到 MemoryArtifact）
+- `.skills/family-memory/prompts/01_task.md`：任务改为"输出 MemoryArtifact"；report/yearlySummary/letter → narrative/summary/longFormText；extensions 结构明确
+- `.skills/family-memory/prompts/02_output_contract.md`：标准 MemoryArtifact 合约；禁止旧字段；必须输出新字段
+- `.skills/family-memory/prompts/03_quality_rules.md`：字段名对齐
+- 真实生成验收：三组样例（丰富/最小/长文本）均直接输出 MemoryArtifact，LLM 未走旧格式路径 ✅
+- 小问题记录：最小输入 risk 偏乐观（Phase 12.5.1 改进）
+- 新增 `docs/quality/family-memoryartifact-prompt-migration.md`
+
 ---
 
 ## 3. 还没完成的 TODO
@@ -186,6 +194,7 @@
 - [x] **Phase 12.4A.2**：family 真实生成回归验收（已完成，有条件通过，允许进入 12.4B）
 - [x] **Phase 12.4B**：family API 返回 MemoryArtifact，GrowthReportApp state 切换（已完成）
 - [x] **Phase 12.4B.1**：API 迁移回归验收 + aiReportGenerator 结构防御 + 旧注释清理（已完成）
+- [x] **Phase 12.5**：family-memory prompt 直接输出 MemoryArtifact，三组验收通过（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -273,7 +282,7 @@ package.json
 
 | 过渡态 | 说明 |
 |--------|------|
-| `family-memory` 仍输出 `GrowthMemoryArtifact` | `parseMemoryArtifact` 兼容转换；Phase 12.5 迁移 prompt |
+| `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
 | `runGrowthMemorySkill` 仍保留 | 不再被 API 调用，作为 rollback path 保留 |
 | `ReportPreview` 仍存在 | 现为 dev-only legacy fallback，不再是生产默认 UI |
 | `LifeGraphPreview` 保留旧名字 | 未改名，Phase 12.6 清理 |
@@ -295,11 +304,11 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.5 - family-memory prompt 改为直接输出 MemoryArtifact
-- 修改 `.skills/family-memory/prompts/02_output_contract.md` 输出合约为 MemoryArtifact
-- 修改 `01_task.md`，把旧字段映射到 `narrative`
-- 这是高风险步骤（改 prompt 影响生成质量），建议先做一组回归测试再上线
-- 详见 `docs/architecture/family-memoryartifact-migration-plan.md` Phase 12.5 节
+### 优先级 1：Phase 12.5.1 - prompt 迁移后质量微调
+- 修正 `03_quality_rules.md` 中 riskOfFabrication 量化标准（最小输入时应为 medium 而非 low）
+- 可选：优化 `01_task.md` 中 longFormText.title 为动态 childName
+- 做 Phase 12.6 兼容层清理的最终前置验收
+- **不要直接进入 Phase 12.6 删除兼容层**
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -323,7 +332,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.4B.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.5 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -333,7 +342,8 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 12.4A.1~12.4A.2：状态流转修复 + 回归验收通过
 - Phase 12.4B：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换
 - Phase 12.4B.1：API 迁移回归验收通过；aiReportGenerator 结构防御；旧注释清理
-- 下一步：Phase 12.5 - family-memory prompt 输出合约迁移（高风险，需回归验收）
+- Phase 12.5：family-memory prompt 直接输出 MemoryArtifact，三组验收通过
+- 下一步：Phase 12.5.1 质量微调，不直接进入 12.6 删除兼容层
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

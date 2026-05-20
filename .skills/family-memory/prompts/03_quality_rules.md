@@ -7,11 +7,11 @@
   - ✗ 错误：「他在三月学会了骑车」（用户没说）
   - ✓ 正确：「这一年，他学会了很多新技能」（用户说了「学会了新能力」）
 - **信息不足不要硬撑**：如果 qaList 很少，timeline 可以只有 3 条且用季节性总结，不要凑数
-- **在 sourceTrace 中说清楚**：哪些内容是直接来自用户回答，哪些是你做了温和的总结性表达
+- **在 extensions.sourceTrace 中说清楚**：哪些内容是直接来自用户回答，哪些是你做了温和的总结性表达
 
 ### 信件规则
 
-- 信件始终以**父母身份**写给孩子，不是孩子的口吻
+- narrative.longFormText 始终以**父母身份**写给孩子，不是孩子的口吻
 - 文风可以根据 style 调整（活泼、诗意等），但**视角不变**
 - 末尾必须用 parentName 署名，标注 reportYear 年
 - 不要制造愧疚感，不要说「时光飞逝你却不珍惜」
@@ -35,9 +35,9 @@
 
 ### 质量自检规则
 
-- riskOfFabrication 要诚实评估：
+- extensions.qualityReview.riskOfFabrication 要诚实评估：
   - low：用户提供了丰富材料，内容有充分依据
   - medium：材料一般，部分内容做了合理总结
   - high：材料很少，大量内容是基于模板的总结
-- weaknesses 要诚实列出，不要为了好看而隐瞒不足
-- suggestionsForBetterInput 要具体，告诉父母下次可以多说哪些内容
+- extensions.qualityReview.weaknesses 要诚实列出，不要为了好看而隐瞒不足
+- extensions.qualityReview.suggestionsForBetterInput 要具体，告诉父母下次可以多说哪些内容

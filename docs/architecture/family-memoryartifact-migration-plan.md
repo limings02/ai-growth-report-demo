@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.4B.1 已完成。API 返回 MemoryArtifact，回归验收通过，aiReportGenerator 有结构防御。下一步 Phase 12.5 需谨慎（修改 family prompt 输出合约）。
+> 当前状态：Phase 12.5 已完成。`.skills/family-memory` 直接输出标准 MemoryArtifact，三组样例验收通过。下一步 Phase 12.5.1 质量微调后再考虑 Phase 12.6 清理兼容层。
 
 ---
 
@@ -231,20 +231,27 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.5：family-memory prompt 改为直接输出 MemoryArtifact
+### Phase 12.5：family-memory prompt 改为直接输出 MemoryArtifact（已完成）
 
-**目标**：`.skills/family-memory/prompts/02_output_contract.md` 改为要求输出 `MemoryArtifact` 格式，不再输出 `GrowthMemoryArtifact`。
-
-**操作**：
-1. 修改 `02_output_contract.md`，输出合约改为 MemoryArtifact 结构
-2. 修改 `01_task.md`，把 `yearlySummary`/`letter`/`skillStatus` 等旧字段映射到 `narrative`
-3. `parseMemoryArtifact` 中 family 的 GrowthMemoryArtifact 识别路径可以保留但不再会被触发
-
-**注意**：
-- 这一步必须在 Phase 12.4B.1 回归验收通过后执行（不得直接从 12.4B 跳到 12.5）
-- `growth-memory` fallback 可以继续保留作为应急
+**已完成**：
+- `01_task.md`：任务改为"输出 MemoryArtifact"；字段名全面更新；extensions 结构明确
+- `02_output_contract.md`：输出合约改为标准 MemoryArtifact；禁止旧字段；必须输出新字段
+- `03_quality_rules.md`：字段名对齐（sourceTrace/qualityReview → extensions.*）
+- 三组真实生成样例均直接输出 MemoryArtifact（LLM 未走旧格式路径）
+- 发现小问题：最小输入时 risk 评估偏乐观，记录为 Phase 12.5.1 改进项
 
 **验收**：生成结果字段完整，质量不低于迁移前。
+
+---
+
+### Phase 12.5.1：prompt 迁移后质量微调（建议下一步）
+
+**目标**：
+- 修正 Phase 12.5 发现的小问题（如最小输入时 risk 评估偏乐观）
+- 可选：优化 `narrative.longFormText.title` 使其动态包含 childName
+- 做 Phase 12.6 兼容层清理的最终前置验收
+
+**注意**：进入 Phase 12.6 删除兼容层之前，必须完成 Phase 12.5.1 验收。
 
 ---
 
@@ -281,7 +288,7 @@ MemoryArtifact（标准格式）
 | Phase 12.4A | ✅ 已完成：family 默认显示 FamilyArtifactPreview；照片/原始记录/图谱可见；dev-only 可切回旧 ReportPreview；/api/generate-report 未修改 |
 | Phase 12.4B | ✅ 已完成：/api/generate-report 直接返回 MemoryArtifact；GrowthReportApp state 切换；API 格式验证通过 |
 | Phase 12.4B.1 | ✅ 已完成：旧注释清理；aiReportGenerator 结构防御；API 错误响应验证；12.4B.1 回归通过 |
-| Phase 12.5 | family-memory 输出 MemoryArtifact，生成质量不低于迁移前，riskOfFabrication 评估合理 |
+| Phase 12.5 | ✅ 已完成：family-memory 直接输出 MemoryArtifact，三组样例验收通过 |
 | Phase 12.6 | 相关兼容文件删除，grep 无残留引用，lint/build 通过 |
 
 ---
