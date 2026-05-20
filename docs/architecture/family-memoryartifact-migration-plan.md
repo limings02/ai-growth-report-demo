@@ -1,7 +1,7 @@
 # Family 链路泛化迁移计划
 
 > 文档创建：Phase 12.1（2026-05-19）  
-> 当前状态：Phase 12.6A 已完成。清理计划已制定，决策删除 dev legacy fallback（方案 B），允许进入 Phase 12.6B。
+> 当前状态：Phase 12.6B 已完成。dev legacy UI fallback 已删除（ReportPreview / LifeGraphPreview / buildLifeGraph / lib/graph/types.ts）。允许进入 Phase 12.6C（删除旧格式 parse fallback）。
 
 ---
 
@@ -266,20 +266,17 @@ MemoryArtifact（标准格式）
 
 ---
 
-### Phase 12.6B：删除 dev legacy UI fallback
+### Phase 12.6B：删除 dev legacy UI fallback（已完成）
 
-**目标**：移除 `GrowthReportApp.tsx` 中的 dev-only legacy fallback，删除 `ReportPreview` / `LifeGraphPreview` / `buildLifeGraph` 级联文件。
-
-**操作**：
-- `GrowthReportApp.tsx`：移除 `showLegacyReportPreview` 状态、`ReportPreview` import、`memoryArtifactToGrowthArtifact` import、dev 浮动按钮
+**已完成**：
+- `GrowthReportApp.tsx`：移除 `showLegacyReportPreview` 状态、`ReportPreview` import、`memoryArtifactToGrowthArtifact` import、`isDev` 变量、dev-only 浮动按钮
 - 删除 `components/ReportPreview.tsx`
 - 删除 `components/LifeGraphPreview.tsx`
 - 删除 `lib/graph/buildLifeGraph.ts`
 - 删除 `lib/graph/types.ts`
-
-**保留**：`artifactAdapter.ts`（`memoryArtifactToGrowthArtifact` 函数，`runGrowthMemorySkill` 仍用到）
-
-**验收**：lint/build 通过，family UI 正常，`grep ReportPreview` 无残留
+- `grep` 验证：`ReportPreview` / `LifeGraphPreview` 代码引用 0；`buildLifeGraph` / `LifeGraphData` / `showLegacyReportPreview` 全部为 0
+- lint/build 通过（TypeScript 零错误）
+- **保留**：`artifactAdapter.ts`、`parseGrowthMemoryArtifact.ts`、`runGrowthMemorySkill.ts`（分步处理）
 
 ---
 
@@ -324,7 +321,7 @@ MemoryArtifact（标准格式）
 | Phase 12.5 | ✅ 已完成：family-memory 直接输出 MemoryArtifact，三组样例验收通过 |
 | Phase 12.5.1 | ✅ 已完成：riskOfFabrication 量化修正，videoScript 保守规则，四组验收通过，引用审计完成 |
 | Phase 12.6A | ✅ 已完成：清理计划制定，引用审计，dev fallback 取舍（推荐方案 B）|
-| Phase 12.6B | 删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph）|
+| Phase 12.6B | ✅ 已完成：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph/graph types）|
 | Phase 12.6C | 删除旧格式 parse fallback |
 | Phase 12.6D | 归档 rollback path / growth-memory |
 

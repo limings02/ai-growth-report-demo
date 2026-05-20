@@ -68,7 +68,7 @@ npm run dev
 - 自由文本区
 - DeepSeek 大模型生成（只传文本，不上传照片）
 - 成长报告展示（封面、关键词、总结、时间线、信件、朋友圈文案）
-- 成长星图（LifeGraphPreview，AI 语义节点优先，fallback 前端派生）
+- 成长星图（FamilyMemoryGraphPreview，AI 语义节点，SVG 星图展示）
 - 朋友圈文案一键复制
 - 原始材料归档展示
 - 打印 / 保存 PDF
@@ -101,8 +101,8 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family MemoryArtifact 迁移完整链路已完成，进入清理阶段**（Phase 12.6A）：`/api/generate-report` 返回标准 `MemoryArtifact`；prompt 直接输出 MemoryArtifact；Phase 12.6B 将删除 dev-only legacy `ReportPreview` fallback；旧 parse fallback 路径仍保留待后续清理
-- 开发环境下 family 结果页右下角有 dev-only 按钮「🧪 查看旧版 ReportPreview」，可对比新旧展示；生产环境不显示
+- **family MemoryArtifact 迁移完整链路已完成，UI fallback 已删除**（Phase 12.6B）：`/api/generate-report` 返回标准 `MemoryArtifact`；prompt 直接输出 MemoryArtifact；`ReportPreview` / `LifeGraphPreview` 旧组件已删除；旧 parse fallback 路径保留待 Phase 12.6C 清理
+- family 结果页只使用 `FamilyArtifactPreview`，不再保留旧版 `ReportPreview` 对比入口
 
 ---
 
@@ -195,9 +195,7 @@ Family form
   → DeepSeek
   → parseMemoryArtifact
   → MemoryArtifact
-  → memoryArtifactToGrowthArtifact
-  → GrowthMemoryArtifact
-  → ReportPreview / LifeGraphPreview
+  → FamilyArtifactPreview
 ```
 
 ---
@@ -294,8 +292,6 @@ components/
     MemorySocialPostsSection.tsx   # 通用分享文案区（含复制按钮）
     MemoryUsageTipsSection.tsx     # 通用保存与使用建议区
   GrowthReportApp.tsx              # family 主状态机
-  LifeGraphPreview.tsx             # 成长星图（支持通用节点类型）
-  ReportPreview.tsx                # 成长报告展示
 
 lib/
   memory-core/
@@ -333,9 +329,6 @@ lib/
     loadSkillPrompt.ts
     types.ts                       # GrowthMemoryArtifact 类型定义
 
-  graph/
-    types.ts                       # LifeGraphData（兼容旧 UI）
-    buildLifeGraph.ts              # 旧兼容 wrapper
 
 .skills/
   family-memory/                   # 当前可用
@@ -359,6 +352,7 @@ docs/
     family-api-memoryartifact-migration.md      # family API MemoryArtifact 迁移验证（Phase 12.4B）
     family-memoryartifact-prompt-migration.md     # family-memory prompt 输出合约迁移验证（Phase 12.5）
     family-memoryartifact-prompt-quality-tuning.md  # prompt 质量微调 + 兼容层引用审计（Phase 12.5.1）
+    family-dev-fallback-removal.md               # dev legacy UI fallback 删除验收（Phase 12.6B）
 ```
 
 ---

@@ -1,7 +1,8 @@
 # Family Legacy Cleanup Plan - Phase 12.6A
 
 > 文档创建：Phase 12.6A（2026-05-20）  
-> 状态：计划阶段，本文档不代表已删除任何文件
+> 更新：Phase 12.6B（2026-05-20）  
+> 状态：Phase 12.6B 已执行完成，dev legacy UI fallback 已删除。允许进入 Phase 12.6C。
 
 ---
 
@@ -74,14 +75,19 @@
 
 **采用方案 B，分三步执行：**
 
-### Phase 12.6B：删除 dev legacy UI fallback
+### Phase 12.6B：删除 dev legacy UI fallback（已完成，2026-05-20）
 
-删除内容：
-- `GrowthReportApp.tsx`：移除 `showLegacyReportPreview` 状态、`memoryArtifactToGrowthArtifact` import、`ReportPreview` import、dev-only 浮动按钮
-- 删除 `components/ReportPreview.tsx`
-- 删除 `components/LifeGraphPreview.tsx`
-- 删除 `lib/graph/buildLifeGraph.ts`
-- 删除 `lib/graph/types.ts`
+已删除：
+- `GrowthReportApp.tsx`：移除 `showLegacyReportPreview` 状态、`memoryArtifactToGrowthArtifact` import、`ReportPreview` import、`isDev` 变量、dev-only 浮动按钮
+- `components/ReportPreview.tsx`（已删除）
+- `components/LifeGraphPreview.tsx`（已删除）
+- `lib/graph/buildLifeGraph.ts`（已删除）
+- `lib/graph/types.ts`（已删除）
+
+grep 结果：`ReportPreview` / `LifeGraphPreview` 代码引用 0；`buildLifeGraph` / `LifeGraphData` / `showLegacyReportPreview` 全部 0；
+残留为注释历史引用（artifactAdapter.ts / runGrowthMemorySkill.ts / types.ts），不影响行为。
+
+lint ✅ | build ✅ | TypeScript 零错误
 
 **保留**：`memoryArtifactToGrowthArtifact`（函数定义，`runGrowthMemorySkill` 仍用到）；`parseGrowthMemoryArtifact`；`growthArtifactToMemoryArtifact`
 
