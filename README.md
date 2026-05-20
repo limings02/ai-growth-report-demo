@@ -101,8 +101,8 @@ npm run dev
 - 不使用「AI 复活」「与逝者对话」等表达，不模拟逝者说话，定位为人生故事整理与家族记忆传承
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
-- **family MemoryArtifact 迁移完整链路已完成，UI fallback 已删除**（Phase 12.6B）：`/api/generate-report` 返回标准 `MemoryArtifact`；prompt 直接输出 MemoryArtifact；`ReportPreview` / `LifeGraphPreview` 旧组件已删除；旧 parse fallback 路径保留待 Phase 12.6C 清理
-- family 结果页只使用 `FamilyArtifactPreview`，不再保留旧版 `ReportPreview` 对比入口
+- **family MemoryArtifact 迁移清理进行中**（Phase 12.6C）：UI fallback 和旧格式 parse fallback 均已删除；rollback path（`runGrowthMemorySkill`）仍保留待 Phase 12.6D 清理
+- family 结果页只使用 `FamilyArtifactPreview`；`parseMemoryArtifact` 不再处理旧 `GrowthMemoryArtifact` 格式
 
 ---
 
@@ -323,9 +323,8 @@ lib/
       mockArtifact.ts              # memorial 开发预览用 mock artifact
 
   skill-runtime/
-    runGrowthMemorySkill.ts        # 旧入口（现为兼容 wrapper）
+    runGrowthMemorySkill.ts        # rollback path（Phase 12.6D 处理）
     buildGrowthMemoryPrompt.ts
-    parseGrowthMemoryArtifact.ts
     loadSkillPrompt.ts
     types.ts                       # GrowthMemoryArtifact 类型定义
 
@@ -353,6 +352,7 @@ docs/
     family-memoryartifact-prompt-migration.md     # family-memory prompt 输出合约迁移验证（Phase 12.5）
     family-memoryartifact-prompt-quality-tuning.md  # prompt 质量微调 + 兼容层引用审计（Phase 12.5.1）
     family-dev-fallback-removal.md               # dev legacy UI fallback 删除验收（Phase 12.6B）
+    family-parse-fallback-removal.md             # 旧格式 parse fallback 删除验收（Phase 12.6C）
 ```
 
 ---

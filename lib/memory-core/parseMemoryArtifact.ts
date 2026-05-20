@@ -2,11 +2,13 @@
 // 服务端专用：把 LLM 返回的 raw string 解析成 MemoryArtifact。
 // 不要在客户端组件中 import 本文件。
 //
-// 解析策略（优先级由高到低）：
-// 1. 解析为 JSON → 已是 MemoryArtifact 格式 → 规范化后返回
-// 2. 解析为 JSON → 是旧 GrowthMemoryArtifact 格式（family mode）→ 转换后返回
-// 3. JSON 解析失败 + family mode → 尝试旧 parseGrowthMemoryArtifact → 转换后返回
-// 4. 全部失败 → 返回最小可渲染 MemoryArtifact，不让 API 崩溃
+// 解析策略（Phase 12.6C 起）：
+// 1. 解析为 JSON → 已是 MemoryArtifact 格式（有 narrative + graph）→ 规范化后返回
+// 2. JSON 可解析但不是 MemoryArtifact 格式 → 返回最小可渲染 MemoryArtifact
+// 3. JSON 解析失败 → 返回最小可渲染 MemoryArtifact，不让 API 崩溃
+//
+// 注意：旧 GrowthMemoryArtifact 输出格式 fallback 已在 Phase 12.6C 删除。
+// family-memory prompt 已在 Phase 12.5 直接输出 MemoryArtifact。
 
 import type {
   MemoryArtifact,
@@ -19,8 +21,6 @@ import type {
   MemoryTimelineItem,
   MemorySocialPost,
 } from "./types";
-import { growthArtifactToMemoryArtifact } from "@/lib/domains/family/artifactAdapter";
-import { parseGrowthMemoryArtifact } from "@/lib/skill-runtime/parseGrowthMemoryArtifact";
 
 // ── 工具函数 ─────────────────────────────────────────────────────
 
@@ -231,50 +231,17 @@ export function parseMemoryArtifact(
   raw: string,
   material: MemoryRawMaterial
 ): MemoryArtifact {
-  // 从 domainPayload 提取 family-specific 字段（用于 fallback parser）
-  const childName =
-    typeof material.domainPayload?.childName === "string"
-      ? material.domainPayload.childName
-      : material.subject.primaryName;
-  const reportYear =
-    typeof material.domainPayload?.reportYear === "number"
-      ? material.domainPayload.reportYear
-      : Number(material.subject.timeRange) || new Date().getFullYear();
-
   let parsed: Record<string, unknown>;
 
   try {
     parsed = JSON.parse(extractJson(raw)) as Record<string, unknown>;
   } catch {
-    // JSON 解析失败：family mode 尝试旧 parser，其他 mode 直接返回最小 artifact
-    if (material.mode === "family") {
-      try {
-        const growthArtifact = parseGrowthMemoryArtifact(raw, childName, reportYear);
-        return growthArtifactToMemoryArtifact(growthArtifact);
-      } catch {
-        return makeMinimalMemoryArtifact(material, "LLM 输出无法解析为 JSON");
-      }
-    }
     return makeMinimalMemoryArtifact(material, "LLM 输出无法解析为 JSON");
   }
 
   // 已是 MemoryArtifact 格式（有 narrative + graph）
   if (parsed.narrative && parsed.graph) {
     return normalizeMemoryArtifact(parsed, material);
-  }
-
-  // 旧 GrowthMemoryArtifact 格式（有 report，family mode）
-  if (material.mode === "family" && parsed.report) {
-    try {
-      const growthArtifact = parseGrowthMemoryArtifact(
-        JSON.stringify(parsed),
-        childName,
-        reportYear
-      );
-      return growthArtifactToMemoryArtifact(growthArtifact);
-    } catch {
-      return makeMinimalMemoryArtifact(material, "旧 GrowthMemoryArtifact 解析失败");
-    }
   }
 
   return makeMinimalMemoryArtifact(material, "无法识别的 MemoryArtifact 格式");

@@ -1,8 +1,8 @@
 # Family Legacy Cleanup Plan - Phase 12.6A
 
 > 文档创建：Phase 12.6A（2026-05-20）  
-> 更新：Phase 12.6B（2026-05-20）  
-> 状态：Phase 12.6B 已执行完成，dev legacy UI fallback 已删除。允许进入 Phase 12.6C。
+> 更新：Phase 12.6C（2026-05-20）  
+> 状态：Phase 12.6B（UI fallback）和 Phase 12.6C（parse fallback）均已完成。允许进入 Phase 12.6D（归档 rollback path）。
 
 ---
 
@@ -91,14 +91,16 @@ lint ✅ | build ✅ | TypeScript 零错误
 
 **保留**：`memoryArtifactToGrowthArtifact`（函数定义，`runGrowthMemorySkill` 仍用到）；`parseGrowthMemoryArtifact`；`growthArtifactToMemoryArtifact`
 
-### Phase 12.6C：删除旧格式 parse fallback
+### Phase 12.6C：删除旧格式 parse fallback（已完成，2026-05-20）
 
-删除内容：
-- `lib/memory-core/parseMemoryArtifact.ts`：移除 `parseGrowthMemoryArtifact` import 和两处调用，移除 `growthArtifactToMemoryArtifact` import
-- 删除 `lib/skill-runtime/parseGrowthMemoryArtifact.ts`
-- 确认 `lib/domains/family/artifactAdapter.ts` 中 `growthArtifactToMemoryArtifact` 是否还有其他引用，若无则可删除函数
+已删除：
+- `parseMemoryArtifact.ts`：移除 `parseGrowthMemoryArtifact` import、`growthArtifactToMemoryArtifact` import、`childName`/`reportYear` 提取、family JSON 失败 fallback、`parsed.report` 分支
+- `lib/skill-runtime/parseGrowthMemoryArtifact.ts`（已删除）
+- `artifactAdapter.ts`：删除 `growthArtifactToMemoryArtifact` 函数和 `toMemoryGraphNodeType` helper
 
-**前置条件**：确认 family prompt 不再输出旧格式（已完成，Phase 12.5.1 验收通过）
+grep 结果：`parseGrowthMemoryArtifact` 0；`growthArtifactToMemoryArtifact` 代码引用 0；`parsed.report` 0
+
+lint ✅ | build ✅ | API 验证 ✅（标准 MemoryArtifact，无 report 字段）
 
 ### Phase 12.6D：归档 rollback path
 
