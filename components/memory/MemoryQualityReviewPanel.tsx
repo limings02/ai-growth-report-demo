@@ -25,10 +25,10 @@ export default function MemoryQualityReviewPanel({ qualityReview }: Props) {
   if (!qualityReview) return null;
 
   return (
-    <MemorySectionCard title="📊 生成质量说明">
+    <MemorySectionCard title="💡 内容参考说明">
       <div className="space-y-2 text-xs" style={{ color: "#9d7b72" }}>
         <div className="flex items-center gap-2">
-          <span>幻觉风险：</span>
+          <span>参考可信度：</span>
           <span
             className="px-2 py-0.5 rounded-full font-medium"
             style={RISK_STYLE[qualityReview.riskOfFabrication]}

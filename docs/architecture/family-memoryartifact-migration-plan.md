@@ -322,6 +322,7 @@ MemoryArtifact（标准格式）
 | Phase 12.6B | ✅ 已完成：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph/graph types）|
 | Phase 12.6C | ✅ 已完成：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact）|
 | Phase 12.6D | ✅ 已完成：rollback path 全部清理，.skills/growth-memory 已归档 |
+| Phase 12.7A.1 | ✅ 已完成：3 组 API 验证 + 产品体验审计 + P1 小修（print:hidden / 文案软化）|
 
 ---
 

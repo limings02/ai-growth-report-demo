@@ -24,6 +24,12 @@ import FamilyMemoryGraphPreview from "./FamilyMemoryGraphPreview";
 
 const MAX_PHOTOS = 6;
 
+const STYLE_LABEL: Record<string, string> = {
+  warm:     "温馨版",
+  literary: "文艺版",
+  simple:   "简洁版",
+};
+
 type Props = {
   artifact: MemoryArtifact;
   rawMaterial?: RawMaterial;   // 照片/原始记录承接；Phase 12.4A 后为常规传入
@@ -112,7 +118,7 @@ export default function FamilyArtifactPreview({
                 )}
                 <p><span className="font-medium">年份：</span>{rawMaterial.reportYear}</p>
                 <p><span className="font-medium">父母称呼：</span>{rawMaterial.parentName}</p>
-                <p><span className="font-medium">风格：</span>{rawMaterial.style}</p>
+                <p><span className="font-medium">风格：</span>{STYLE_LABEL[rawMaterial.style] ?? rawMaterial.style}</p>
                 {rawMaterial.photoUrls.length > 0 && (
                   <p><span className="font-medium">照片数量：</span>{rawMaterial.photoUrls.length} 张（仅本地预览）</p>
                 )}

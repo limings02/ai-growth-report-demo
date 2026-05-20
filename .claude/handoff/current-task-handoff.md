@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-20  
-> 当前阶段：Phase 12.6D 已完成（family MemoryArtifact 迁移全部完成）  
+> 当前阶段：Phase 12.7A.1 已完成（family 最终回归 + P1 体验小修）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -11,7 +11,7 @@
 这是一个多阶段架构重构项目，目标是把单一孩子成长报告 demo 演化为 **multi-mode Memory Product**，支持 family / couple / personal / memorial 四种记忆主题。
 
 **当前状态：**
-- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.6B/C/D 全部完成，GrowthMemoryArtifact 兼容层已彻底清理）
+- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.6D 全部完成；Phase 12.7A.1 体验小修已完成）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
 - memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
@@ -203,12 +203,20 @@
 - 删除 `lib/domains/family/artifactAdapter.ts`（`memoryArtifactToGrowthArtifact`）
 - 删除 `components/SkillReviewPanel.tsx`（孤立 dev panel）
 - 清理 `buildMemoryPrompt.ts` `legacyFamilyInput`、`skillRegistry.ts` `fallbackSkillDir`、`loadMemorySkillPrompt.ts` fallback 逻辑
-- 清理多个文件过渡注释（types.ts / runMemorySkill / adapter / types / aiReportGenerator）
 - `.skills/growth-memory/README.md` 更新为 ARCHIVED 归档说明
-- grep 全量：所有 rollback 符号代码引用 0
 - lint/build ✅，API 验证 ✅
-- 新增 `docs/quality/family-rollback-path-removal.md`
 - **Phase 12.6 完成：family MemoryArtifact 迁移全部完成**
+
+### Phase 12.7A.1（family 最终回归 + P1 体验小修）
+- 3 组 API 样例验收（最小/丰富/长文本）：全部返回标准 MemoryArtifact ✅
+- 产品体验代码审计：P1/P2/P3 问题分类，见 `docs/quality/family-final-regression.md`
+- **P1 小修**（直接实施）：
+  - `MemoryArtifactPreview.tsx`：质量说明 + 溯源 section 加 `print:hidden`（不出现在礼物 PDF）
+  - `MemoryQualityReviewPanel.tsx`："幻觉风险" → "参考可信度"；"📊 生成质量说明" → "💡 内容参考说明"
+  - `FamilyArtifactPreview.tsx`：raw material 风格字段 warm/literary/simple → 中文名
+  - `MemoryArtifactPreview.tsx`："首页" → "← 返回首页"
+- lint/build ✅
+- 新增 `docs/quality/family-final-regression.md`：3 组样例结果 + 体验评分 + P1/P2/P3 问题列表 + Phase 12.7B 建议
 
 ---
 
@@ -239,7 +247,8 @@
 - [x] **Phase 12.6A**：清理计划文档 + 引用审计 + dev fallback 取舍决策（已完成，允许进入 12.6B）
 - [x] **Phase 12.6B**：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph）（已完成，允许进入 12.6C）
 - [x] **Phase 12.6C**：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact）（已完成）
-- [x] **Phase 12.6D**：归档 rollback path（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等）（已完成，family MemoryArtifact 迁移全部完成）
+- [x] **Phase 12.6D**：归档 rollback path（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等）（已完成）
+- [x] **Phase 12.7A.1**：family 最终回归 + P1 体验小修（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -325,6 +334,7 @@ package.json
 |--------|------|
 | `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
 | `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
+| 真实浏览器交互验证 | 未完成（API 3 组验证通过；P1 小修代码验证通过）|
 
 ---
 
@@ -342,10 +352,16 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.7 - family 最终回归与体验优化（Phase 12.6 全部完成，下一步）
-- family MemoryArtifact 迁移已全部完成，可进行体验打磨
-- 可选方向：FamilyArtifactPreview 视觉细节打磨、照片区/原始记录打印支持、成长星图节点交互优化
-- 无硬性代码债务，按需规划
+### 优先级 1：Phase 12.7B - family 礼物感体验优化（P1 已修，P2 待做）
+
+当前 P1 问题已修复，P2 问题建议作为 Phase 12.7B 执行：
+- **照片区位置前移**：将 `extraSections`（照片 + 原始记录）移到 cover section 之后，而不是当前的页面最底部（中等风险，影响 MemoryArtifactPreview 插槽顺序）
+- **图谱双标题问题**：在 `FamilyMemoryGraphPreview` 中隐藏 `graph.title`（因为 MemorySectionCard 标题已显示"🌿 成长星图"）
+- **节点截断放宽**：`truncate(node.label, 5)` → `truncate(node.label, 8)`
+
+### 优先级 2：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
+
+family 产品稳定后，可以开始设计多次生成历史保存系统。
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -370,7 +386,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.6D 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.7A.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -385,9 +401,9 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 12.6A：清理计划文档 + 引用审计 + dev fallback 取舍决策（推荐删除，方案 B）
 - Phase 12.6B：删除 dev legacy UI fallback（ReportPreview/LifeGraphPreview/buildLifeGraph/graph types），lint/build ✅
 - Phase 12.6C：删除旧格式 parse fallback（parseGrowthMemoryArtifact / growthArtifactToMemoryArtifact），lint/build ✅
-- Phase 12.6D：rollback path 全部清理（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等），lint/build ✅，API ✅
-- family MemoryArtifact 迁移全部完成（Phase 12.1 → 12.6D）
-- 下一步：Phase 12.7 - family 体验优化（按需规划）
+- Phase 12.6D：rollback path 全部清理，lint/build ✅，API ✅
+- Phase 12.7A.1：3 组 API 样例验证 ✅，产品体验审计完成，P1 小修已实施（print:hidden / 文案软化 / 风格中文化 / 首页按钮文案）
+- 下一步：Phase 12.7B（照片区位置 / 图谱标题 / 节点截断）或 Phase 13（数据保存）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

@@ -124,7 +124,7 @@ export default function MemoryArtifactPreview({
               className="text-sm cursor-pointer hover:underline"
               style={{ color: "#b08878" }}
             >
-              首页
+              ← 返回首页
             </button>
           )}
         </div>
@@ -183,14 +183,16 @@ export default function MemoryArtifactPreview({
         {/* graph 插槽：由各 mode 传入对应图谱组件 */}
         {graphSlot}
 
-        <MemoryQualityReviewPanel qualityReview={qualityReview} />
+        {/* 质量说明 + 溯源：print:hidden — 工程化信息不适合出现在礼物 PDF 中 */}
+        <div className="print:hidden">
+          <MemoryQualityReviewPanel qualityReview={qualityReview} />
+          <MemorySourceTraceDetails sourceTrace={sourceTrace} />
+        </div>
 
         <MemoryUsageTipsSection
           primaryTip={usagePrimaryTip}
           secondaryTip={usageSecondaryTip}
         />
-
-        <MemorySourceTraceDetails sourceTrace={sourceTrace} />
 
         {/* mode-specific 额外 section 插槽（family：照片区 + 原始记录区） */}
         {extraSections}

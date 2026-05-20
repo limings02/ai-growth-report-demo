@@ -1,8 +1,8 @@
 # Family Legacy Cleanup Plan - Phase 12.6A
 
 > 文档创建：Phase 12.6A（2026-05-20）  
-> 更新：Phase 12.6D（2026-05-20）  
-> 状态：Phase 12.6B / 12.6C / 12.6D 全部完成。family MemoryArtifact 迁移全部完成，GrowthMemoryArtifact 兼容层已彻底清理。
+> 更新：Phase 12.7A.1（2026-05-20）  
+> 状态：Phase 12.6B / 12.6C / 12.6D 全部完成，GrowthMemoryArtifact 兼容层已彻底清理。Phase 12.7A.1 产品体验审计 + P1 小修已完成。
 
 ---
 

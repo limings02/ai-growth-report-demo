@@ -102,6 +102,7 @@ npm run dev
 - 开发环境下 memorial 输入页提供 mock 预览按钮；生产环境不显示
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 - **family MemoryArtifact 迁移已完成**（Phase 12.6D）：旧 UI fallback、parse fallback、rollback path 均已清理；`.skills/growth-memory` 已归档；family 链路完全使用 `MemoryArtifact`
+- **family 体验优化**（Phase 12.7A.1）：质量说明/内容溯源 section 加 `print:hidden`（不出现在礼物 PDF）；"幻觉风险"改为"参考可信度"；raw material 风格字段显示中文名称
 
 ---
 
@@ -348,6 +349,7 @@ docs/
     family-dev-fallback-removal.md               # dev legacy UI fallback 删除验收（Phase 12.6B）
     family-parse-fallback-removal.md             # 旧格式 parse fallback 删除验收（Phase 12.6C）
     family-rollback-path-removal.md              # rollback path 删除验收（Phase 12.6D）
+    family-final-regression.md                  # family 最终回归 + 产品体验审计（Phase 12.7）
 ```
 
 ---
