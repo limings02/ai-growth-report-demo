@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-21  
-> 当前阶段：Phase 13.4 已完成（family archive 删除 / 清空管理）  
+> 当前阶段：Phase 13.5 已完成（family archive JSON 导出）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,18 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 13.5（family archive JSON 导出）
+- `lib/archive/exportArchive.ts`（新增）：`createArchiveExportBundle` / `createArchiveExportFileName` / `downloadJsonFile`（Blob + URL.createObjectURL，SSR 安全）
+- `lib/archive/index.ts`：新增 `export * from "./exportArchive"`
+- `FamilyArchivePage.tsx`：
+  - import 导出函数
+  - `operationStatus: "success" | "error"` 状态区分（反馈颜色：绿/红）
+  - `showOperationMessage()` helper 统一操作反馈
+  - `handleExportFamilyArchive()`：只导出 family item
+  - 顶部栏「导出 JSON」按钮（`items.length > 0` 时显示）
+  - 危险操作区上方添加隐私说明（不包含原始照片文件）
+- lint/build ✅；新增 `docs/quality/family-archive-export-check.md`
+
 ### Phase 13.4（family archive 删除 / 清空管理）
 - `lib/archive/localArchiveStore.ts`：新增 `deleteArchiveItemsByMode(mode)` — 只删指定 mode，不影响其他 mode
 - `components/archive/FamilyArchivePage.tsx`：
@@ -311,6 +323,7 @@
 - [x] **Phase 13.2**：family 结果页「保存到本地」按钮接入（已完成）
 - [x] **Phase 13.3**：family 历史记录列表 + 本地详情回看（已完成）
 - [x] **Phase 13.4**：family archive 删除单条 + 清空 family（已完成）
+- [x] **Phase 13.5**：family archive JSON 导出（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -411,11 +424,15 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 13.5 - 导出 JSON（可选）
+### 优先级 1：Phase 13.6 - JSON 导入 / 恢复
 
-family archive 管理已完善（保存/列表/详情/删除/清空），可选择：
-- 导出当前 family archive 为 JSON 文件（`Blob + URL.createObjectURL`，无需后端）
-- 或直接进入其他 mode 的 archive 接入（couple/personal/memorial 保存 + 列表）
+family archive 导出已就绪，可选择接下来做：
+- 读取用户选择的 JSON 文件，解析并合并到 localStorage（`FileReader` / `input[type=file]`，无需后端）
+- 需要设计冲突处理：相同 id 如何处理（跳过 / 覆盖 / 新 id）
+
+### 优先级 2：其他 mode archive 接入（可选）
+- couple / personal / memorial 结果页增加「保存到本地」按钮
+- 复用 `lib/archive/` 数据层，已支持多 mode
 
 ### 优先级 2：Phase 13.3 - 历史记录列表页（可选）
 
@@ -438,7 +455,7 @@ Phase 13.2 完成后：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 13.4 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 13.5 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -462,7 +479,8 @@ Phase 13.2 完成后：
 - Phase 13.2：family 结果页「保存到本地」按钮（topActionsSlot / upsertArchiveItem）✅
 - Phase 13.3：family 历史列表（FamilyArchivePage / useState 懒初始化 / showArchiveSaveButton）✅
 - Phase 13.4：archive 删除单条 + 清空 family（deleteArchiveItemsByMode / 二次确认 / refreshItems）✅
-- 下一步：Phase 13.5（导出 JSON）或其他 mode archive 接入
+- Phase 13.5：family archive JSON 导出（exportArchive / Blob+URL.createObjectURL / operationStatus）✅
+- 下一步：Phase 13.6（JSON 导入）或其他 mode archive 接入
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -479,7 +497,7 @@ Phase 13.2 完成后：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 13.5：导出 JSON 或其他 mode archive 接入
+- 进入 Phase 13.6：JSON 导入 / 恢复，或其他 mode archive 接入
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

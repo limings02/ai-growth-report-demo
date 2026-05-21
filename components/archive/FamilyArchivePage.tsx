@@ -1,11 +1,11 @@
 "use client";
 
 // components/archive/FamilyArchivePage.tsx
-// family 历史成长册列表页（Phase 13.4）。
+// family 历史成长册列表页（Phase 13.5）。
 // 读取 localStorage memory_wiki_archive_v1，只展示 mode === "family" 的 ArchiveItem。
-// 点击卡片进入详情回看；支持删除单条（二次确认）和清空 family（二次确认）。
-// 清空只删除 family mode，不影响其他 mode 的 ArchiveItem。
-// 不保存照片 blob；不做编辑；不做导出/导入；不做云同步。
+// 点击卡片进入详情回看；支持删除单条/清空 family/导出 JSON。
+// 清空/导出只影响 family mode，不影响其他 mode 的 ArchiveItem。
+// 不保存照片 blob；不做编辑；不做导入；不做云同步。
 
 import { useState } from "react";
 import type { ArchiveItem } from "@/lib/archive";
@@ -13,6 +13,9 @@ import {
   readArchiveCollection,
   deleteArchiveItem,
   deleteArchiveItemsByMode,
+  createArchiveExportBundle,
+  createArchiveExportFileName,
+  downloadJsonFile,
 } from "@/lib/archive";
 import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
 
@@ -48,6 +51,12 @@ export default function FamilyArchivePage({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [operationMessage, setOperationMessage] = useState<string | null>(null);
+  const [operationStatus, setOperationStatus] = useState<"success" | "error">("success");
+
+  function showOperationMessage(message: string, status: "success" | "error" = "success") {
+    setOperationMessage(message);
+    setOperationStatus(status);
+  }
 
   function refreshItems() {
     setItems(loadFamilyArchiveItems());
@@ -57,11 +66,10 @@ export default function FamilyArchivePage({
   function handleDeleteConfirm(id: string) {
     const ok = deleteArchiveItem(id);
     if (ok) {
-      setOperationMessage("已删除这本成长册");
-      // 如果当前详情页展示的就是被删除的 item，回到列表
+      showOperationMessage("已删除这本成长册");
       if (selectedItem?.id === id) setSelectedItem(null);
     } else {
-      setOperationMessage("删除失败，请稍后重试");
+      showOperationMessage("删除失败，请稍后重试", "error");
     }
     setPendingDeleteId(null);
     refreshItems();
@@ -71,12 +79,28 @@ export default function FamilyArchivePage({
   function handleClearConfirm() {
     const ok = deleteArchiveItemsByMode("family");
     if (ok) {
-      setOperationMessage("已清空本地成长册");
+      showOperationMessage("已清空本地成长册");
     } else {
-      setOperationMessage("清空失败，请稍后重试");
+      showOperationMessage("清空失败，请稍后重试", "error");
     }
     setConfirmClear(false);
     refreshItems();
+  }
+
+  // ── 导出 JSON ───────────────────────────────────────────────────
+  function handleExportFamilyArchive() {
+    if (items.length === 0) {
+      showOperationMessage("没有可导出的成长册", "error");
+      return;
+    }
+    const bundle = createArchiveExportBundle({ mode: "family", items });
+    const fileName = createArchiveExportFileName({ mode: "family" });
+    const ok = downloadJsonFile({ fileName, data: bundle });
+    if (ok) {
+      showOperationMessage(`已导出 ${bundle.itemCount} 本成长册`);
+    } else {
+      showOperationMessage("导出失败，请稍后重试", "error");
+    }
   }
 
   // 详情回看：复用 FamilyArtifactPreview，禁用保存按钮
@@ -112,13 +136,26 @@ export default function FamilyArchivePage({
         >
           ← 返回家庭成长册
         </button>
-        <button
-          onClick={onCreateNew}
-          className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
-          style={{ background: "#fde8dc", color: "#c0674a" }}
-        >
-          + 新建成长册
-        </button>
+        <div className="flex items-center gap-2">
+          {items.length > 0 && (
+            <button
+              type="button"
+              onClick={handleExportFamilyArchive}
+              title="导出当前浏览器中的家庭成长册 JSON 备份"
+              className="text-sm px-3 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
+              style={{ background: "#e8f5e9", color: "#2e7d32" }}
+            >
+              导出 JSON
+            </button>
+          )}
+          <button
+            onClick={onCreateNew}
+            className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
+            style={{ background: "#fde8dc", color: "#c0674a" }}
+          >
+            + 新建成长册
+          </button>
+        </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pt-8 pb-20">
@@ -134,7 +171,11 @@ export default function FamilyArchivePage({
         {operationMessage && (
           <div
             className="mb-5 rounded-xl px-4 py-2 text-sm"
-            style={{ background: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" }}
+            style={
+              operationStatus === "error"
+                ? { background: "#fff0ee", color: "#c0674a", border: "1px solid #f4b8a0" }
+                : { background: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" }
+            }
           >
             {operationMessage}
           </div>
@@ -270,11 +311,14 @@ export default function FamilyArchivePage({
               ))}
             </div>
 
-            {/* 清空操作区 */}
+            {/* 数据说明 + 清空操作区 */}
             <div
               className="mt-10 pt-6"
               style={{ borderTop: "1px solid #f0ddd5" }}
             >
+              <p className="text-xs mb-4" style={{ color: "#c0a090" }}>
+                导出的 JSON 包含 AI 生成内容与低敏来源摘要，不包含原始照片文件。
+              </p>
               <p className="text-xs mb-3" style={{ color: "#c0a090" }}>
                 危险操作 · 清空只影响家庭成长册，不影响未来其他类型记忆
               </p>

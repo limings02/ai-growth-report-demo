@@ -2,3 +2,4 @@
 export * from "./types";
 export * from "./createArchiveItem";
 export * from "./localArchiveStore";
+export * from "./exportArchive";

@@ -107,6 +107,7 @@ npm run dev
 - **Phase 13.2 family 保存入口**：family 结果页已支持将当前 MemoryArtifact 保存为本地 ArchiveItem，写入 localStorage；当前仅本设备可见，不保存照片 blob，不涉及登录、数据库或云同步
 - **Phase 13.3 family 历史记录**：family landing 页新增"我的成长册"入口，可读取 localStorage 中的 family ArchiveItem 列表，并回看已保存的 MemoryArtifact；当前不保存照片 blob，不支持跨设备同步
 - **Phase 13.4 family archive 管理**：我的成长册支持删除单条记录和清空本地 family 成长册；清空只影响 family mode，不清空其他 mode 的 ArchiveItem
+- **Phase 13.5 family archive 导出**：我的成长册支持将本地 family ArchiveItem 导出为 JSON 备份文件；导出内容包含 MemoryArtifact 和低敏来源摘要，不包含照片 blob/File/previewUrl
 
 ---
 
