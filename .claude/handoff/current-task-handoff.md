@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-21  
-> 当前阶段：Phase 12.7C.1 已完成（文档收口 + 人工 E2E checklist）  
+> 当前阶段：Phase 12.7C.2 已完成（family 人工 E2E 验收通过，允许进入 Phase 13）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -11,7 +11,7 @@
 这是一个多阶段架构重构项目，目标是把单一孩子成长报告 demo 演化为 **multi-mode Memory Product**，支持 family / couple / personal / memorial 四种记忆主题。
 
 **当前状态：**
-- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.7C 体验优化全部完成；照片进入礼物 PDF、前移至封面后、星图优化、print:hidden、按钮统一）
+- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.7C 体验优化全部完成；**人工 E2E 验收通过（Phase 12.7C.2）；可进入 Phase 13**）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
 - memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
@@ -262,11 +262,12 @@
 - [x] **Phase 12.7B**：family 照片区前移 + 图谱双标题修复 + 节点截断放宽 + 按钮文案统一（已完成）
 - [x] **Phase 12.7C**：照片纳入礼物 PDF（print-only 照片区）+ 移动端小屏 grid-cols-2 优化（已完成）
 - [x] **Phase 12.7C.1**：文档收口 + 过时 TODO 清理 + 人工 E2E checklist 新增（已完成）
+- [x] **Phase 12.7C.2**：family 人工 E2E 验收通过落档，允许进入 Phase 13（已完成）
 
 ### 中期（优先级 2）
-- [ ] **family 真实浏览器 E2E 验收**（见 `docs/quality/family-manual-e2e-checklist.md`）
-- [ ] **family 真实打印预览验收**
-- [ ] **family 移动端人工验收**
+- [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
+- [x] **family 真实打印预览验收**（已完成，Phase 12.7C.2）
+- [x] **family 移动端人工验收**（已完成，Phase 12.7C.2）
 - [ ] couple / personal / memorial 结果页体验对齐 family 12.7 系列（print:hidden / 文案软化 / 图谱优化）
 
 ### 长期
@@ -344,7 +345,7 @@ package.json
 |--------|------|
 | `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 已在 Phase 12.6C 删除 |
 | `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
-| 真实浏览器交互验证 | **未完成**（API 3 组验证通过；Phase 12.7A.1+12.7B+12.7C 代码验证通过；需人工 E2E）|
+| 真实浏览器交互验证 | ✅ **已完成**（Phase 12.7C.2 人工验收通过；浏览器主流程 + 打印预览 + 移动端；无 P0/P1）|
 
 ---
 
@@ -362,19 +363,23 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：family 人工 E2E 验收（发布前门禁）
+### 优先级 1：Phase 13 - 跨 mode 数据保存 / 人生 Wiki 数据层
 
-请先完成 `docs/quality/family-manual-e2e-checklist.md`，再视为 family 可发布。
-重点验证：照片区位置（封面后）/ 打印预览照片出现 / 工程化信息不打印 / 移动端小屏布局。
+family 已完成：
+- MemoryArtifact 迁移（Phase 12.6D）
+- 体验优化（Phase 12.7A.1 + 12.7B + 12.7C）
+- 人工 E2E 验收（Phase 12.7C.2）
 
-### 优先级 2：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
+**建议进入 Phase 13：**
+- Phase 13.1：本地 MemoryArchive 数据模型设计（不急着写 UI）
+  - 每次生成的 MemoryArtifact 如何保存？
+  - family/couple/personal/memorial 使用统一 archive item？
+  - 先用 localStorage / IndexedDB 还是导出 JSON？
+- Phase 13.2：历史生成记录 UI
+- Phase 13.3：人生 Wiki / Life Archive 长期档案入口
 
-人工 E2E 通过后，建议进入 Phase 13：
-- 多次生成历史保存 / 本地持久化
-- Life Archive 数据层设计
-- 或 couple/personal/memorial 结果页体验对齐（参考 family 12.7 系列）
-
-### 优先级 3：其他 mode 体验优化（可选，按需规划）
+### 优先级 2：其他 mode 体验对齐（可选）
+- couple / personal / memorial 结果页体验对齐 family 12.7 系列
 - Phase 11.4：memorial 结果页文案微调
 - Phase 10.5：personal 结果页文案微调
 
@@ -388,7 +393,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.7C 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.7C.2 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -407,7 +412,8 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 12.7A.1：3 组 API 验证 ✅，P1 小修（print:hidden / 文案软化 / 风格中文化 / 首页按钮）
 - Phase 12.7B：照片区前移（afterCoverSections）/ 图谱双标题修复 / 节点截断 8 / 按钮统一 ✅
 - Phase 12.7C：照片纳入礼物 PDF（print-only）/ 小屏 grid-cols-2 / 打印隐藏项全部 print:hidden ✅
-- family 体验优化系列全部完成，下一步：Phase 13（数据保存）
+- Phase 12.7C.2：family 人工 E2E 验收通过（浏览器主流程 + 打印预览 + 移动端，无 P0/P1）✅
+- family 全部完成，下一步：Phase 13.1（本地 MemoryArchive 数据模型设计）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -424,8 +430,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 先完成 docs/quality/family-manual-e2e-checklist.md（人工 E2E）
-- E2E 通过后再进入 Phase 13
+- 进入 Phase 13.1：本地 MemoryArchive 数据模型设计
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```
