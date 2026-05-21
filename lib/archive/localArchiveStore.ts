@@ -5,7 +5,7 @@
 // 所有 localStorage 访问先判断 typeof window !== "undefined"（SSR 安全）。
 // 所有读写均 try/catch，失败不影响生成页。
 
-import type { ArchiveCollection, ArchiveItem } from "./types";
+import type { ArchiveCollection, ArchiveItem, ArchiveMode } from "./types";
 
 export const ARCHIVE_STORAGE_KEY = "memory_wiki_archive_v1";
 export const MAX_ARCHIVE_ITEMS = 50;
@@ -71,6 +71,16 @@ export function deleteArchiveItem(id: string): boolean {
   const before = collection.items.length;
   collection.items = collection.items.filter((i) => i.id !== id);
   if (collection.items.length === before) return false; // id 不存在
+  collection.updatedAt = new Date().toISOString();
+  return writeArchiveCollection(collection);
+}
+
+/** 只删除指定 mode 的所有 item，不影响其他 mode。 */
+export function deleteArchiveItemsByMode(mode: ArchiveMode): boolean {
+  const collection = readArchiveCollection();
+  const before = collection.items.length;
+  collection.items = collection.items.filter((item) => item.mode !== mode);
+  if (collection.items.length === before) return false;
   collection.updatedAt = new Date().toISOString();
   return writeArchiveCollection(collection);
 }

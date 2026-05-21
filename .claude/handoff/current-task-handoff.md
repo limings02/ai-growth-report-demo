@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-21  
-> 当前阶段：Phase 13.3 已完成（family 历史记录列表 + 本地详情回看）  
+> 当前阶段：Phase 13.4 已完成（family archive 删除 / 清空管理）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,17 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 13.4（family archive 删除 / 清空管理）
+- `lib/archive/localArchiveStore.ts`：新增 `deleteArchiveItemsByMode(mode)` — 只删指定 mode，不影响其他 mode
+- `components/archive/FamilyArchivePage.tsx`：
+  - `items` state 改为可更新 + `refreshItems()` 函数
+  - 卡片重构为 `<article>` + 内嵌 `<button>`（主体）+ 独立删除区，无 button 嵌套
+  - 单条删除：`pendingDeleteId` 二次确认 → `deleteArchiveItem(id)` → `refreshItems()`
+  - 清空 family：`confirmClear` 二次确认 → `deleteArchiveItemsByMode("family")` → `refreshItems()`（**不调用 clearArchiveCollection()**）
+  - `operationMessage` 操作反馈（成功/失败）
+  - 文案明确说明"只清空家庭成长册，不影响未来其他类型记忆"
+- lint/build ✅；新增 `docs/quality/family-archive-management-check.md`
+
 ### Phase 13.3（family 历史记录列表 + 详情回看）
 - `app/page.tsx`：新增 `family-archive` screen；FamilyLandingPage 传 `onOpenArchive`
 - `FamilyLandingPage.tsx`：新增 `onOpenArchive?` prop + "📚 我的成长册"按钮（顶部右侧）
@@ -299,6 +310,7 @@
 - [x] **Phase 13.1**：Life Archive 本地数据模型 + localStorage 工具函数（已完成）
 - [x] **Phase 13.2**：family 结果页「保存到本地」按钮接入（已完成）
 - [x] **Phase 13.3**：family 历史记录列表 + 本地详情回看（已完成）
+- [x] **Phase 13.4**：family archive 删除单条 + 清空 family（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -399,12 +411,11 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 13.4 - archive 基础管理
+### 优先级 1：Phase 13.5 - 导出 JSON（可选）
 
-已支持：保存 + 列表 + 详情回看。下一步管理能力：
-- 删除单条 ArchiveItem（卡片右上角删除按钮）
-- 清空所有（底部"清空本地成长册"按钮，需确认）
-- 可选：导出 JSON
+family archive 管理已完善（保存/列表/详情/删除/清空），可选择：
+- 导出当前 family archive 为 JSON 文件（`Blob + URL.createObjectURL`，无需后端）
+- 或直接进入其他 mode 的 archive 接入（couple/personal/memorial 保存 + 列表）
 
 ### 优先级 2：Phase 13.3 - 历史记录列表页（可选）
 
@@ -427,7 +438,7 @@ Phase 13.2 完成后：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 13.3 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 13.4 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -450,7 +461,8 @@ Phase 13.2 完成后：
 - Phase 13.1：lib/archive/ 数据层就绪（ArchiveItem / localStorage / createArchiveItemFromArtifact）✅
 - Phase 13.2：family 结果页「保存到本地」按钮（topActionsSlot / upsertArchiveItem）✅
 - Phase 13.3：family 历史列表（FamilyArchivePage / useState 懒初始化 / showArchiveSaveButton）✅
-- 下一步：Phase 13.4（archive 删除 / 清空管理）
+- Phase 13.4：archive 删除单条 + 清空 family（deleteArchiveItemsByMode / 二次确认 / refreshItems）✅
+- 下一步：Phase 13.5（导出 JSON）或其他 mode archive 接入
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -467,7 +479,7 @@ Phase 13.2 完成后：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 13.4：archive 删除 / 清空管理
+- 进入 Phase 13.5：导出 JSON 或其他 mode archive 接入
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```
