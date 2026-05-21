@@ -104,6 +104,7 @@ npm run dev
 - **family MemoryArtifact 迁移已完成**（Phase 12.6D）：旧 UI fallback、parse fallback、rollback path 均已清理；`.skills/growth-memory` 已归档；family 链路完全使用 `MemoryArtifact`
 - **family 体验优化已通过人工 E2E 验收**（Phase 12.7C.2）：照片区前移至封面后；照片纳入礼物 PDF 打印；星图去掉双标题、节点截断放宽；质量/溯源 section 不出现在 PDF；小屏照片布局优化；浏览器主流程/打印预览/移动端均已人工验收通过
 - **Phase 13.1 开始引入 Life Archive 本地数据层**：定义 `ArchiveItem` / `ArchiveCollection` 类型，提供 `localStorage` 读写工具函数；暂不接入 UI、登录或数据库
+- **Phase 13.2 family 保存入口**：family 结果页已支持将当前 MemoryArtifact 保存为本地 ArchiveItem，写入 localStorage；当前仅本设备可见，不保存照片 blob，不涉及登录、数据库或云同步
 
 ---
 
@@ -358,6 +359,7 @@ docs/
     family-final-regression.md                  # family 最终回归 + 产品体验审计（Phase 12.7）
     family-manual-e2e-checklist.md              # family 人工 E2E 验收 checklist（发布前门禁）
     life-archive-data-model-check.md            # Life Archive 数据模型静态验收（Phase 13.1）
+    family-save-to-archive-check.md             # family 保存按钮验收（Phase 13.2）
 ```
 
 ---

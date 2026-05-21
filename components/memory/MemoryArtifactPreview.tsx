@@ -62,6 +62,10 @@ type Props = {
   // dev-only shadow preview 可传 "← 返回旧版预览"
   backLabel?: string;
 
+  // 顶部操作栏右侧额外按钮插槽（已在 print:hidden 区域内）
+  // family mode 用于注入"保存到本地"按钮；不传时 UI 完全不变
+  topActionsSlot?: React.ReactNode;
+
   // 封面后插槽：插入在 MemoryCoverSection 之后、MemoryTimelineSection 之前
   // family mode 用于在封面紧接着展示照片区，增强第一屏礼物感
   afterCoverSections?: React.ReactNode;
@@ -92,6 +96,7 @@ export default function MemoryArtifactPreview({
   usageSecondaryTip,
   graphSlot,
   backLabel = "← 返回修改",
+  topActionsSlot,
   afterCoverSections,
   extraSections,
   className = "",
@@ -135,6 +140,7 @@ export default function MemoryArtifactPreview({
           )}
         </div>
         <div className="flex items-center gap-2">
+          {topActionsSlot}
           <MemoryPrintButton label="保存 PDF" />
           <button
             onClick={onCreateAnother}
