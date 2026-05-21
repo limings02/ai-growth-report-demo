@@ -140,9 +140,18 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
 
   // ── 结果页 ────────────────────────────────────────────────────
   if (status === "result" && artifact) {
+    // 低敏来源摘要：不保存 chatText / freeNote 原文
+    const coupleArchiveSource = {
+      inputTitle: `${form.partnerAName || "我"} & ${form.partnerBName || "TA"}`,
+      inputSummary: `${form.relationshipTimeRange}，${answeredCount} 条问答，${form.photoCount} 张照片`,
+      sourceQuestionCount: answeredCount,
+      photoCount: form.photoCount,
+      style: form.style,
+    };
     return (
       <CoupleArtifactPreview
         artifact={artifact}
+        source={coupleArchiveSource}
         onBackToEdit={() => setStatus("input")}
         onCreateAnother={() => {
           setArtifact(null);

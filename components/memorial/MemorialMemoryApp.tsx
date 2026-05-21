@@ -15,6 +15,7 @@ import { MEMORIAL_DEFAULT_QUESTIONS } from "@/lib/domains/memorial/defaultQuesti
 import { MOCK_MEMORIAL_ARTIFACT } from "@/lib/domains/memorial/mockArtifact";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import MemorialMemoryGraphPreview from "./MemorialMemoryGraphPreview";
+import ArchiveSaveButton from "@/components/archive/ArchiveSaveButton";
 
 type MemorialScreen = "input" | "generating" | "result" | "error";
 type QAItem = { question: string; answer: string };
@@ -114,12 +115,25 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
 
   // ── 结果页 ────────────────────────────────────────────────────
   if (screen === "result" && artifact) {
+    // 低敏来源摘要：不保存 freeNote 原文、不保存完整 qaList 原文
+    // 安全边界：保存按钮文案使用通用"保存到本地"，不涉及逝者模拟
+    const memorialAnsweredCount = qaList.filter((q) => q.answer.trim()).length;
+    const memorialArchiveSource = {
+      inputTitle: deceasedName,
+      inputSummary: `${relation} · ${timeRange}，${memorialAnsweredCount} 条问答`,
+      sourceQuestionCount: memorialAnsweredCount,
+      photoCount: 0,
+      style,
+    };
     return (
       <MemoryArtifactPreview
         artifact={artifact}
         onBackToEdit={() => setScreen("input")}
         onCreateAnother={handleReset}
         onBackToHome={onBackToHome}
+        topActionsSlot={
+          <ArchiveSaveButton artifact={artifact} mode="memorial" source={memorialArchiveSource} />
+        }
         modeLabel="纪念册"
         badge="🕯️ 纪念册"
         fallbackTitle="纪念册"

@@ -2,26 +2,42 @@
 
 // components/couple/CoupleArtifactPreview.tsx
 // couple mode 结果展示——MemoryArtifactPreview 的薄 wrapper。
-// 只负责传入 couple-specific 文案和 RelationshipGalaxyPreview graphSlot。
+// Phase 13.7：新增 source / showArchiveSaveButton prop，支持"保存到本地"按钮。
 
 import type { MemoryArtifact } from "@/lib/memory-core/types";
+import type { ArchiveSourceSnapshot } from "@/lib/archive";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import RelationshipGalaxyPreview from "./RelationshipGalaxyPreview";
+import ArchiveSaveButton from "@/components/archive/ArchiveSaveButton";
 
 type Props = {
   artifact: MemoryArtifact;
   onBackToEdit: () => void;
   onCreateAnother: () => void;
   onBackToHome?: () => void;
+  source?: ArchiveSourceSnapshot;
+  showArchiveSaveButton?: boolean;
 };
 
-export default function CoupleArtifactPreview({ artifact, onBackToEdit, onCreateAnother, onBackToHome }: Props) {
+export default function CoupleArtifactPreview({
+  artifact,
+  onBackToEdit,
+  onCreateAnother,
+  onBackToHome,
+  source,
+  showArchiveSaveButton = true,
+}: Props) {
   return (
     <MemoryArtifactPreview
       artifact={artifact}
       onBackToEdit={onBackToEdit}
       onCreateAnother={onCreateAnother}
       onBackToHome={onBackToHome}
+      topActionsSlot={
+        showArchiveSaveButton ? (
+          <ArchiveSaveButton artifact={artifact} mode="couple" source={source} />
+        ) : undefined
+      }
       modeLabel="恋爱纪念册"
       badge="💑 恋爱纪念册"
       fallbackTitle="恋爱纪念册"

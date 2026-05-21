@@ -10,6 +10,7 @@ import { PERSONAL_DEFAULT_QUESTIONS } from "@/lib/domains/personal/defaultQuesti
 import { MOCK_PERSONAL_ARTIFACT } from "@/lib/domains/personal/mockArtifact";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import PersonalMemoryGraphPreview from "./PersonalMemoryGraphPreview";
+import ArchiveSaveButton from "@/components/archive/ArchiveSaveButton";
 
 type PersonalScreen = "input" | "generating" | "result" | "error";
 type QAItem = { question: string; answer: string };
@@ -106,6 +107,15 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
 
   // ── 结果页 ────────────────────────────────────────────────────
   if (screen === "result" && artifact) {
+    // 低敏来源摘要：不保存 freeNote 原文、不保存完整 qaList 原文
+    const personalAnsweredCount = qaList.filter((q) => q.answer.trim()).length;
+    const personalArchiveSource = {
+      inputTitle: personName,
+      inputSummary: `${lifeStage} · ${timeRange}，${personalAnsweredCount} 条问答`,
+      sourceQuestionCount: personalAnsweredCount,
+      photoCount: 0,
+      style,
+    };
     return (
       <MemoryArtifactPreview
         artifact={artifact}
@@ -115,6 +125,9 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           setScreen("input");
         }}
         onBackToHome={onBackToHome}
+        topActionsSlot={
+          <ArchiveSaveButton artifact={artifact} mode="personal" source={personalArchiveSource} />
+        }
         modeLabel="个人回忆录"
         badge="📖 个人回忆录"
         fallbackTitle="个人回忆录"
