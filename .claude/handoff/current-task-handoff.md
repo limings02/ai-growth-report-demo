@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
-> 生成时间：2026-05-20  
-> 当前阶段：Phase 12.7B 已完成（family 照片前移 + 图谱优化 + 按钮统一）  
+> 生成时间：2026-05-21  
+> 当前阶段：Phase 12.7C 已完成（打印照片 + 移动端小屏优化）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -11,7 +11,7 @@
 这是一个多阶段架构重构项目，目标是把单一孩子成长报告 demo 演化为 **multi-mode Memory Product**，支持 family / couple / personal / memorial 四种记忆主题。
 
 **当前状态：**
-- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.7B 体验优化完成；照片区前移、图谱双标题修复、print:hidden、按钮统一）
+- family：available，真实 AI 生成（MemoryArtifact 链路；Phase 12.7C 体验优化全部完成；照片进入礼物 PDF、前移至封面后、星图优化、print:hidden、按钮统一）
 - couple：available，真实 AI 生成，直接输出 MemoryArtifact
 - personal：available，真实 AI 生成，直接输出 MemoryArtifact（Phase 10.2）
 - memorial：available，真实 AI 生成（Phase 11.2），不模拟逝者说话
@@ -219,7 +219,14 @@
 - `FamilyMemoryGraphPreview.tsx`：去掉 `graph.title` 展示（保留 subtitle）；节点截断 5 → 8 字
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
-- 体验评分：照片融合度 3→4，图谱价值 3→3.5，打印 PDF 2→4
+
+### Phase 12.7C（打印照片 + 移动端优化）
+- `FamilyArtifactPreview.tsx`：
+  - 新增 `hidden print:block` 照片区（blob URL 同会话有效，照片纳入礼物 PDF）
+  - 浏览器照片网格改为 `grid-cols-2 sm:grid-cols-3`（小屏 2 列，大屏 3 列）
+  - 更新文件头注释说明双版本照片策略
+- lint/build ✅
+- 静态分析：打印隐藏项（顶部栏/quality/sourceTrace/原始记录/底部按钮）全部 print:hidden ✅；照片/时间线/信件/社交文案/星图可打印 ✅
 
 ---
 
@@ -253,6 +260,7 @@
 - [x] **Phase 12.6D**：归档 rollback path（runGrowthMemorySkill / artifactAdapter / skill-runtime/types 等）（已完成）
 - [x] **Phase 12.7A.1**：family 最终回归 + P1 体验小修（已完成）
 - [x] **Phase 12.7B**：family 照片区前移 + 图谱双标题修复 + 节点截断放宽 + 按钮文案统一（已完成）
+- [x] **Phase 12.7C**：照片纳入礼物 PDF（print-only 照片区）+ 移动端小屏 grid-cols-2 优化（已完成）
 
 ### 中期（优先级 2）
 - [ ] `family-memory` 改为直接输出 `MemoryArtifact`
@@ -338,7 +346,7 @@ package.json
 |--------|------|
 | `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
 | `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
-| 真实浏览器交互验证 | 未完成（API 3 组验证通过；Phase 12.7A.1+12.7B 代码验证通过）|
+| 真实浏览器交互验证 | 未完成（API 3 组验证通过；Phase 12.7A.1+12.7B+12.7C 代码验证通过）|
 
 ---
 
@@ -356,13 +364,20 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 12.7C - 照片打印 layout（可选，按需规划）
+### 优先级 1：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
 
-唯一剩余 P2 问题：照片未纳入礼物 PDF 打印。需要专门设计打印排版，不是小修。
+family 体验优化系列（Phase 12.7A.1 + 12.7B + 12.7C）全部完成。建议切换到新功能开发：
+- 多次生成历史保存 / 本地持久化
+- Life Archive 数据层设计
+- 或者 couple/personal/memorial 体验对齐（参考 family 12.7 系列）
 
-### 优先级 2：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
+### 优先级 2：family 真实浏览器 E2E（产品发布前手动验证）
 
-family 产品体验已达到可分享礼物标准，可以切换到新功能开发：多次生成历史保存、本地持久化、或 Life Archive 数据层设计。
+需要人工在浏览器中完整走一遍 family 流程，重点验证：
+- 照片区位置（封面后）
+- 打印预览中照片出现
+- 打印预览中工程化信息不出现
+- 移动端小屏布局
 
 ### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
 - MemorialLandingPage 情绪表达与文案优化
@@ -387,7 +402,7 @@ family 产品体验已达到可分享礼物标准，可以切换到新功能开�
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.7B 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 12.7C 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -405,7 +420,8 @@ family 产品体验已达到可分享礼物标准，可以切换到新功能开�
 - Phase 12.6D：rollback path 全部清理，lint/build ✅，API ✅
 - Phase 12.7A.1：3 组 API 验证 ✅，P1 小修（print:hidden / 文案软化 / 风格中文化 / 首页按钮）
 - Phase 12.7B：照片区前移（afterCoverSections）/ 图谱双标题修复 / 节点截断 8 / 按钮统一 ✅
-- family 体验优化全部完成，下一步：Phase 12.7C（照片打印）或 Phase 13（数据保存）
+- Phase 12.7C：照片纳入礼物 PDF（print-only）/ 小屏 grid-cols-2 / 打印隐藏项全部 print:hidden ✅
+- family 体验优化系列全部完成，下一步：Phase 13（数据保存）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

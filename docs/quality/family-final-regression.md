@@ -183,4 +183,82 @@
 | couple / personal / memorial 不受影响 | ✅（afterCoverSections 为可选 prop）|
 | 是否建议进入下一阶段 | ✅ **建议进入 Phase 12.7C 或 Phase 13** |
 
-Phase 12.7B 完成后，family 结果页主要体验问题已全部处理。剩余唯一开放 P2 项是照片打印，需要专门的 print layout 设计。
+Phase 12.7B 完成后，family 结果页主要体验问题已全部处理。剩余唯一开放 P2 项是照片打印，已在 Phase 12.7C 实现。
+
+---
+
+## 10. Phase 12.7C：打印优化 + 移动端检查
+
+### 10.1 代码改动（Phase 12.7C）
+
+| 文件 | 改动 |
+|------|------|
+| `FamilyArtifactPreview.tsx` | 新增 `hidden print:block` 照片区（print-only，blob URL 在同一会话内有效）；浏览器版照片网格改为 `grid-cols-2 sm:grid-cols-3`（小屏不挤）|
+
+**照片打印实现原理：**
+- 浏览器版照片区保持 `print:hidden`（不变）
+- 新增一个 `hidden print:block` 的照片区，使用相同 blob URL
+- `URL.createObjectURL()` 创建的 blob URL 在同一浏览器会话中持续有效，直到页面卸载或主动 revoke
+- 照片最多 6 张，3 列布局，aspect-square
+
+### 10.2 打印预览分析（代码静态验证）
+
+| 检查项 | 结果 | 依据 |
+|---|---|---|
+| 顶部操作栏隐藏 | ✅ | `print:hidden` on sticky bar |
+| quality/sourceTrace 隐藏 | ✅ | `<div className="print:hidden">` wrap |
+| 原始记录隐藏 | ✅ | `print:hidden` on extraSections div |
+| 底部按钮隐藏 | ✅ | `print:hidden` on button row |
+| 分享文案复制按钮隐藏 | ✅ | `print:hidden` on copy button |
+| 照片纳入打印 | ✅ | `hidden print:block` photo section added |
+| 打印标题区显示 | ✅ | `hidden print:block` print title div |
+| 封面（标题/关键词/summary）打印 | ✅ | 无 print:hidden |
+| 时间线打印 | ✅ | 无 print:hidden |
+| 信件打印 | ✅ | 无 print:hidden |
+| 分享文案内容打印 | ✅ | 复制按钮 print:hidden，内容无 hidden |
+| 星图打印 | ✅ | SVG 可打印 + `hidden print:block` 文字摘要 |
+| 使用建议打印 | ✅ | 无 print:hidden |
+
+**真实浏览器打印预览**：**未完成**（需人工操作浏览器）
+
+### 10.3 移动端分析（代码静态验证）
+
+| 检查项 | 结果 | 依据 |
+|---|---|---|
+| 封面 | ✅ | `max-w-2xl mx-auto px-4`，文字自适应 |
+| 照片区（小屏）| ✅ | 改为 `grid-cols-2 sm:grid-cols-3`，小屏 2 列不挤 |
+| 星图 SVG | ✅ | `w-full` + `viewBox`，自动缩放；`maxHeight: 260px` |
+| 顶部操作栏换行 | ✅ | 左侧按钮组有 `flex-wrap` |
+| 底部按钮 | ✅ | `flex gap-3`，两个 `flex-1` 各占 50% |
+
+**真实移动端验证**：**未完成**（需人工操作浏览器）
+
+### 10.4 浏览器 E2E 验证（样例 B：丰富输入 + 照片）
+
+**未完成**（需人工操作浏览器）
+
+代码静态分析确认：
+- `afterCoverSections` 插槽在 cover 和 timeline 之间渲染 ✅
+- 照片区浏览器版：`print:hidden`，3×2 grid（改为 `grid-cols-2 sm:grid-cols-3`）✅
+- 照片区打印版：`hidden print:block`，3 列 grid ✅
+- 原始记录 `extraSections` 位置不变（使用建议之后）✅
+- 图谱：不显示 `graph.title`，只显示 `graph.subtitle` ✅
+- 节点截断 8 字 ✅
+- 顶部/底部"再做一本"文案一致 ✅
+
+### 10.5 结论
+
+| 检查项 | 状态 |
+|--------|------|
+| lint | ✅ |
+| build | ✅ |
+| 照片纳入礼物 PDF（代码验证）| ✅ |
+| 移动端照片区小屏不挤（代码验证）| ✅ |
+| 打印时工程化信息隐藏（代码验证）| ✅ |
+| 未修改 API / runtime / prompt | ✅ |
+| 未恢复旧兼容层 | ✅ |
+| 真实浏览器 E2E | **未完成** |
+| 真实打印预览 | **未完成** |
+| 是否建议进入 Phase 13 | ✅ **建议** |
+
+**结论**：照片打印问题已通过代码级方案解决。family 礼物感优化全系列（Phase 12.7A.1 + 12.7B + 12.7C）已完成。真实浏览器 E2E 和打印预览需人工验证，可作为 family 上线前最后一步由产品负责人完成。建议进入 **Phase 13**：人生 Wiki 数据层 / 多次生成历史保存。

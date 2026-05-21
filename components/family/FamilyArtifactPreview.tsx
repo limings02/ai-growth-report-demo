@@ -9,8 +9,10 @@
 // - 时间线 / 信件 / 分享文案 / 星图 / 质量说明 / 使用建议
 // - 原始记录折叠区（extraSections）— print:hidden，位置靠后，不干扰主叙事
 //
-// 照片打印策略：照片区 print:hidden，不纳入礼物 PDF。
-// 原始记录打印策略：折叠区 print:hidden，不适合直接打印。
+// 照片打印策略：
+// - 浏览器版照片区 print:hidden（不参与打印）
+// - 打印版照片区 hidden print:block（仅在打印中显示，使用同一 blob URL，在同一会话内有效）
+// 原始记录打印策略：折叠交互区 print:hidden，不适合直接打印。
 
 import { useState } from "react";
 import type { MemoryArtifact } from "@/lib/memory-core/types";
@@ -49,37 +51,62 @@ export default function FamilyArtifactPreview({
   const visiblePhotos = photos?.slice(0, MAX_PHOTOS) ?? [];
 
   // ── 照片区（afterCoverSections：封面后、时间线前）────────────
-  // print:hidden — 照片不纳入礼物 PDF
   const familyAfterCoverSections = visiblePhotos.length > 0 ? (
-    <div
-      className="print:hidden rounded-2xl p-5 mb-5"
-      style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
-    >
-      <p className="text-xs font-semibold mb-3" style={{ color: "#9d7b72" }}>
-        📷 这一年的照片
-        {photos && photos.length > MAX_PHOTOS && (
-          <span className="ml-1 font-normal" style={{ color: "#c0a090" }}>
-            （展示前 {MAX_PHOTOS} 张，共 {photos.length} 张）
-          </span>
-        )}
-      </p>
-      <div className="grid grid-cols-3 gap-2">
-        {visiblePhotos.map((photo) => (
-          <div
-            key={photo.id}
-            className="aspect-square rounded-xl overflow-hidden"
-            style={{ border: "1px solid #f0ddd5" }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={photo.previewUrl}
-              alt="成长照片"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
+    <>
+      {/* 浏览器照片区（print:hidden）*/}
+      <div
+        className="print:hidden rounded-2xl p-5 mb-5"
+        style={{ background: "#fffaf7", border: "1px solid #f0ddd5" }}
+      >
+        <p className="text-xs font-semibold mb-3" style={{ color: "#9d7b72" }}>
+          📷 这一年的照片
+          {photos && photos.length > MAX_PHOTOS && (
+            <span className="ml-1 font-normal" style={{ color: "#c0a090" }}>
+              （展示前 {MAX_PHOTOS} 张，共 {photos.length} 张）
+            </span>
+          )}
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {visiblePhotos.map((photo) => (
+            <div
+              key={photo.id}
+              className="aspect-square rounded-xl overflow-hidden"
+              style={{ border: "1px solid #f0ddd5" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.previewUrl}
+                alt="成长照片"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* 打印照片区（hidden print:block）— blob URL 在同一浏览器会话内有效 */}
+      <div className="hidden print:block mb-6">
+        <p className="text-xs font-semibold mb-3" style={{ color: "#9d7b72" }}>
+          📷 这一年的照片
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {visiblePhotos.map((photo) => (
+            <div
+              key={`print-${photo.id}`}
+              className="aspect-square overflow-hidden rounded-lg"
+              style={{ border: "1px solid #f0ddd5" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.previewUrl}
+                alt="成长照片"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   ) : null;
 
   // ── 原始记录折叠区（extraSections：页面底部）─────────────────
