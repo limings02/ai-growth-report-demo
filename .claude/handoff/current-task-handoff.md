@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-21  
-> 当前阶段：Phase 12.7C.2 已完成（family 人工 E2E 验收通过，允许进入 Phase 13）  
+> 当前阶段：Phase 13.1 已完成（Life Archive 本地数据模型设计 + 工具函数）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,15 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 13.1（Life Archive 本地数据模型）
+- 新增 `lib/archive/types.ts`：`ArchiveMode`（复用 MemoryMode）/ `ArchiveSourceSnapshot` / `ArchiveItem` / `ArchiveCollection`
+- 新增 `lib/archive/createArchiveItem.ts`：`createArchiveItemFromArtifact()` 工厂函数（mode fallback title / 时间戳 id / 不保存照片 blob）
+- 新增 `lib/archive/localArchiveStore.ts`：`localStorage` 读写工具（SSR 安全 / try-catch / 最多 50 条 / 按 updatedAt 倒序）
+- 新增 `lib/archive/index.ts`：barrel export
+- 新增 `docs/architecture/life-archive-data-model.md`：架构设计文档
+- 新增 `docs/quality/life-archive-data-model-check.md`：静态验收报告
+- lint/build ✅，无新依赖，未接 UI
+
 ### Phase 12.7C（打印照片 + 移动端优化）
 - `FamilyArtifactPreview.tsx`：
   - 新增 `hidden print:block` 照片区（blob URL 同会话有效，照片纳入礼物 PDF）
@@ -263,6 +272,7 @@
 - [x] **Phase 12.7C**：照片纳入礼物 PDF（print-only 照片区）+ 移动端小屏 grid-cols-2 优化（已完成）
 - [x] **Phase 12.7C.1**：文档收口 + 过时 TODO 清理 + 人工 E2E checklist 新增（已完成）
 - [x] **Phase 12.7C.2**：family 人工 E2E 验收通过落档，允许进入 Phase 13（已完成）
+- [x] **Phase 13.1**：Life Archive 本地数据模型 + localStorage 工具函数（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -363,22 +373,22 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 13 - 跨 mode 数据保存 / 人生 Wiki 数据层
+### 优先级 1：Phase 13.2 - family 结果页接入「保存」按钮
 
-family 已完成：
-- MemoryArtifact 迁移（Phase 12.6D）
-- 体验优化（Phase 12.7A.1 + 12.7B + 12.7C）
-- 人工 E2E 验收（Phase 12.7C.2）
+`lib/archive/` 数据层已就绪，下一步：
+- `FamilyArtifactPreview` 结果页新增「保存到本地」按钮
+- 调用 `createArchiveItemFromArtifact` + `upsertArchiveItem`
+- 按钮反馈：保存成功 / 已保存 / 失败提示
+- `ArchiveSourceSnapshot` 从当前 `rawMaterial` / `photos.length` 提取
+- 本阶段不做历史列表 UI
 
-**建议进入 Phase 13：**
-- Phase 13.1：本地 MemoryArchive 数据模型设计（不急着写 UI）
-  - 每次生成的 MemoryArtifact 如何保存？
-  - family/couple/personal/memorial 使用统一 archive item？
-  - 先用 localStorage / IndexedDB 还是导出 JSON？
-- Phase 13.2：历史生成记录 UI
-- Phase 13.3：人生 Wiki / Life Archive 长期档案入口
+### 优先级 2：Phase 13.3 - 历史记录列表页（可选）
 
-### 优先级 2：其他 mode 体验对齐（可选）
+Phase 13.2 完成后：
+- 所有 mode 已保存的 ArchiveItem 列表
+- 点击进入详情页回看（从 archive 加载 artifact）
+
+### 优先级 3：其他 mode 体验对齐（可选）
 - couple / personal / memorial 结果页体验对齐 family 12.7 系列
 - Phase 11.4：memorial 结果页文案微调
 - Phase 10.5：personal 结果页文案微调
@@ -393,7 +403,7 @@ family 已完成：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 12.7C.2 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 13.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -413,7 +423,8 @@ family 已完成：
 - Phase 12.7B：照片区前移（afterCoverSections）/ 图谱双标题修复 / 节点截断 8 / 按钮统一 ✅
 - Phase 12.7C：照片纳入礼物 PDF（print-only）/ 小屏 grid-cols-2 / 打印隐藏项全部 print:hidden ✅
 - Phase 12.7C.2：family 人工 E2E 验收通过（浏览器主流程 + 打印预览 + 移动端，无 P0/P1）✅
-- family 全部完成，下一步：Phase 13.1（本地 MemoryArchive 数据模型设计）
+- Phase 13.1：lib/archive/ 数据层就绪（ArchiveItem / localStorage / createArchiveItemFromArtifact）✅
+- 下一步：Phase 13.2（family 结果页接入「保存」按钮）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）

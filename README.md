@@ -103,6 +103,7 @@ npm run dev
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 - **family MemoryArtifact 迁移已完成**（Phase 12.6D）：旧 UI fallback、parse fallback、rollback path 均已清理；`.skills/growth-memory` 已归档；family 链路完全使用 `MemoryArtifact`
 - **family 体验优化已通过人工 E2E 验收**（Phase 12.7C.2）：照片区前移至封面后；照片纳入礼物 PDF 打印；星图去掉双标题、节点截断放宽；质量/溯源 section 不出现在 PDF；小屏照片布局优化；浏览器主流程/打印预览/移动端均已人工验收通过
+- **Phase 13.1 开始引入 Life Archive 本地数据层**：定义 `ArchiveItem` / `ArchiveCollection` 类型，提供 `localStorage` 读写工具函数；暂不接入 UI、登录或数据库
 
 ---
 
@@ -322,7 +323,11 @@ lib/
       defaultQuestions.ts          # memorial 默认访谈问题（Phase 11.1 新增）
       mockArtifact.ts              # memorial 开发预览用 mock artifact
 
-
+  archive/                           # Life Archive 本地数据层（Phase 13.1）
+    types.ts                         # ArchiveItem / ArchiveCollection / ArchiveSourceSnapshot
+    createArchiveItem.ts             # 从 MemoryArtifact 构造 ArchiveItem
+    localArchiveStore.ts             # localStorage 读写工具函数
+    index.ts                         # barrel export
 
 .skills/
   family-memory/                   # 当前可用
@@ -338,6 +343,7 @@ docs/
     current-transition-state.md              # 当前过渡态说明
     family-memoryartifact-migration-plan.md  # family 旧链路迁移到 MemoryArtifact 的阶段计划
     family-legacy-cleanup-plan.md            # family 兼容层清理计划（Phase 12.6A）
+    life-archive-data-model.md              # Life Archive 数据模型设计（Phase 13.1）
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）
@@ -351,6 +357,7 @@ docs/
     family-rollback-path-removal.md              # rollback path 删除验收（Phase 12.6D）
     family-final-regression.md                  # family 最终回归 + 产品体验审计（Phase 12.7）
     family-manual-e2e-checklist.md              # family 人工 E2E 验收 checklist（发布前门禁）
+    life-archive-data-model-check.md            # Life Archive 数据模型静态验收（Phase 13.1）
 ```
 
 ---
