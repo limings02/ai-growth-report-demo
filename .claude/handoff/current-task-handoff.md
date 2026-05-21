@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-21  
-> 当前阶段：Phase 12.7C 已完成（打印照片 + 移动端小屏优化）  
+> 当前阶段：Phase 12.7C.1 已完成（文档收口 + 人工 E2E checklist）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -261,14 +261,16 @@
 - [x] **Phase 12.7A.1**：family 最终回归 + P1 体验小修（已完成）
 - [x] **Phase 12.7B**：family 照片区前移 + 图谱双标题修复 + 节点截断放宽 + 按钮文案统一（已完成）
 - [x] **Phase 12.7C**：照片纳入礼物 PDF（print-only 照片区）+ 移动端小屏 grid-cols-2 优化（已完成）
+- [x] **Phase 12.7C.1**：文档收口 + 过时 TODO 清理 + 人工 E2E checklist 新增（已完成）
 
 ### 中期（优先级 2）
-- [ ] `family-memory` 改为直接输出 `MemoryArtifact`
-- [ ] `ReportPreview` 泛化为消费 `MemoryArtifact`
-- [ ] `LifeGraphPreview` 改名为 `MemoryGraphPreview`
+- [ ] **family 真实浏览器 E2E 验收**（见 `docs/quality/family-manual-e2e-checklist.md`）
+- [ ] **family 真实打印预览验收**
+- [ ] **family 移动端人工验收**
+- [ ] couple / personal / memorial 结果页体验对齐 family 12.7 系列（print:hidden / 文案软化 / 图谱优化）
 
 ### 长期
-- [ ] 删除 GrowthMemoryArtifact 兼容层（条件：ReportPreview 泛化后）
+- [ ] Phase 13：跨 mode 数据保存 / 人生 Wiki 数据层设计（人工 E2E 通过后再开始）
 
 ---
 
@@ -295,26 +297,26 @@ components/
     PersonalMemoryGraphPreview.tsx
   family/
     FamilyLandingPage.tsx                    # 【禁止修改】
-    FamilyArtifactPreview.tsx                # 迁移准备组件（Phase 12.2 新增，可按 phase 修改）
-    FamilyMemoryGraphPreview.tsx             # 迁移准备组件（Phase 12.2 新增，可按 phase 修改）
-  GrowthReportApp.tsx                        # family 主状态机（Phase 12.6B 已清理 dev fallback）
+    FamilyArtifactPreview.tsx                # family 结果页（唯一，照片前移/打印/原始记录）
+    FamilyMemoryGraphPreview.tsx             # family 成长星图（subtitle 氛围文案，节点截断 8 字）
+  GrowthReportApp.tsx                        # family 主状态机
 
 lib/
   memory-core/
-    modes.ts                                 # personal = available（Phase 10.2）
-    types.ts / runMemorySkill.ts / ...
+    modes.ts / types.ts / runMemorySkill.ts / parseMemoryArtifact.ts / buildMemoryPrompt.ts
   domains/
+    family/
+      adapter.ts                             # RawMaterial → MemoryRawMaterial
+      runFamilyMemorySkill.ts                # family server 入口
     personal/
       adapter.ts / defaultQuestions.ts / mockArtifact.ts
-  skill-runtime/
-    runGrowthMemorySkill.ts                  # 【禁止修改】
 
 .skills/
-  family-memory/                             # 【禁止修改】
+  family-memory/                             # 【禁止修改】当前 family skill pack
   couple-memory/                             # 【禁止修改】
-  growth-memory/                             # 【禁止修改，fallback】
-  personal-memory/                           # 真实 skill pack【Phase 10.2 升级】
-  memorial-memory/                           # 真实 skill pack【Phase 11.2 升级】
+  growth-memory/                             # ARCHIVED（有 README 说明，不被运行时调用）
+  personal-memory/                           # 真实 skill pack
+  memorial-memory/                           # 真实 skill pack
 ```
 
 ---
@@ -327,12 +329,8 @@ app/api/generate-couple-memory/route.ts
 lib/memory-core/runMemorySkill.ts
 lib/memory-core/buildMemoryPrompt.ts
 lib/memory-core/parseMemoryArtifact.ts
-lib/skill-runtime/runGrowthMemorySkill.ts
 components/family/FamilyLandingPage.tsx
-# 注意：GrowthReportApp.tsx Phase 12.3 已加 dev-only shadow preview，生产主链路逻辑不可替换
-# 注意：components/family/FamilyArtifactPreview.tsx 和 FamilyMemoryGraphPreview.tsx 是迁移准备组件，可按 phase 修改
 .skills/family-memory/**
-.skills/growth-memory/**
 .skills/couple-memory/**
 package.json
 .env.local
@@ -344,9 +342,9 @@ package.json
 
 | 过渡态 | 说明 |
 |--------|------|
-| `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 路径保留 |
+| `family-memory` 已输出 `MemoryArtifact` | Phase 12.5 完成；旧格式 fallback 已在 Phase 12.6C 删除 |
 | `.skills/growth-memory` 已归档 | 历史参考保留，有 ARCHIVED README，不被任何运行时调用 |
-| 真实浏览器交互验证 | 未完成（API 3 组验证通过；Phase 12.7A.1+12.7B+12.7C 代码验证通过）|
+| 真实浏览器交互验证 | **未完成**（API 3 组验证通过；Phase 12.7A.1+12.7B+12.7C 代码验证通过；需人工 E2E）|
 
 ---
 
@@ -364,33 +362,21 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
+### 优先级 1：family 人工 E2E 验收（发布前门禁）
 
-family 体验优化系列（Phase 12.7A.1 + 12.7B + 12.7C）全部完成。建议切换到新功能开发：
+请先完成 `docs/quality/family-manual-e2e-checklist.md`，再视为 family 可发布。
+重点验证：照片区位置（封面后）/ 打印预览照片出现 / 工程化信息不打印 / 移动端小屏布局。
+
+### 优先级 2：Phase 13 - 跨 mode 数据保存 / 人生 Wiki
+
+人工 E2E 通过后，建议进入 Phase 13：
 - 多次生成历史保存 / 本地持久化
 - Life Archive 数据层设计
-- 或者 couple/personal/memorial 体验对齐（参考 family 12.7 系列）
+- 或 couple/personal/memorial 结果页体验对齐（参考 family 12.7 系列）
 
-### 优先级 2：family 真实浏览器 E2E（产品发布前手动验证）
-
-需要人工在浏览器中完整走一遍 family 流程，重点验证：
-- 照片区位置（封面后）
-- 打印预览中照片出现
-- 打印预览中工程化信息不出现
-- 移动端小屏布局
-
-### 优先级 2：Phase 11.4 - MemorialLandingPage / result 文案与视觉微调（可选）
-- MemorialLandingPage 情绪表达与文案优化
-- memorial 结果页 usage tips 等文案优化
-
-### 优先级 2：Phase 10.5 - personal 文案与视觉微调（可选）
-- PersonalLandingPage 情绪表达打磨
-- personal 结果页 usage tips 等文案优化
-
-### 优先级 2：family 清理与体验优化
-- 兼容层清理：Phase 12.6B（UI fallback）→ Phase 12.6C（parse fallback）→ Phase 12.6D（rollback path）
-- 照片打印与原始记录打印优化（当前 print:hidden，待后续评估）
-- `FamilyArtifactPreview` 视觉细节打磨
+### 优先级 3：其他 mode 体验优化（可选，按需规划）
+- Phase 11.4：memorial 结果页文案微调
+- Phase 10.5：personal 结果页文案微调
 
 
 
@@ -435,8 +421,11 @@ family 体验优化系列（Phase 12.7A.1 + 12.7B + 12.7C）全部完成。建�
 
 核心约束（不可修改）：
 - family API / runtime / .skills/family-memory / .skills/couple-memory
-- GrowthReportApp / components/family/**（ReportPreview / LifeGraphPreview 已删除，不再适用）
-- package.json / .env.local
+- components/family/FamilyLandingPage.tsx / package.json / .env.local
+
+待办：
+- 先完成 docs/quality/family-manual-e2e-checklist.md（人工 E2E）
+- E2E 通过后再进入 Phase 13
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

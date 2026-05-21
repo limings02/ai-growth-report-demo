@@ -103,6 +103,7 @@ npm run dev
 - 当前仍是单次 DeepSeek 调用，不做多阶段 agent workflow
 - **family MemoryArtifact 迁移已完成**（Phase 12.6D）：旧 UI fallback、parse fallback、rollback path 均已清理；`.skills/growth-memory` 已归档；family 链路完全使用 `MemoryArtifact`
 - **family 体验优化**（Phase 12.7C）：照片区前移至封面后；照片纳入礼物 PDF 打印；星图去掉双标题、节点截断放宽；质量/溯源 section 不出现在 PDF；小屏照片布局优化
+- **family 代码级优化已完成，待人工 E2E 验收后视为可发布**（见 `docs/quality/family-manual-e2e-checklist.md`）
 
 ---
 
@@ -350,6 +351,7 @@ docs/
     family-parse-fallback-removal.md             # 旧格式 parse fallback 删除验收（Phase 12.6C）
     family-rollback-path-removal.md              # rollback path 删除验收（Phase 12.6D）
     family-final-regression.md                  # family 最终回归 + 产品体验审计（Phase 12.7）
+    family-manual-e2e-checklist.md              # family 人工 E2E 验收 checklist（发布前门禁）
 ```
 
 ---
