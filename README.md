@@ -105,6 +105,7 @@ npm run dev
 - **family 体验优化已通过人工 E2E 验收**（Phase 12.7C.2）：照片区前移至封面后；照片纳入礼物 PDF 打印；星图去掉双标题、节点截断放宽；质量/溯源 section 不出现在 PDF；小屏照片布局优化；浏览器主流程/打印预览/移动端均已人工验收通过
 - **Phase 13.1 开始引入 Life Archive 本地数据层**：定义 `ArchiveItem` / `ArchiveCollection` 类型，提供 `localStorage` 读写工具函数；暂不接入 UI、登录或数据库
 - **Phase 13.2 family 保存入口**：family 结果页已支持将当前 MemoryArtifact 保存为本地 ArchiveItem，写入 localStorage；当前仅本设备可见，不保存照片 blob，不涉及登录、数据库或云同步
+- **Phase 13.3 family 历史记录**：family landing 页新增"我的成长册"入口，可读取 localStorage 中的 family ArchiveItem 列表，并回看已保存的 MemoryArtifact；当前不保存照片 blob，不支持跨设备同步
 
 ---
 

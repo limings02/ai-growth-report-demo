@@ -13,14 +13,15 @@ import HowItWorks from "@/components/HowItWorks";
 type Props = {
   onStart: () => void;
   onBackToModes: () => void;
+  onOpenArchive?: () => void;
 };
 
-export default function FamilyLandingPage({ onStart, onBackToModes }: Props) {
+export default function FamilyLandingPage({ onStart, onBackToModes, onOpenArchive }: Props) {
   return (
     <main className="flex-1 flex flex-col">
-      {/* 顶部导航：返回记忆主题选择 */}
+      {/* 顶部导航：左-返回主题，右-我的成长册 */}
       <div
-        className="sticky top-0 z-20 px-5 py-3"
+        className="sticky top-0 z-20 px-5 py-3 flex items-center justify-between gap-3"
         style={{
           background: "rgba(255, 250, 247, 0.92)",
           backdropFilter: "blur(8px)",
@@ -34,6 +35,15 @@ export default function FamilyLandingPage({ onStart, onBackToModes }: Props) {
         >
           ← 返回记忆主题
         </button>
+        {onOpenArchive && (
+          <button
+            onClick={onOpenArchive}
+            className="text-sm cursor-pointer hover:underline flex items-center gap-1"
+            style={{ color: "#c0674a" }}
+          >
+            📚 我的成长册
+          </button>
+        )}
       </div>
 
       {/* 原有的孩子成长 landing 内容 */}

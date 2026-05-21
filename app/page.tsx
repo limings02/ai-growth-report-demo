@@ -21,11 +21,13 @@ import PersonalLandingPage from "@/components/personal/PersonalLandingPage";
 import PersonalMemoryApp from "@/components/personal/PersonalMemoryApp";
 import MemorialLandingPage from "@/components/memorial/MemorialLandingPage";
 import MemorialMemoryApp from "@/components/memorial/MemorialMemoryApp";
+import FamilyArchivePage from "@/components/archive/FamilyArchivePage";
 
 type HomeScreen =
   | "mode-select"
   | "family-landing"
   | "family-app"
+  | "family-archive"
   | "couple-landing"
   | "couple-app"
   | "personal-landing"
@@ -53,6 +55,20 @@ export default function Home() {
     }
   }
 
+  // family archive 历史列表页
+  if (screen === "family-archive") {
+    return (
+      <FamilyArchivePage
+        onBackToLanding={() => setScreen("family-landing")}
+        onCreateNew={() => setScreen("family-app")}
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
   // family 生成页
   if (screen === "family-app") {
     return (
@@ -67,6 +83,7 @@ export default function Home() {
     return (
       <FamilyLandingPage
         onStart={() => setScreen("family-app")}
+        onOpenArchive={() => setScreen("family-archive")}
         onBackToModes={() => {
           setSelectedMode(null);
           setScreen("mode-select");

@@ -44,6 +44,8 @@ type Props = {
   onBackToEdit: () => void;
   onCreateAnother: () => void;
   onBackToHome?: () => void;
+  // archive 详情回看时传 false，避免对已保存的记录重复保存
+  showArchiveSaveButton?: boolean;
 };
 
 export default function FamilyArtifactPreview({
@@ -54,6 +56,7 @@ export default function FamilyArtifactPreview({
   onBackToEdit,
   onCreateAnother,
   onBackToHome,
+  showArchiveSaveButton = true,
 }: Props) {
   const [rawMaterialOpen, setRawMaterialOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">("idle");
@@ -275,7 +278,7 @@ export default function FamilyArtifactPreview({
       emptySocialPostsHint="这次没有生成分享文案。可以补充更具体的成长瞬间或想分享给亲友的话。"
       usagePrimaryTip="你可以把这份成长册保存成 PDF，作为生日、毕业、18 岁成人礼或家庭纪念资料留存。"
       usageSecondaryTip="如果想让下一版更贴近真实成长，可以补充更具体的时间、地点、孩子说过的话、作品、照片背景和亲子互动。"
-      topActionsSlot={familySaveButton}
+      topActionsSlot={showArchiveSaveButton ? familySaveButton : undefined}
       graphSlot={<FamilyMemoryGraphPreview graph={artifact.graph} />}
       afterCoverSections={familyAfterCoverSections}
       extraSections={familyExtraSections}
