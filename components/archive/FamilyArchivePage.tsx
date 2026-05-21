@@ -1,13 +1,14 @@
 "use client";
 
 // components/archive/FamilyArchivePage.tsx
-// family 历史成长册列表页（Phase 13.5）。
+// family 历史成长册列表页（Phase 13.6）。
 // 读取 localStorage memory_wiki_archive_v1，只展示 mode === "family" 的 ArchiveItem。
-// 点击卡片进入详情回看；支持删除单条/清空 family/导出 JSON。
-// 清空/导出只影响 family mode，不影响其他 mode 的 ArchiveItem。
-// 不保存照片 blob；不做编辑；不做导入；不做云同步。
+// 点击卡片进入详情回看；支持删除单条/清空 family/导出 JSON/导入 JSON。
+// 导入采用非破坏性合并：相同 id 跳过，不覆盖；不导入 previewUrl/blob/File。
+// 清空/导出/导入只影响 family mode，不影响其他 mode 的 ArchiveItem。
+// 不保存照片 blob；不做编辑；不做云同步。
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ArchiveItem } from "@/lib/archive";
 import {
   readArchiveCollection,
@@ -16,6 +17,8 @@ import {
   createArchiveExportBundle,
   createArchiveExportFileName,
   downloadJsonFile,
+  parseArchiveImportText,
+  importArchiveItemsFromBundle,
 } from "@/lib/archive";
 import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
 
@@ -45,13 +48,14 @@ export default function FamilyArchivePage({
   onCreateNew,
   onBackToHome,
 }: Props) {
-  // 懒初始化，SSR 安全；items 可更新（删除/清空后调用 refreshItems）
+  // 懒初始化，SSR 安全；items 可更新（删除/清空/导入后调用 refreshItems）
   const [items, setItems] = useState<ArchiveItem[]>(() => loadFamilyArchiveItems());
   const [selectedItem, setSelectedItem] = useState<ArchiveItem | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [operationMessage, setOperationMessage] = useState<string | null>(null);
   const [operationStatus, setOperationStatus] = useState<"success" | "error">("success");
+  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   function showOperationMessage(message: string, status: "success" | "error" = "success") {
     setOperationMessage(message);
@@ -103,6 +107,57 @@ export default function FamilyArchivePage({
     }
   }
 
+  // ── 导入 JSON ───────────────────────────────────────────────────
+  function handleImportButtonClick() {
+    importInputRef.current?.click();
+  }
+
+  async function handleImportFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    // 重置 input，允许重复选择同一文件
+    event.target.value = "";
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".json")) {
+      showOperationMessage("请选择 JSON 文件", "error");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const parsed = parseArchiveImportText(text);
+      if (!parsed.ok || !parsed.bundle) {
+        showOperationMessage(parsed.error ?? "导入文件无效", "error");
+        return;
+      }
+
+      const result = importArchiveItemsFromBundle({
+        bundle: parsed.bundle,
+        mode: "family",
+      });
+
+      if (!result.ok) {
+        showOperationMessage(result.error ?? "导入失败，请稍后重试", "error");
+        return;
+      }
+
+      refreshItems();
+
+      if (result.importedCount === 0) {
+        showOperationMessage(
+          `没有新增成长册，跳过重复 ${result.skippedDuplicateCount} 条，拒绝 ${result.rejectedCount} 条`,
+          result.rejectedCount > 0 ? "error" : "success"
+        );
+      } else {
+        showOperationMessage(
+          `已导入 ${result.importedCount} 本成长册，跳过重复 ${result.skippedDuplicateCount} 条，拒绝 ${result.rejectedCount} 条`
+        );
+      }
+    } catch {
+      showOperationMessage("读取文件失败，请稍后重试", "error");
+    }
+  }
+
   // 详情回看：复用 FamilyArtifactPreview，禁用保存按钮
   if (selectedItem) {
     return (
@@ -149,6 +204,15 @@ export default function FamilyArchivePage({
             </button>
           )}
           <button
+            type="button"
+            onClick={handleImportButtonClick}
+            title="从 JSON 备份恢复家庭成长册"
+            className="text-sm px-3 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
+            style={{ background: "#f5f0ee", color: "#9d7b72" }}
+          >
+            导入 JSON
+          </button>
+          <button
             onClick={onCreateNew}
             className="text-sm px-4 py-1.5 rounded-full cursor-pointer transition-all hover:shadow-md"
             style={{ background: "#fde8dc", color: "#c0674a" }}
@@ -156,6 +220,14 @@ export default function FamilyArchivePage({
             + 新建成长册
           </button>
         </div>
+        {/* 隐藏的文件选择 input（由导入按钮触发）*/}
+        <input
+          ref={importInputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={handleImportFileChange}
+        />
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pt-8 pb-20">
@@ -316,8 +388,11 @@ export default function FamilyArchivePage({
               className="mt-10 pt-6"
               style={{ borderTop: "1px solid #f0ddd5" }}
             >
-              <p className="text-xs mb-4" style={{ color: "#c0a090" }}>
+              <p className="text-xs mb-2" style={{ color: "#c0a090" }}>
                 导出的 JSON 包含 AI 生成内容与低敏来源摘要，不包含原始照片文件。
+              </p>
+              <p className="text-xs mb-4" style={{ color: "#c0a090" }}>
+                导入 JSON 时会跳过本地已存在的同 id 记录，不覆盖已有成长册。
               </p>
               <p className="text-xs mb-3" style={{ color: "#c0a090" }}>
                 危险操作 · 清空只影响家庭成长册，不影响未来其他类型记忆
