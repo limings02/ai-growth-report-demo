@@ -22,12 +22,14 @@ import PersonalMemoryApp from "@/components/personal/PersonalMemoryApp";
 import MemorialLandingPage from "@/components/memorial/MemorialLandingPage";
 import MemorialMemoryApp from "@/components/memorial/MemorialMemoryApp";
 import FamilyArchivePage from "@/components/archive/FamilyArchivePage";
+import AllArchivePage from "@/components/archive/AllArchivePage";
 
 type HomeScreen =
   | "mode-select"
   | "family-landing"
   | "family-app"
   | "family-archive"
+  | "all-archive"
   | "couple-landing"
   | "couple-app"
   | "personal-landing"
@@ -39,6 +41,15 @@ type HomeScreen =
 export default function Home() {
   const [screen, setScreen] = useState<HomeScreen>("mode-select");
   const [selectedMode, setSelectedMode] = useState<MemoryMode | null>(null);
+
+  function handleCreateNewByMode(mode: MemoryMode) {
+    setSelectedMode(mode);
+    if (mode === "family") setScreen("family-app");
+    else if (mode === "couple") setScreen("couple-app");
+    else if (mode === "personal") setScreen("personal-app");
+    else if (mode === "memorial") setScreen("memorial-app");
+    else setScreen("mode-select");
+  }
 
   function handleSelectMode(mode: MemoryMode) {
     setSelectedMode(mode);
@@ -65,6 +76,19 @@ export default function Home() {
           setSelectedMode(null);
           setScreen("mode-select");
         }}
+      />
+    );
+  }
+
+  // all-archive 跨 mode 统一档案页（只读）
+  if (screen === "all-archive") {
+    return (
+      <AllArchivePage
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+        onCreateNewByMode={handleCreateNewByMode}
       />
     );
   }
@@ -184,5 +208,10 @@ export default function Home() {
   }
 
   // 默认：全局记忆主题首页
-  return <MemoryModeHome onSelectMode={handleSelectMode} />;
+  return (
+    <MemoryModeHome
+      onSelectMode={handleSelectMode}
+      onOpenArchive={() => setScreen("all-archive")}
+    />
+  );
 }

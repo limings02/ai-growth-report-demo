@@ -8,9 +8,10 @@ import { MEMORY_MODES, type MemoryMode } from "@/lib/memory-core/modes";
 
 type Props = {
   onSelectMode: (mode: MemoryMode) => void;
+  onOpenArchive?: () => void;
 };
 
-export default function MemoryModeHome({ onSelectMode }: Props) {
+export default function MemoryModeHome({ onSelectMode, onOpenArchive }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -179,8 +180,26 @@ export default function MemoryModeHome({ onSelectMode }: Props) {
             })}
           </div>
 
+          {/* ── 我的记忆档案入口 ──────────────────────── */}
+          {onOpenArchive && (
+            <div className="text-center mt-10">
+              <button
+                type="button"
+                onClick={onOpenArchive}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm cursor-pointer transition-all hover:shadow-md"
+                style={{ background: "#fffaf7", border: "1px solid #f0ddd5", color: "#9d7b72" }}
+              >
+                <span>📚</span>
+                <span>我的记忆档案</span>
+              </button>
+              <p className="text-xs mt-2" style={{ color: "#c0a090" }}>
+                查看保存在当前浏览器中的记忆册
+              </p>
+            </div>
+          )}
+
           {/* ── 底部说明 ──────────────────────────────── */}
-          <p className="text-center text-xs mt-10" style={{ color: "#c0a090" }}>
+          <p className="text-center text-xs mt-6" style={{ color: "#c0a090" }}>
             🔒 所有照片仅在本地预览，不会上传服务器
           </p>
         </div>
