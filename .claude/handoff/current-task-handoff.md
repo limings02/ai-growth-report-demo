@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 14.0 已完成（云端同步 / 账户系统架构设计）  
+> 当前阶段：Phase 14.1 已完成（Supabase schema spike / 最小云端数据层）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,25 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 14.1（Supabase schema spike / 最小云端数据层）
+- `npm install @supabase/supabase-js`（已安装，package.json 中 `^2.106.1`）
+- `lib/supabase/client.ts`（新增）：
+  - `getSupabaseClient()`：env 未配置时返回 null，不 throw
+  - `isSupabaseConfigured()`：检查 env 是否就绪
+  - 使用 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`（不使用旧命名 ANON_KEY）
+  - 不使用 service role / secret key
+- `lib/archive/cloudArchiveMapper.ts`（新增）：
+  - `CloudArchiveItemInsert` 类型：对应 Supabase archive_items insert row
+  - `mapArchiveItemToCloudInsert()`：纯函数映射，不发网络请求
+  - `containsBlockedCloudArchiveFields()`：防止 blob/previewUrl 上传
+- `supabase/migrations/0001_life_archive_schema.sql`（新增）：
+  - profiles 表 + RLS
+  - archive_items 表（id 沿用本地，artifact/source 为 jsonb，soft delete 预留）
+  - 4 个独立 RLS policy（SELECT/INSERT/UPDATE/DELETE），均 `user_id = auth.uid()`
+- README 新增 Supabase env 节，明确离线降级
+- lint/build ✅；新增 `docs/quality/supabase-schema-spike-check.md`
+- **本阶段无登录 UI、无真实同步、无自动上传；未配置 env 时 app 完全离线运行**
+
 ### Phase 14.0（云端同步 / 账户系统架构设计）
 - 新增 `docs/architecture/cloud-sync-plan.md`：
   - 推荐技术路线：Supabase + Next.js；本阶段不接入
@@ -392,6 +411,7 @@
 - [x] **Phase 13.8**：跨 mode archive 统一列表 / 我的记忆档案（已完成）
 - [x] **Phase 13.9**：统一 archive 筛选 / 搜索 / 单条删除（已完成）
 - [x] **Phase 14.0**：云端同步 / 账户系统架构设计（已完成，纯文档）
+- [x] **Phase 14.1**：Supabase schema spike / 最小云端数据层（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -492,14 +512,17 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 14.1 - Supabase schema spike
+### 优先级 1：Phase 14.2 - Auth shell / 登录登出 UI
 
-架构设计已完成（cloud-sync-plan.md）。下一步最小可执行：
-- 添加 `@supabase/supabase-js` 依赖
-- 新增 `lib/supabase/client.ts`（仅在 env 配置时初始化）
-- 新增 SQL migration（profiles + archive_items 表 + RLS）
-- 不改主 UI；不自动同步；未配置 env 时 app 仍可完全离线运行
-- 详见 `docs/architecture/cloud-sync-plan.md` §13
+Phase 14.1 已完成（依赖/client helper/schema/mapper）。下一步：
+- 安装 `@supabase/ssr`（Next.js cookie-based auth）
+- 新增登录 / 登出 UI（email+password 或 Magic Link）
+- 获取 user session，但**不同步 archive**
+- 不改本地 archive 主链路
+
+### 优先级 2：Phase 14.3 - 手动上传本地 archive（Phase 14.2 完成后）
+
+用户点击"同步到云端" → `mapArchiveItemToCloudInsert` → `upsert` 到 Supabase
 
 ### 优先级 2：其他模式管理增强（可选）
 - couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
@@ -520,7 +543,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 14.0 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 14.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -549,8 +572,9 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 13.7：couple / personal / memorial 保存入口（ArchiveSaveButton / 低敏 source snapshot）✅
 - Phase 13.8：跨 mode 统一档案页（MemoryModeHome 入口 / AllArchivePage / 各 mode 详情回看）✅
 - Phase 13.9：统一 archive 筛选 / 搜索 / 单条删除（mode filter / contains search / pendingDeleteId）✅
-- Phase 14.0：云端同步架构设计文档（Supabase schema / RLS / 迁移策略 / 风险清单，纯文档不接真实服务）✅
-- 下一步：Phase 14.1（Supabase schema spike，详见 docs/architecture/cloud-sync-plan.md §13）
+- Phase 14.0：云端同步架构设计文档（Supabase schema / RLS / 迁移策略 / 风险清单，纯文档）✅
+- Phase 14.1：Supabase schema spike（@supabase/supabase-js / client helper / SQL migration + RLS / cloudArchiveMapper，无登录无同步）✅
+- 下一步：Phase 14.2（Auth shell：安装 @supabase/ssr / 登录登出 UI / 获取 session，不同步 archive）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -567,7 +591,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 14.1：Supabase schema spike（按 cloud-sync-plan.md §13 验收标准执行）
+- 进入 Phase 14.2：Auth shell（@supabase/ssr / 登录登出 UI / session，不同步 archive）
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

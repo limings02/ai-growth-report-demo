@@ -113,6 +113,7 @@ npm run dev
 - **Phase 13.8 跨 mode 统一档案页**：首页新增"我的记忆档案"入口，可统一查看 family / couple / personal / memorial 保存到本地的 ArchiveItem，并按 mode 进入对应详情回看；当前统一页只读，不提供删除、导出或导入
 - **Phase 13.9 统一档案管理增强**：我的记忆档案支持按 mode 筛选、按标题/摘要/关键词本地搜索，并可在统一列表中删除单条 ArchiveItem；当前不支持统一批量清空、导出或导入
 - **Phase 14.0 云端同步架构设计**：在本地 Life Archive 闭环完成后，新增云端同步 / 账户系统设计文档，明确 Supabase schema 草案、RLS 权限边界、本地到云端迁移策略、隐私边界和 Phase 14.1 最小实现计划；本阶段不接入真实云端服务
+- **Phase 14.1 Supabase schema spike**：新增 `@supabase/supabase-js` 依赖、Supabase client helper（env 缺失时返回 null）、云端 row mapper（纯函数）和 SQL migration（profiles + archive_items + RLS）；本阶段无登录 UI、无真实同步、未配置 env 时 app 仍可完全离线运行
 
 ---
 
@@ -158,6 +159,25 @@ const generator = aiGenerator;
 ```bash
 npm run dev
 ```
+
+---
+
+## Supabase / Cloud Sync Spike
+
+Phase 14.1 introduces a minimal Supabase schema spike.
+
+Required env vars for future cloud features (add to `.env.local`):
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+**Notes:**
+- Cloud sync is not active yet. The app still works fully offline when these env vars are missing.
+- No local archive data is uploaded automatically.
+- Do not expose Supabase secret keys in the frontend.
+- SQL migration is at `supabase/migrations/0001_life_archive_schema.sql` — apply manually.
 
 ---
 

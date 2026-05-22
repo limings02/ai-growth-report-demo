@@ -254,18 +254,35 @@ UPDATE archive_items SET deleted_at = now() WHERE id = $1 AND user_id = auth.uid
 
 ---
 
-## 13. Phase 14.1 最小验收标准
+## 13. Phase 14.1 最小验收标准（已完成）
 
-如果下一步进入 Supabase schema spike，验收标准为：
+> Phase 14.1 已实施：`@supabase/supabase-js` 已安装，下列验收项均通过。
 
-| 检查项 | 预期 |
+### env 命名（最新规范）
+
+| 变量 | 说明 |
+|------|------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 项目 URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key（**不使用旧命名 ANON_KEY**）|
+
+### 实现细节
+
+| 文件 | 说明 |
+|------|------|
+| `lib/supabase/client.ts` | `getSupabaseClient()` 在 env 缺失时返回 null；`isSupabaseConfigured()` 检查 env |
+| `lib/archive/cloudArchiveMapper.ts` | 纯函数 `mapArchiveItemToCloudInsert`，不发网络请求；`containsBlockedCloudArchiveFields` 防止 blob 上传 |
+| `supabase/migrations/0001_life_archive_schema.sql` | profiles + archive_items 表 + 4 个 RLS policy |
+
+### 验收结果
+
+| 检查项 | 结果 |
 |--------|------|
 | `npm run lint` | ✅ 零错误 |
 | `npm run build` | ✅ TypeScript 零错误 |
 | 现有本地功能不受影响 | ✅ localStorage archive 完全不变 |
 | 没有自动上传 | ✅ 无任何自动 fetch 到 Supabase |
-| 没有破坏 localStorage | ✅ readArchiveCollection / writeArchiveCollection 行为不变 |
-| Supabase client 仅在配置了 env 时初始化 | ✅ 未配置 env 时 app 仍可完全离线运行 |
-| SQL migration 文件存在 | ✅ 包含 RLS 规则 |
-| README 新增 Supabase env 配置说明 | ✅ NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY |
-| 无真实用户数据写入 | ✅ spike 只用测试账号验证 schema |
+| 没有破坏 localStorage | ✅ |
+| Supabase client 仅在配置了 env 时初始化 | ✅ env 缺失返回 null |
+| SQL migration 文件存在 + RLS | ✅ |
+| README 新增 Supabase env 配置说明 | ✅ 使用 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY |
+| 无真实用户数据写入 | ✅ |
