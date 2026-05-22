@@ -1,8 +1,10 @@
 "use client";
 
 // components/personal/PersonalLandingPage.tsx
-// personal mode 的介绍落地页。
-// 定位：个人阶段回忆录 / 人生 Wiki 的 preview 体验入口。
+// personal mode 的介绍落地页（Phase 15.0 情绪升级版）。
+// 删除 preview/mock 旧文案；呈现为真实可用的人生阶段展厅。
+
+import EmotionalBackdrop from "@/components/visual/EmotionalBackdrop";
 
 type Props = {
   onStart: () => void;
@@ -12,9 +14,10 @@ type Props = {
 export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       style={{ background: "linear-gradient(160deg, #f5f8ff 0%, #eef2fb 50%, #e8edf8 100%)" }}
     >
+      <EmotionalBackdrop tone="personal" />
       {/* 顶部导航 */}
       <div
         className="sticky top-0 z-20 px-5 py-3"
@@ -38,22 +41,20 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
         {/* Hero 区 */}
         <div className="mb-10">
           <p className="text-xs font-medium mb-3 opacity-60" style={{ color: "#5568a0" }}>
-            📖 个人回忆录 · preview 体验
+            📖 个人回忆录
           </p>
           <h1
-            className="text-3xl font-bold leading-snug mb-4"
+            className="text-3xl font-bold leading-snug mb-4 reveal-up"
             style={{ color: "#1a2340" }}
           >
-            把某段人生，
+            把某段人生重新摊开，
             <br />
-            整理成一本能反复回看的
-            <br />
-            个人 Wiki
+            <span style={{ color: "#6b8adc" }}>看见那些你曾经怎样走过。</span>
           </h1>
           <p className="text-sm leading-loose" style={{ color: "#4a5880" }}>
-            大学四年、第一份工作、搬去新城市、一段走出来了的低谷……
+            大学四年、第一份工作、搬去新城市、走出低谷……
             <br />
-            那些你没说完的故事，值得被好好整理一次。
+            那些你没说完的故事，值得被认真整理一次。
           </p>
         </div>
 
@@ -147,15 +148,14 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
           开始整理这段人生 →
         </button>
 
-        {/* 边界说明 */}
+        {/* 隐私说明 */}
         <div
           className="rounded-xl px-4 py-3 text-xs leading-relaxed"
           style={{ background: "rgba(255,255,255,0.5)", color: "#8090b8", border: "1px solid #dde3f0" }}
         >
-          <p className="font-medium mb-1" style={{ color: "#5568a0" }}>关于 preview 体验</p>
+          <p className="font-medium mb-1" style={{ color: "#5568a0" }}>🔒 关于你的隐私</p>
           <p>
-            当前阶段展示的是 mock 结果预览，不会调用 AI，不会发送你填写的内容。
-            填写内容只在本地浏览器使用，刷新即清除。
+            你可以只填写愿意整理的片段。当前档案默认保存在本地浏览器；登录不会自动上传。
           </p>
         </div>
 

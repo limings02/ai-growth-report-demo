@@ -1,13 +1,10 @@
 "use client";
 
 // components/couple/CoupleLandingPage.tsx
-// couple mode 的专属落地介绍页（Phase 8.1.2 增强版）。
-//
-// 目标：先调动情绪，再说明功能和边界。
-// 开发约定：
-// - 面向用户不出现「MemoryRawMaterial」，改称「记忆材料」
-// - AI 生成当前未接入，在页面底部轻量说明，不做大块警告
-// - 不修改 CoupleMemoryApp 核心逻辑
+// couple mode 的专属落地介绍页（Phase 15.0 情绪升级版）。
+// 目标：浪漫、克制、有传播力；删除 Preview / 下一阶段开放 旧文案。
+
+import EmotionalBackdrop from "@/components/visual/EmotionalBackdrop";
 
 type Props = {
   onStart: () => void;
@@ -17,9 +14,10 @@ type Props = {
 export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       style={{ background: "linear-gradient(160deg, #fff8f3 0%, #fdf0e8 50%, #fce8e0 100%)" }}
     >
+      <EmotionalBackdrop tone="couple" />
       {/* 顶部导航 */}
       <div
         className="sticky top-0 z-20 px-5 py-3"
@@ -48,23 +46,23 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
               style={{ background: "#fde8dc", color: "#c0674a" }}
             >
               <span>💑</span>
-              <span>恋爱纪念册 · Preview</span>
+              <span>恋爱纪念册</span>
             </div>
 
             <h1
-              className="text-3xl sm:text-4xl font-bold mb-5"
+              className="text-3xl sm:text-4xl font-bold mb-5 reveal-up"
               style={{ color: "#2d1f1a", lineHeight: "1.45" }}
             >
-              从第一句晚安，<br />
-              <span style={{ color: "#e07a5f" }}>到后来每一次想念。</span>
+              把你们说过的晚安、争吵、和好与想念，<br />
+              <span style={{ color: "#e07a5f" }}>整理成一本只属于两个人的恋爱纪念册。</span>
             </h1>
 
             <p
               className="text-base leading-relaxed mb-8 max-w-lg mx-auto"
               style={{ color: "#7a5a52" }}
             >
-              那些藏在聊天记录里的心动、玩笑、争吵与和好，
-              都可以被认真整理成你们的恋爱时间线、关系关键词、周年信和 Relationship Galaxy。
+              恋爱时间线、关系关键词、周年信和 Relationship Galaxy，
+              用你们真实的故事生成，不是模板，不是套词。
             </p>
 
             {/* Hero CTA */}
@@ -75,11 +73,6 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
             >
               开始整理恋爱故事 →
             </button>
-
-            {/* 阶段说明：轻量，不做警告 */}
-            <p className="text-xs mt-3" style={{ color: "#b08878" }}>
-              当前可体验：填写恋爱故事，预览 AI 将如何整理你们的记忆材料
-            </p>
           </div>
 
           {/* ── 它会帮你整理什么 ─────────────────────────────── */}
@@ -245,17 +238,6 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
             </ul>
           </div>
 
-          {/* ── Preview 阶段说明（轻量）─────────────────────── */}
-          <div
-            className="rounded-xl px-4 py-3 mb-8 text-center"
-            style={{ background: "#fff3e0", border: "1px solid #ffe0b2" }}
-          >
-            <p className="text-xs" style={{ color: "#e65100" }}>
-              当前是 Preview 体验：你可以先填写故事，查看系统如何整理你们的记忆材料。
-              完整 AI 纪念册生成将在下一阶段开放。
-            </p>
-          </div>
-
           {/* ── 底部 CTA ──────────────────────────────────────── */}
           <button
             onClick={onStart}
@@ -266,7 +248,7 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
           </button>
 
           <p className="text-center text-xs mt-3" style={{ color: "#b08878" }}>
-            填写完成后，可以预览 AI 将如何整理你们的记忆材料
+            填写完成后，AI 会整理生成你们的恋爱纪念册
           </p>
         </div>
       </main>

@@ -18,9 +18,11 @@ export default function MemoryCoverSection({
 }: Props) {
   return (
     <div
-      className="rounded-3xl p-7 mb-5"
+      className="rounded-3xl p-7 mb-5 reveal-up"
       style={{
         background: "linear-gradient(135deg, #fde8dc 0%, #fcd5c0 50%, #f4b8a0 100%)",
+        boxShadow: "0 8px 32px rgba(200, 100, 70, 0.15), 0 2px 8px rgba(200, 100, 70, 0.08)",
+        animationDelay: "0.2s",
       }}
     >
       <p className="text-xs font-medium mb-3 opacity-70" style={{ color: "#8b4a38" }}>
@@ -35,7 +37,12 @@ export default function MemoryCoverSection({
             <span
               key={kw}
               className="px-3 py-1 rounded-full text-xs font-medium"
-              style={{ background: "rgba(255,255,255,0.5)", color: "#8b4a38" }}
+              style={{
+                background: "rgba(255,255,255,0.55)",
+                color: "#8b4a38",
+                backdropFilter: "blur(4px)",
+                border: "1px solid rgba(255,255,255,0.7)",
+              }}
             >
               {kw}
             </span>
@@ -49,7 +56,7 @@ export default function MemoryCoverSection({
       {narrative.summary && (
         <p
           className="text-sm leading-loose whitespace-pre-line"
-          style={{ color: "#3d2c2c", opacity: 0.85 }}
+          style={{ color: "#3d2c2c", opacity: 0.9 }}
         >
           {narrative.summary}
         </p>

@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 14.3 已完成（手动上传本地 archive 到云端）  
+> 当前阶段：Phase 15.0 已完成（Emotional Motion Polish / 浪漫动态体验打磨）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -219,6 +219,19 @@
 - `FamilyMemoryGraphPreview.tsx`：去掉 `graph.title` 展示（保留 subtitle）；节点截断 5 → 8 字
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
+
+### Phase 15.0（Emotional Motion Polish / 浪漫动态体验打磨）
+- `app/globals.css`：5 个 CSS 动效（memoryFloat/Drift/softPulse/revealUp/shimmerLine）+ prefers-reduced-motion + print 禁用
+- `components/visual/EmotionalBackdrop.tsx`（新增）：mode-specific 情绪背景（5 种 tone / radial glow / floating chips / print:hidden）
+- `MemoryModeHome.tsx`：EmotionalBackdrop / 文案升级 / 状态修正（四种主题均可体验）/ 卡片 CTA 升级 / 底部隐私文案 / 账户文案修正
+- `FamilyLandingPage.tsx`：EmotionalBackdrop + 情绪引导语 + 未来打开场景标签（不删子组件）
+- `CoupleLandingPage.tsx`：删除 Preview badge / orange warning box / 旧阶段文案；hero 升级；EmotionalBackdrop
+- `PersonalLandingPage.tsx`：删除 preview/mock 旧文案；hero 升级；隐私说明规范化；EmotionalBackdrop
+- `MemorialLandingPage.tsx`：删除 preview/mock 旧文案；hero 升级；新增明确边界声明（绝不复活/对话）；EmotionalBackdrop
+- `MemoryArtifactPreview.tsx`：新增 reveal hint（print:hidden）
+- `MemoryCoverSection.tsx`：reveal-up 动效 + 增强封面阴影 + keywords 视觉升级
+- lint/build ✅；新增 `docs/quality/emotional-motion-polish-check.md`
+- **不新增任何依赖；暂停云端同步开发**
 
 ### Phase 14.3（手动上传本地 archive 到云端）
 - `lib/archive/cloudArchiveSync.ts`（新增）：
@@ -444,6 +457,7 @@
 - [x] **Phase 14.1**：Supabase schema spike / 最小云端数据层（已完成）
 - [x] **Phase 14.2**：Auth shell / 登录登出 UI（已完成）
 - [x] **Phase 14.3**：手动上传本地 archive 到云端（已完成）
+- [x] **Phase 15.0**：Emotional Motion Polish / 浪漫动态体验打磨（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -544,18 +558,19 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 14.4 - 云端 archive 读取 / 本地合并预览
+### 优先级 1：Phase 15.1 - 移动端验收 / Beta 部署准备
 
-手动上传已完成。下一步：
-- 登录后读取 cloud archive_items（SELECT WHERE user_id = uid AND deleted_at IS NULL）
-- 与本地 localStorage 合并预览（不强制写回本地，用户确认后再合并）
-- 详见 `docs/architecture/cloud-sync-plan.md` §11
+情绪升级已完成。下一步：
+- 移动端真实浏览器 E2E（各 landing 页 + 结果页动效验收）
+- 核查所有 landing 页移动端布局不溢出
+- 考虑 Beta 发布部署（Vercel 或同类平台）
+- 云端同步（Phase 14.4）暂缓，待用户测试后再决定
 
-### 优先级 2：Phase 14.2B - SSR token refresh middleware（可选）
+### 优先级 2：Phase 14.4（暂缓，可选）
 
-完整 cookie session 刷新可通过 Next.js middleware 实现；当前 Auth shell 已可用，middleware 可后移。
+云端 archive 读取 / 本地合并预览；优先级低于移动端验收和 Beta 部署。
 
-### 优先级 2：其他模式管理增强（可选）
+### 优先级 3：其他模式管理增强（可选）
 - couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
 - couple/personal/memorial archive 导出/导入能力对齐 family
 
@@ -574,7 +589,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 14.3 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 15.0 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -607,7 +622,8 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 14.1：Supabase schema spike（@supabase/supabase-js / client helper / SQL migration + RLS / cloudArchiveMapper）✅
 - Phase 14.2：Auth shell（@supabase/ssr / env.ts / browserClient / AuthPanel / 登录登出 / session）✅
 - Phase 14.3：手动上传本地 archive（cloudArchiveSync / INSERT ONLY / blocked fields 防护 / AuthPanel 同步按钮）✅
-- 下一步：Phase 14.4（云端 archive 读取 / 本地合并预览）
+- Phase 15.0：Emotional Motion Polish（EmotionalBackdrop / CSS动效 / 文案升级 / preview/mock清理）✅
+- 下一步：Phase 15.1（移动端验收 / Beta 部署准备）；云端同步暂缓
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -624,7 +640,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 14.4：云端 archive 读取 / 本地合并预览
+- 进入 Phase 15.1：移动端验收 / Beta 部署准备
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

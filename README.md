@@ -116,6 +116,7 @@ npm run dev
 - **Phase 14.1 Supabase schema spike**：新增 `@supabase/supabase-js` 依赖、Supabase client helper（env 缺失时返回 null）、云端 row mapper（纯函数）和 SQL migration（profiles + archive_items + RLS）；本阶段无登录 UI、无真实同步、未配置 env 时 app 仍可完全离线运行
 - **Phase 14.2 Auth shell**：新增 `@supabase/ssr`、登录/注册/登出 UI（email/password），首页增加"账户 / 登录"入口；登录后只显示 session 状态，不同步 archive；未配置 env 时显示"云端同步未配置"，本地功能不受影响
 - **Phase 14.3 手动上传本地 archive**：登录后账户页出现"同步到云端"按钮，用户主动点击将 localStorage ArchiveItem 上传到 Supabase；INSERT ONLY（同 id 跳过，不覆盖），不上传照片 blob，不读取云端数据
+- **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
 
 ---
 

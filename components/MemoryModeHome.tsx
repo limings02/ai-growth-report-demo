@@ -5,6 +5,7 @@
 // 内容 mode-neutral，不出现孩子/成长/父母等 family 专属表达。
 
 import { MEMORY_MODES, type MemoryMode } from "@/lib/memory-core/modes";
+import EmotionalBackdrop from "@/components/visual/EmotionalBackdrop";
 
 type Props = {
   onSelectMode: (mode: MemoryMode) => void;
@@ -15,18 +16,10 @@ type Props = {
 export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth }: Props) {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       style={{ background: "linear-gradient(160deg, #fff8f3 0%, #fdf0e8 40%, #fce8e0 100%)" }}
     >
-      {/* 背景装饰 */}
-      <div
-        className="fixed top-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #f4b8a0, transparent)" }}
-      />
-      <div
-        className="fixed bottom-[-60px] left-[-60px] w-56 h-56 rounded-full opacity-15 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #fcd5c0, transparent)" }}
-      />
+      <EmotionalBackdrop tone="home" />
 
       <main className="flex-1 flex flex-col items-center justify-start px-5 pt-16 pb-20 relative z-10">
         <div className="w-full max-w-5xl">
@@ -42,26 +35,24 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth
             </div>
 
             <h1
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-5"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-5 reveal-up"
               style={{ color: "#2d1f1a", lineHeight: "1.35" }}
             >
-              把重要的人生片段，<br />
-              <span style={{ color: "#e07a5f" }}>整理成会被珍藏的记忆。</span>
+              把散落的人生片段，<br />
+              <span style={{ color: "#e07a5f" }}>整理成一份会被珍藏的记忆册。</span>
             </h1>
 
             <p
               className="text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-3"
               style={{ color: "#7a5a52" }}
             >
-              选择一个记忆主题，AI 会把照片、文字、对话和故事<br className="hidden sm:block" />
-              整理成时间线、纪念文、星图与可分享的回忆册。
+              选择一个记忆主题，AI 会把照片、问答、对话和故事<br className="hidden sm:block" />
+              整理成时间线、纪念文、关键词与记忆图谱。
             </p>
 
-            {/* 三种状态说明 */}
+            {/* 状态说明：修正为全部可体验 */}
             <p className="text-sm" style={{ color: "#b08878" }}>
-              🟢 可生成：<strong>家庭亲子记忆、情侣恋爱纪念</strong>
-              &nbsp;·&nbsp;
-              ⏳ 后续开放：个人、纪念馆
+              四种记忆主题均可体验 · 当前档案默认保存在本地浏览器
             </p>
           </div>
 
@@ -160,20 +151,29 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth
                       color: "#9d7b72",
                     }}
                   >
-                    {isAvailable && (
+                    {cfg.id === "family" && (
                       <span>
-                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ 立即生成：</span>
-                        {cfg.primaryUseCase}
+                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
+                        18 岁生日那天，打开这本成长册
                       </span>
                     )}
-                    {isPreview && (
+                    {cfg.id === "couple" && (
                       <span>
-                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ 先体验：</span>
-                        {cfg.primaryUseCase}
+                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
+                        把你们的聊天变成一封周年信
                       </span>
                     )}
-                    {isComingSoon && (
-                      <span>💡 {cfg.primaryUseCase}</span>
+                    {cfg.id === "personal" && (
+                      <span>
+                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
+                        给未来的自己留下一份阶段总结
+                      </span>
+                    )}
+                    {cfg.id === "memorial" && (
+                      <span>
+                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
+                        把家族故事整理成可以留下来的文字
+                      </span>
                     )}
                   </div>
                 </div>
@@ -211,14 +211,14 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth
               <p className="text-xs mt-2" style={{ color: "#c0a090" }}>
                 {onOpenArchive && "查看保存在当前浏览器中的记忆册"}
                 {onOpenArchive && onOpenAuth && " · "}
-                {onOpenAuth && "登录后可在后续阶段开启云端同步"}
+                {onOpenAuth && "账户功能测试中，当前不会自动同步本地记忆"}
               </p>
             </div>
           )}
 
           {/* ── 底部说明 ──────────────────────────────── */}
           <p className="text-center text-xs mt-6" style={{ color: "#c0a090" }}>
-            🔒 所有照片仅在本地预览，不会上传服务器
+            🔒 当前记忆档案默认保存在本地浏览器；登录功能处于测试阶段，不会自动上传内容。
           </p>
         </div>
       </main>

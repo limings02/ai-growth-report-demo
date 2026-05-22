@@ -25,6 +25,55 @@ body {
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
 }
 
+/* ── 轻量情绪动效（Phase 15.0）─────────────────────────────────
+   prefers-reduced-motion 下全部禁用
+   不影响 print
+   ─────────────────────────────────────────────────────── */
+
+@keyframes memoryFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes memoryDrift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.35; }
+  50%  { transform: translate3d(18px, -22px, 0) rotate(4deg); opacity: 0.65; }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.35; }
+}
+
+@keyframes softPulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.04); }
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmerLine {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.memory-float  { animation: memoryFloat 5s ease-in-out infinite; }
+.memory-drift  { animation: memoryDrift  8s ease-in-out infinite; }
+.soft-pulse    { animation: softPulse   4s ease-in-out infinite; }
+.reveal-up     { animation: revealUp  0.7s ease-out both; }
+.shimmer-text  { background-size: 200% auto; animation: shimmerLine 4s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-float, .memory-drift, .soft-pulse, .reveal-up, .shimmer-text {
+    animation: none !important;
+  }
+}
+
+@media print {
+  .memory-float, .memory-drift, .soft-pulse, .reveal-up, .shimmer-text {
+    animation: none !important;
+  }
+}
+
 /* ── 打印样式 ───────────────────────────────────────────────
    使用方式：调用 window.print()，浏览器弹出打印对话框
    选择"另存为 PDF"即可保存
