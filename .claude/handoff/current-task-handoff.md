@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.1C 已完成（全量静态移动端验收 + 文档修正）  
-> 下一阶段：Phase 15.2 — Beta Deployment Prep（代码层面准备就绪）  
+> 当前阶段：Phase 15.2A 已完成（Beta Deployment Prep with Manual QA Gate）  
+> 下一阶段：Phase 15.2B — Preview/Staging Deploy + Manual Browser QA  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -258,6 +258,19 @@
   6. 中：动效在真实设备上轻柔不廉价
   7. 低：couple Galaxy 在深色系统模式下可读
 - **建议进入 Phase 15.2 Beta Deployment Prep**：代码层面无阻塞；高优先待确认项属视觉/交互验收，不属于代码 bug
+
+### Phase 15.2A（Beta Deployment Prep with Manual QA Gate）
+- **新增** `docs/deployment/beta-release-gate.md`：10 项 Hard Gate 人工验收条件 + Go/No-Go 判断标准 + 可接受 Beta 限制 + 禁止承诺项；当前 Hard Gate #8 / #9 静态已通过，#1-#7 / #10 待人工
+- **更新** `docs/deployment/beta-deployment-checklist.md`：新增 10 步 Smoke Test 清单；补充 Phase 15.2A 更新备注；明确部署前需完成 beta-release-gate.md Hard Gate
+- **修正** `docs/quality/mobile-beta-qa-check.md`：Personal Landing 旧"grid-cols-2 文字较小"→ 当前单列状态；"已知限制"表格更新；Phase 15.1B 整体结论同步
+- **修正** `docs/quality/landing-emotional-storytelling-check.md`：移除文档中对旧高风险表达的直接引用，改为抽象描述；同步 Phase 15.1B.1 修复记录措辞
+- `npm run lint` ✅ / `npm run build` ✅
+- **当前状态**：
+  - 无公开发布（仅准备文档和配置说明）
+  - 真实浏览器验收仍未完成（7 项人工待确认）
+  - Phase 14.x 云端同步继续暂缓
+  - AuthPanel 仍不展示"同步到云端"按钮
+- **下一阶段 Phase 15.2B**：部署到 Vercel Preview URL → 执行 Smoke Test → 执行 Hard Gate 10 项真实浏览器验收 → 通过后才可对外公开 Beta
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

@@ -1,7 +1,9 @@
 # Beta Deployment Checklist
 
 > 创建时间：Phase 15.1B（2026-05-22）  
-> 适用范围：首次 Beta 部署（Vercel 或同类平台）
+> 更新：Phase 15.2A（2026-05-22）  
+> 适用范围：首次 Beta 部署（Vercel 或同类平台）  
+> 注意：本 checklist 描述部署配置；公开 Beta 前还需完成 beta-release-gate.md 中的 10 项 Hard Gate 人工验收
 
 ---
 
@@ -82,14 +84,20 @@ NEXT_PUBLIC_SUPABASE_URL               = <Supabase project URL>
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY   = <publishable key>
 ```
 
-### 首次部署后验证
+### 首次部署后 Smoke Test
 
-- [ ] 访问首页，四个 mode 卡片正常显示
-- [ ] 进入 family 模式，生成一次成功
-- [ ] 检查 API Routes 正常（`/api/generate-report` 等）
-- [ ] 确认 DeepSeek 调用成功（不超时、不报 401）
-- [ ] 检查 PDF 保存功能正常
-- [ ] 检查本地 archive 保存/读取正常
+按顺序执行，全部通过才视为部署成功：
+
+- [ ] 1. 首页可访问，四个 mode 卡片正常显示，无白屏
+- [ ] 2. 四个 mode landing page 均可进入
+- [ ] 3. 四个 mode 输入页均可进入并显示表单
+- [ ] 4. 至少一个 mode（建议 family）完整生成结果，无 API 报错
+- [ ] 5. 结果页可执行：返回首页 / 再做一本 / 保存 PDF
+- [ ] 6. archive 本地保存 / 列表 / 删除 可用
+- [ ] 7. AuthPanel 未配置 Supabase env 时降级正常（显示"云端同步未配置"）
+- [ ] 8. memorial 页面无高风险表达（边界说明文案正确）
+- [ ] 9. 移动端 375px 首页不横向滚动（DevTools 或真实设备）
+- [ ] 10. 控制台无明显 runtime error
 
 ---
 

@@ -154,7 +154,7 @@ Phase 15.1B.1 进一步克制化边界声明（移除"模拟离世者 / 数字�
 - · 不替代真实的怀念与悲伤
 - ✓ 帮助这些记忆被家人慢慢读起
 
-> 旧版本（Phase 15.1B）曾包含"不模拟离世者发言 / 不包装成数字人格"等表述已于 Phase 15.1B.1 中移除。
+> 旧版边界声明中存在较直接的拟人化/人格化方向表达，已于 Phase 15.1B.1 改为更克制的资料整理边界说明。
 
 ---
 
@@ -196,7 +196,7 @@ Phase 15.1B.1 进一步克制化边界声明（移除"模拟离世者 / 数字�
 
 | 修复项 | 改动内容 |
 |--------|---------|
-| memorial 用户可见边界文案 | MemoryModeHome "不做对话模拟" → "整理故事 · 保留家族记忆"；MemorialLandingPage 边界声明改用正向措辞，移除"模拟离世者 / 数字形象"等概念 |
+| memorial 用户可见边界文案 | MemoryModeHome 旧副标题 → "整理故事 · 保留家族记忆"；MemorialLandingPage 边界声明改用正向资料整理措辞，移除旧版拟人化/人格化方向表达 |
 | personal 情绪场景卡片移动端 | `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`，移动端单列阅读 |
 | memorial 记忆细节卡片移动端 | `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`，移动端单列阅读 |
 | gentle-glow 动效拆分 | 删除通用 `gentleGlow`，新增 `gentleGlowWarm` / `gentleGlowBlue` / `gentleGlowMemorial` 三种 tone；personal CTA 改用 `gentle-glow-blue` |
