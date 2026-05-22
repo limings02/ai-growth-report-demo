@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 14.2 已完成（Auth shell / 登录登出 UI）  
+> 当前阶段：Phase 14.3 已完成（手动上传本地 archive 到云端）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,20 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 14.3（手动上传本地 archive 到云端）
+- `lib/archive/cloudArchiveSync.ts`（新增）：
+  - `uploadLocalArchiveItemsToCloud()`：INSERT ONLY，不 upsert，不覆盖
+  - 流程：blocked fields 过滤 → SELECT 云端已有 id → filter 新 id → INSERT
+  - 不做 cloud → local；不做自动同步；不做删除同步
+  - 纯参数化函数，不引用 localStorage
+- `AuthPanel.tsx`（更新）：
+  - `useMemo(() => getSupabaseBrowserClient(), [])` 避免重复创建 client
+  - `handleManualUploadArchive`：登录后可用，读取本地 archive → 上传
+  - 已登录 UI：新增"手动同步本地记忆档案"区域 + "同步到云端"按钮 + syncMessage 反馈
+  - 安全文案：明确只有点击才上传，不自动上传
+- lint/build ✅；新增 `docs/quality/manual-cloud-upload-check.md`
+- **本阶段：不读取 cloud archive / 不做 cloud→local / 不做删除同步**
+
 ### Phase 14.2（Auth shell / 登录登出 UI）
 - `npm install @supabase/ssr`（已安装 `^0.10.3`）
 - `lib/supabase/env.ts`（新增）：统一 env 读取，`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
@@ -429,6 +443,7 @@
 - [x] **Phase 14.0**：云端同步 / 账户系统架构设计（已完成，纯文档）
 - [x] **Phase 14.1**：Supabase schema spike / 最小云端数据层（已完成）
 - [x] **Phase 14.2**：Auth shell / 登录登出 UI（已完成）
+- [x] **Phase 14.3**：手动上传本地 archive 到云端（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -529,12 +544,11 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 14.3 - 手动上传本地 archive 到云端
+### 优先级 1：Phase 14.4 - 云端 archive 读取 / 本地合并预览
 
-Auth shell 已完成。下一步：
-- 在 AuthPanel 或 AllArchivePage 增加"同步到云端"按钮（仅登录后显示）
-- 调用 `mapArchiveItemToCloudInsert` + Supabase upsert
-- 不自动后台同步；用户主动点击触发
+手动上传已完成。下一步：
+- 登录后读取 cloud archive_items（SELECT WHERE user_id = uid AND deleted_at IS NULL）
+- 与本地 localStorage 合并预览（不强制写回本地，用户确认后再合并）
 - 详见 `docs/architecture/cloud-sync-plan.md` §11
 
 ### 优先级 2：Phase 14.2B - SSR token refresh middleware（可选）
@@ -560,7 +574,7 @@ Auth shell 已完成。下一步：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 14.2 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 14.3 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -591,8 +605,9 @@ Auth shell 已完成。下一步：
 - Phase 13.9：统一 archive 筛选 / 搜索 / 单条删除（mode filter / contains search / pendingDeleteId）✅
 - Phase 14.0：云端同步架构设计文档（Supabase schema / RLS / 迁移策略 / 风险清单，纯文档）✅
 - Phase 14.1：Supabase schema spike（@supabase/supabase-js / client helper / SQL migration + RLS / cloudArchiveMapper）✅
-- Phase 14.2：Auth shell（@supabase/ssr / env.ts / browserClient / AuthPanel / 登录登出 / session，不同步 archive）✅
-- 下一步：Phase 14.3（手动上传本地 archive 到云端，用户主动触发）
+- Phase 14.2：Auth shell（@supabase/ssr / env.ts / browserClient / AuthPanel / 登录登出 / session）✅
+- Phase 14.3：手动上传本地 archive（cloudArchiveSync / INSERT ONLY / blocked fields 防护 / AuthPanel 同步按钮）✅
+- 下一步：Phase 14.4（云端 archive 读取 / 本地合并预览）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -609,7 +624,7 @@ Auth shell 已完成。下一步：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 14.3：手动上传本地 archive 到云端（登录后"同步到云端"按钮，用户主动触发）
+- 进入 Phase 14.4：云端 archive 读取 / 本地合并预览
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

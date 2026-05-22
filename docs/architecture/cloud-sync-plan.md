@@ -230,7 +230,7 @@ UPDATE archive_items SET deleted_at = now() WHERE id = $1 AND user_id = auth.uid
 | Phase 14.0 | 架构设计（本文档）| 不接真实服务 |
 | Phase 14.1 | Supabase schema spike | 添加依赖/env；SQL migration 文档；不改主 UI；不自动同步 |
 | Phase 14.2 | Auth shell（已完成）| `@supabase/ssr`；email/password 登录/注册/登出；session 管理；未配置 env 显示"云端同步未配置"；不同步 archive |
-| Phase 14.3 | 手动上传本地 archive | 用户点击"同步到云端"触发上传；不后台自动同步 |
+| Phase 14.3 | 手动上传本地 archive（已完成）| `cloudArchiveSync.ts`；INSERT ONLY，同 id 跳过；containsBlockedCloudArchiveFields 防护；不读取云端内容；AuthPanel "同步到云端"按钮（仅登录后显示）|
 | Phase 14.4 | 云端 archive 读取 | 登录后读取云端 archive；与本地合并 |
 | Phase 14.5 | 冲突处理 + 删除同步 | updatedAt 冲突处理；soft delete 同步 |
 | Phase 14.6 | Cloud backup export | 从云端导出全量 JSON |

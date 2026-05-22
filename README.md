@@ -115,6 +115,7 @@ npm run dev
 - **Phase 14.0 云端同步架构设计**：在本地 Life Archive 闭环完成后，新增云端同步 / 账户系统设计文档，明确 Supabase schema 草案、RLS 权限边界、本地到云端迁移策略、隐私边界和 Phase 14.1 最小实现计划；本阶段不接入真实云端服务
 - **Phase 14.1 Supabase schema spike**：新增 `@supabase/supabase-js` 依赖、Supabase client helper（env 缺失时返回 null）、云端 row mapper（纯函数）和 SQL migration（profiles + archive_items + RLS）；本阶段无登录 UI、无真实同步、未配置 env 时 app 仍可完全离线运行
 - **Phase 14.2 Auth shell**：新增 `@supabase/ssr`、登录/注册/登出 UI（email/password），首页增加"账户 / 登录"入口；登录后只显示 session 状态，不同步 archive；未配置 env 时显示"云端同步未配置"，本地功能不受影响
+- **Phase 14.3 手动上传本地 archive**：登录后账户页出现"同步到云端"按钮，用户主动点击将 localStorage ArchiveItem 上传到 Supabase；INSERT ONLY（同 id 跳过，不覆盖），不上传照片 blob，不读取云端数据
 
 ---
 
@@ -186,8 +187,18 @@ Phase 14.2 adds a lightweight account panel.
 
 - Email/password sign in and sign up are supported when Supabase env vars are configured.
 - Signing in does **not** upload local archive data.
-- Cloud sync is still inactive — sync will be manually triggered in a future phase.
+- Cloud sync is manually triggered by the user (Phase 14.3).
 - Local archive features continue to work without Supabase env vars.
+
+### Manual cloud upload status
+
+Phase 14.3 adds a manual "sync to cloud" action for signed-in users.
+
+- Sync is user-triggered only.
+- Existing cloud rows with the same ArchiveItem id are skipped.
+- Local archive data is not uploaded automatically.
+- Photo blob/File/previewUrl values are blocked from upload.
+- Cloud-to-local restore is not implemented yet.
 
 ---
 

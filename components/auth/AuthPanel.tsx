@@ -1,15 +1,18 @@
 "use client";
 
 // components/auth/AuthPanel.tsx
-// Auth shell（Phase 14.2）。
+// Auth shell（Phase 14.3）。
 // 支持 email/password 登录 / 注册 / 登出 / 查看 session。
-// 登录后只显示状态，不同步 archive，不上传 localStorage 数据。
+// 已登录时支持手动点击"同步到云端"，上传本地 localStorage ArchiveItem。
+// 同步是用户主动触发，不自动上传，不覆盖云端已有数据。
 // env 未配置时显示"云端同步未配置"，本地功能仍完全可用。
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { readArchiveCollection } from "@/lib/archive";
+import { uploadLocalArchiveItemsToCloud } from "@/lib/archive/cloudArchiveSync";
 
 type Props = {
   onBackToHome: () => void;
@@ -27,7 +30,10 @@ export default function AuthPanel({ onBackToHome }: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const configured = isSupabaseConfigured();
-  const supabase = getSupabaseBrowserClient();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<"success" | "error" | "info">("info");
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     if (!configured || !supabase) return;
@@ -80,6 +86,38 @@ export default function AuthPanel({ onBackToHome }: Props) {
       setUser(result.data.user ?? null);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleManualUploadArchive() {
+    if (!supabase || !user) {
+      setSyncStatus("error");
+      setSyncMessage("请先登录后再同步。");
+      return;
+    }
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const collection = readArchiveCollection();
+      const result = await uploadLocalArchiveItemsToCloud({
+        supabase,
+        userId: user.id,
+        items: collection.items,
+      });
+      if (!result.ok) {
+        setSyncStatus("error");
+        setSyncMessage(result.error ?? "同步失败，请稍后重试。");
+        return;
+      }
+      setSyncStatus("success");
+      setSyncMessage(
+        `同步完成：本地 ${result.totalLocalCount} 条，上传 ${result.uploadedCount} 条，跳过已有 ${result.skippedExistingCount} 条，拒绝 ${result.rejectedCount} 条。`
+      );
+    } catch (error) {
+      setSyncStatus("error");
+      setSyncMessage(error instanceof Error ? error.message : "同步失败，请稍后重试。");
+    } finally {
+      setIsSyncing(false);
     }
   }
 
@@ -195,7 +233,46 @@ export default function AuthPanel({ onBackToHome }: Props) {
                   className="rounded-xl px-4 py-3 mb-5 text-xs leading-relaxed"
                   style={{ background: "#f5f0ee", color: "#7a5a52" }}
                 >
-                  ℹ️ 当前不会自动上传你的本地记忆档案。同步功能将在后续阶段由你手动触发。
+                  ℹ️ 不会自动上传你的本地记忆档案。只有点击「同步到云端」后，才会手动上传当前浏览器中的本地记忆。
+                </div>
+
+                {/* 手动同步区域 */}
+                <div
+                  className="rounded-xl p-4 mb-4"
+                  style={{ background: "#fff8f5", border: "1px solid #f0ddd5" }}
+                >
+                  <p className="text-sm font-semibold mb-1" style={{ color: "#2d1f1a" }}>
+                    手动同步本地记忆档案
+                  </p>
+                  <p className="text-xs mb-3 leading-relaxed" style={{ color: "#9d7b72" }}>
+                    把当前浏览器 localStorage 中的记忆档案上传到你的 Supabase 账户。
+                    云端已存在的同 id 记录会跳过，不会覆盖。不会上传照片文件。
+                  </p>
+
+                  {syncMessage && (
+                    <div
+                      className="mb-3 rounded-lg px-3 py-2 text-xs"
+                      style={
+                        syncStatus === "error"
+                          ? { background: "#fff0ee", color: "#c0674a", border: "1px solid #f4b8a0" }
+                          : syncStatus === "success"
+                          ? { background: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" }
+                          : { background: "#f5f0ee", color: "#9d7b72" }
+                      }
+                    >
+                      {syncMessage}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleManualUploadArchive}
+                    disabled={isLoading || isSyncing}
+                    className="w-full py-2.5 rounded-full text-sm font-medium cursor-pointer transition-all hover:shadow-md disabled:opacity-50"
+                    style={{ background: "#e8f5e9", color: "#2e7d32" }}
+                  >
+                    {isSyncing ? "同步中…" : "同步到云端"}
+                  </button>
                 </div>
 
                 <button
