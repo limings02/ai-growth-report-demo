@@ -147,12 +147,43 @@
 
 ---
 
+## Phase 16.0.1 补充（2026-05-22）
+
+### mid-form / before-submit 接入完成情况
+
+| 输入页 | hero | mid-form | before-submit |
+|--------|------|---------|---------------|
+| GrowthReportApp（family）| ✅ | ✅（InterviewForm 之前）| ✅（canGenerate 且内容少时）|
+| CoupleMemoryApp | ✅ | ✅（chatText 和 questions 之间）| ✅（基本信息有效但无内容时）|
+| PersonalMemoryApp | ✅ | ✅（问答区之前）| ✅（canGenerate 时）|
+| MemorialMemoryApp | ✅ | ✅（问答区之前）| ✅（canGenerate 时）|
+
+### family 最小门槛修改
+
+| 项目 | Phase 16.0 | Phase 16.0.1 |
+|------|------------|--------------|
+| 前端 isFormValid | answeredCount >= 2 | answeredCount >= 1 **OR** freeNote.trim().length > 0 |
+| API 校验（generate-report）| qaList.length < 2 → 报错 | qaList.length >= 1 **OR** freeNote 非空 → 允许 |
+| 门槛提示文案 | 「还需要至少回答 2 个问题」| 「先写一点也可以——回答 1 个问题，或写一段自由记录，就能生成初版。」|
+
+### family 常驻 hint 覆盖
+
+InterviewForm.tsx 新增 `hints[]` 数组（并行于 `placeholders[]`），8 道默认题全部有 hint，显示在问题标题下方（`✦ 提示文字` 格式）。
+
+### 生成质量回归执行情况
+
+✅ **四个 mode 均执行了真实生成回归**。详见 `docs/quality/generation-regression/phase-16-0-1-results.md`。
+
+综合评分：family 3.9 / couple 4.6 / personal 4.7 / memorial 4.9。Phase 16.0 prompt 改动效果显著。
+
+---
+
 ## 7. lint/build 结果
 
 | 命令 | 结果 |
 |------|------|
-| `npm run lint` | ✅ 零错误 |
-| `npm run build` | ✅ 零 TypeScript 错误 |
+| `npm run lint` | ✅ 零错误（Phase 16.0 + Phase 16.0.1）|
+| `npm run build` | ✅ 零 TypeScript 错误（Phase 16.0 + Phase 16.0.1）|
 
 ---
 

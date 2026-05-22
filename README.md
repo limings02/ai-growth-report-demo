@@ -161,6 +161,7 @@ http://192.168.1.23:3000
 - **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
 - **Phase 15.1A Visual Layer Fix + Mobile Beta QA**：修复情绪背景层级和 glow transform 问题，增强 couple 聊天气泡，移除 memorial 敏感表达，Beta 前弱化云端同步入口，并补充移动端验收清单
 - **Phase 15.1A.1 Hotfix**：补齐 Family landing 正文层级（LandingHero 等均包入 relative z-10），清理 memorial 源码注释里的高风险表达
+- **Phase 16.0.1 Input Friction Hotfix + Generation Quality Regression**：补齐四个输入页的 mid-form（表单中段安抚）和 before-submit（提交前安抚）；family 最小门槛降为 1 个回答 OR 非空 freeNote（前端 + API 同步）；InterviewForm 8 道问题全部加入常驻 hint；执行四个 mode 真实生成回归（family 3.9/couple 4.6/personal 4.7/memorial 4.9），Phase 16.0 prompt 改动效果显著；新增回归 fixtures / rubric / results 文档
 - **Phase 16.0 Input Comfort + Human-like Skill Quality**：四个输入页加入 InputComfortNote 情绪安抚组件，降低填写心理阻力；couple/personal/memorial 每道问题下新增 hint 示例；四个 mode skill prompt 增加「记忆编辑师」写作人格、反模板规则和输入不足诚实处理；新增多模态记忆路线图（5 阶段规划，当前阶段不实装上传/识图/视频）；lint/build ✅；部署线暂停
 - **Phase 15.2B.1 Vercel CLI Setup + Preview Deploy Guide**：`npx vercel` v54.3.0 可用；`.gitignore` 已正确忽略 `.env.local` / `.vercel`；lint/build ✅；阻塞于 Vercel 登录（需人工 `npx vercel login` → `npx vercel link` → 配置 env → `npx vercel`）；完整 5 步部署指南已记录在 `docs/deployment/beta-release-gate.md` Section 7；外部公开 Beta 未开放
 - **Phase 15.2B Preview/Staging Deploy + Manual Browser QA**：当前 CI 环境无 Vercel 部署权限，Smoke Test（10 步）和 Hard Gate（10 项）均待手动在 preview URL 上完成；手动部署步骤已记录在 `docs/deployment/beta-release-gate.md` Section 7

@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 16.0 已完成（Input Comfort + Human-like Skill Quality）  
-> 下一阶段：Phase 16.0.1 生成质量对比回归，或 Phase 16.1 Photo Caption Local Preview  
+> 当前阶段：Phase 16.0.1 已完成（Input Friction Hotfix + Generation Quality Regression）  
+> 下一阶段：Phase 16.1 Photo Caption Local Preview（生成质量回归通过，可推进下一功能）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -323,6 +323,20 @@
 - **下一阶段建议**：
   - Phase 16.0.1：用四个 mode 真实样例输入对比生成质量（验证 skill prompt 改动效果）
   - 或 Phase 16.1：Photo Caption Local Preview（用户为图片写说明，进入 AI 上下文）
+
+### Phase 16.0.1（Input Friction Hotfix + Generation Quality Regression）
+- **GrowthReportApp.tsx**：`isFormValid()` 改为 `answeredCount >= 1 || hasFreeNote`；mid-form 安抚插在 InterviewForm 前；before-submit 在内容少时显示于按钮上方；门槛提示文案软化
+- **app/api/generate-report/route.ts**：API 校验从"qaList.length >= 2"改为"qaList.length >= 1 OR freeNote 非空"（最小侵入，仅改输入校验）
+- **InterviewForm.tsx**：新增 `hints[]` 数组，8 道默认题全部有常驻 hint（显示在问题标题下方）
+- **CoupleMemoryApp.tsx**：mid-form 在 chatText 和 questions 之间；before-submit 替换原文本提示
+- **PersonalMemoryApp.tsx**：mid-form 在问答区前；before-submit 在 canGenerate 时显示
+- **MemorialMemoryApp.tsx**：mid-form 在问答区前；before-submit 在 canGenerate 时显示
+- `docs/quality/generation-regression/phase-16-0-1-fixtures.md`（**新增**）：四个 mode 固定输入样例
+- `docs/quality/generation-regression/phase-16-0-1-rubric.md`（**新增**）：7 维评分 rubric
+- `docs/quality/generation-regression/phase-16-0-1-results.md`（**新增**）：真实生成结果，综合分 3.9/4.6/4.7/4.9
+- `npm run lint` ✅ / `npm run build` ✅
+- **生成质量回归结论**：Phase 16.0 prompt 改动效果显著，personal/memorial/couple 表现优秀；family 有轻微「比喻升华」问题，可在 Phase 16.1 中顺带修
+- **部署线仍暂停**；Preview URL 仍待人工部署；多模态/视频生成未实装；云端同步继续暂缓
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

@@ -82,15 +82,16 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
     }
   }
 
-  // 至少回答 2 道访谈问题
   const answeredCount = formData.questions.filter((q) => q.answer.trim() !== "").length;
+  const hasFreeNote = formData.freeNote.trim().length > 0;
 
   function isFormValid(): boolean {
+    const hasContent = answeredCount >= 1 || hasFreeNote;
     return (
       formData.childName.trim() !== "" &&
       formData.childAge !== "" &&
       formData.parentName.trim() !== "" &&
-      answeredCount >= 2
+      hasContent
     );
   }
 
@@ -165,6 +166,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             handleFormChange({ photos: formData.photos.filter((p) => p.id !== id) });
           }}
         />
+        <InputComfortNote mode="family" variant="mid-form" />
         <InterviewForm formData={formData} onChange={handleFormChange} />
 
         <div className="mt-10 mb-16">
@@ -173,6 +175,11 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             <p className="text-center text-xs mb-4" style={{ color: "var(--text-muted)" }}>
               📷 也可以先不上传照片，但加入照片会让这份礼物更完整
             </p>
+          )}
+
+          {/* before-submit 安抚：内容较少但可生成时 */}
+          {isFormValid() && answeredCount <= 1 && !hasFreeNote && (
+            <InputComfortNote mode="family" variant="before-submit" />
           )}
 
           <button
@@ -189,7 +196,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             <p className="text-center text-xs mt-3" style={{ color: "var(--text-muted)" }}>
               {formData.childName.trim() === "" || formData.childAge === "" || formData.parentName.trim() === ""
                 ? "请填写孩子昵称、年龄和父母称呼"
-                : `先写一点也可以——再回答 ${Math.max(0, 2 - answeredCount)} 个问题就能生成初版（已回答 ${answeredCount} 个）`}
+                : "先写一点也可以——回答 1 个问题，或写一段自由记录，就能生成初版。"}
             </p>
           )}
         </div>

@@ -347,6 +347,9 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
           </div>
         </div>
 
+        {/* 填写安抚 mid-form */}
+        <InputComfortNote mode="memorial" variant="mid-form" />
+
         {/* 问答区 */}
         <div
           className="rounded-2xl p-5 mb-5"
@@ -407,6 +410,9 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
               : "慢慢来——回答 1 个问题或写一段自由记录，就能生成初版"}
           </p>
         )}
+
+        {/* before-submit 安抚 */}
+        {canGenerate && <InputComfortNote mode="memorial" variant="before-submit" />}
 
         {/* 隐私说明 */}
         <p className="text-xs text-center mb-3" style={{ color: "#9a908a" }}>

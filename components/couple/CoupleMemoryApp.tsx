@@ -387,6 +387,9 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
           </SectionCard>
         </section>
 
+        {/* 填写安抚 mid-form */}
+        <InputComfortNote mode="couple" variant="mid-form" />
+
         {/* ── 访谈问题 ── */}
         <section className="mb-6">
           <SectionCard title={`💬 关于你们（已回答 ${answeredCount} / ${form.questions.length}）`}>
@@ -446,9 +449,7 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
             </p>
           )}
           {isFormBasicValid && !hasContent && (
-            <p className="text-center text-xs mb-3" style={{ color: "#b08878" }}>
-              先写一点也可以——粘贴一段聊天、回答 1 个问题，或写一段自由记录，就能生成初版
-            </p>
+            <InputComfortNote mode="couple" variant="before-submit" />
           )}
           {isChatTooLong && (
             <p className="text-center text-xs mb-3" style={{ color: "#c0674a" }}>

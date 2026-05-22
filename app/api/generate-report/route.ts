@@ -34,8 +34,10 @@ export async function POST(req: NextRequest) {
   if (!material.parentName?.trim()) {
     return NextResponse.json({ error: "缺少父母称呼" }, { status: 400 });
   }
-  if (!material.qaList || material.qaList.length < 2) {
-    return NextResponse.json({ error: "至少需要回答 2 个问题" }, { status: 400 });
+  // Phase 16.0.1: 允许 1 个回答 OR 非空 freeNote，让用户先生成初版
+  const hasContent = (material.qaList && material.qaList.length >= 1) || material.freeNote?.trim();
+  if (!hasContent) {
+    return NextResponse.json({ error: "先写一点也可以——回答 1 个问题，或写一段自由记录，就能生成初版。" }, { status: 400 });
   }
   if (!material.reportYear || typeof material.reportYear !== "number") {
     return NextResponse.json({ error: "缺少报告年份" }, { status: 400 });

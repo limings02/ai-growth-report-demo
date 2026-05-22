@@ -20,6 +20,18 @@ const placeholders = [
   "例如：希望你永远保留现在这份对世界的好奇……",
 ];
 
+// 常驻提示（显示在问题标题下方，帮助用户写出具体内容）
+const hints = [
+  "可以是很小的变化：开始自己做决定、变得爱问问题、或者突然有了一个固定习惯。",
+  "不一定是大事。一次放学路上、一次生病、一次旅行、一次普通的晚饭都可以。",
+  "写具体动作会更好，比如第一次自己穿鞋、第一次完整讲一个故事。",
+  "原话最珍贵，哪怕只有一句，也会让这份成长册更像 ta。",
+  "写发生了什么，也写当时谁在场、孩子是什么反应。",
+  "可以是玩具、动画、食物、某个人、某个地方，越具体越好。",
+  "不用写得煽情。写那个动作、那个眼神、那句话就够了。",
+  "想象 ta 很多年后打开这一页。你最想让 ta 知道，现在的你为什么愿意记录这些。",
+];
+
 export default function InterviewForm({ formData, onChange }: Props) {
   // 正在编辑标题的题目 id
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -120,6 +132,13 @@ export default function InterviewForm({ formData, onChange }: Props) {
                 </button>
               </div>
             </div>
+
+            {/* 常驻 hint */}
+            {hints[idx] && (
+              <p className="text-xs mb-2 pl-7" style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
+                ✦ {hints[idx]}
+              </p>
+            )}
 
             {/* 回答输入框 */}
             <textarea
