@@ -14,6 +14,7 @@ import ChildInfoForm from "./ChildInfoForm";
 import PhotoUploader from "./PhotoUploader";
 import InterviewForm from "./InterviewForm";
 import FamilyArtifactPreview from "@/components/family/FamilyArtifactPreview";
+import InputComfortNote from "@/components/memory/InputComfortNote";
 
 function makeDefaultQuestions(): InterviewQuestion[] {
   const labels = [
@@ -141,9 +142,11 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
         <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
           记录孩子这一年 🌱
         </h2>
-        <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
+        <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
           随心填写，AI 会为你生成一份独一无二的成长礼物
         </p>
+
+        <InputComfortNote mode="family" variant="hero" />
 
         {generateError && (
           <div className="mb-6 px-4 py-3 rounded-xl text-sm"
@@ -186,7 +189,7 @@ export default function GrowthReportApp({ onBackToLanding }: Props) {
             <p className="text-center text-xs mt-3" style={{ color: "var(--text-muted)" }}>
               {formData.childName.trim() === "" || formData.childAge === "" || formData.parentName.trim() === ""
                 ? "请填写孩子昵称、年龄和父母称呼"
-                : `还需要至少回答 2 个问题（已回答 ${answeredCount} 个）`}
+                : `先写一点也可以——再回答 ${Math.max(0, 2 - answeredCount)} 个问题就能生成初版（已回答 ${answeredCount} 个）`}
             </p>
           )}
         </div>

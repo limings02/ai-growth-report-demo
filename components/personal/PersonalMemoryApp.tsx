@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { MemoryArtifact } from "@/lib/memory-core/types";
 import { PERSONAL_DEFAULT_QUESTIONS } from "@/lib/domains/personal/defaultQuestions";
 import { MOCK_PERSONAL_ARTIFACT } from "@/lib/domains/personal/mockArtifact";
+import InputComfortNote from "@/components/memory/InputComfortNote";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import PersonalMemoryGraphPreview from "./PersonalMemoryGraphPreview";
 import ArchiveSaveButton from "@/components/archive/ArchiveSaveButton";
@@ -250,9 +251,11 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
         <h2 className="text-xl font-bold mb-1" style={{ color: "#1a2340" }}>
           告诉我那段时间的故事
         </h2>
-        <p className="text-sm mb-6" style={{ color: "#6b7db3" }}>
+        <p className="text-sm mb-4" style={{ color: "#6b7db3" }}>
           填写越具体，整理出来就越像你自己。
         </p>
+
+        <InputComfortNote mode="personal" variant="hero" />
 
         {/* 基本信息 */}
         <div
@@ -338,9 +341,14 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           <div className="space-y-5">
             {qaList.map((qa, idx) => (
               <div key={idx}>
-                <p className="text-xs font-medium mb-1.5" style={{ color: "#3a4870" }}>
+                <p className="text-xs font-medium mb-1" style={{ color: "#3a4870" }}>
                   {idx + 1}. {qa.question}
                 </p>
+                {PERSONAL_DEFAULT_QUESTIONS[idx]?.hint && (
+                  <p className="text-xs mb-1.5 pl-1" style={{ color: "#8090b8" }}>
+                    ✦ {PERSONAL_DEFAULT_QUESTIONS[idx].hint}
+                  </p>
+                )}
                 <textarea
                   value={qa.answer}
                   onChange={(e) => handleAnswerChange(idx, e.target.value)}
@@ -378,7 +386,7 @@ export default function PersonalMemoryApp({ onBackToLanding, onBackToHome }: Pro
           <p className="text-xs mb-3 text-center" style={{ color: "#8090b8" }}>
             {!personName.trim() || !lifeStage.trim() || !timeRange.trim()
               ? "请填写名字、阶段名称和时间跨度"
-              : "请至少回答一个问题，或在自由记录里写一些内容"}
+              : "先写一点也可以——回答 1 个问题或写一段自由记录，就能生成初版"}
           </p>
         )}
 

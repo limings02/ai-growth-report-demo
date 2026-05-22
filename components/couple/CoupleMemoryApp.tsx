@@ -23,6 +23,7 @@ import {
 import type { MemoryArtifact } from "@/lib/memory-core/types";
 import CoupleArtifactPreview from "./CoupleArtifactPreview";
 import { MOCK_COUPLE_ARTIFACT } from "@/lib/domains/couple/mockArtifact";
+import InputComfortNote from "@/components/memory/InputComfortNote";
 
 type CoupleStyle = CoupleRawInput["style"];
 type CoupleAppStatus = "input" | "generating" | "result" | "error";
@@ -249,9 +250,10 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
           <h2 className="text-2xl font-bold mb-2" style={{ color: "#2d1f1a" }}>
             把你们的故事，整理成一本纪念册
           </h2>
-          <p className="text-sm" style={{ color: "#9d7b72" }}>
+          <p className="text-sm mb-4" style={{ color: "#9d7b72" }}>
             填写关系信息、粘贴聊天片段、回答几个问题，AI 会帮你生成恋爱时间线和周年纪念信。
           </p>
+          <InputComfortNote mode="couple" variant="hero" />
         </div>
 
         {/* ── 基本信息 ── */}
@@ -400,6 +402,11 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
                     </span>
                     <span style={{ color: "#7a5a52" }}>{q.label}</span>
                   </p>
+                  {q.hint && (
+                    <p className="text-xs mb-1.5 pl-1" style={{ color: "#b08878" }}>
+                      ✦ {q.hint}
+                    </p>
+                  )}
                   <textarea
                     rows={3}
                     placeholder="可以写具体的细节……"
@@ -440,7 +447,7 @@ export default function CoupleMemoryApp({ onBackToLanding, onBackToHome }: Props
           )}
           {isFormBasicValid && !hasContent && (
             <p className="text-center text-xs mb-3" style={{ color: "#b08878" }}>
-              请至少粘贴一段聊天文本、回答 1 个问题，或填写自由记录
+              先写一点也可以——粘贴一段聊天、回答 1 个问题，或写一段自由记录，就能生成初版
             </p>
           )}
           {isChatTooLong && (

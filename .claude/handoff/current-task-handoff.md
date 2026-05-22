@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.2B.1 阻塞中（Vercel CLI 可用，等待用户完成 npx vercel login）  
-> 下一阶段：完成登录后执行 npx vercel link → npx vercel → Smoke Test + Hard Gate  
+> 当前阶段：Phase 16.0 已完成（Input Comfort + Human-like Skill Quality）  
+> 下一阶段：Phase 16.0.1 生成质量对比回归，或 Phase 16.1 Photo Caption Local Preview  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -305,6 +305,24 @@
   npx vercel                # 创建 Preview deployment（不是 --prod）
   ```
 - 登录 + 部署完成后，把 preview URL 告知 Claude Code，继续 Smoke Test + Hard Gate
+
+### Phase 16.0（Input Comfort + Human-like Skill Quality）
+- `components/memory/InputComfortNote.tsx`（**新增**）：四种 mode 四种文案，three variants（hero/mid-form/before-submit），mode-specific 色系
+- `GrowthReportApp.tsx`：import InputComfortNote，插入 hero variant；门槛提示语气软化
+- `CoupleMemoryApp.tsx`：import InputComfortNote，插入 hero variant；问题下方显示 hint；门槛提示软化
+- `PersonalMemoryApp.tsx`：import InputComfortNote，插入 hero variant；问题下方显示 hint（通过 index 访问 PERSONAL_DEFAULT_QUESTIONS[idx].hint）；门槛提示软化
+- `MemorialMemoryApp.tsx`：import InputComfortNote，插入 hero variant；问题下方显示 hint；门槛提示软化
+- `lib/domains/couple/defaultQuestions.ts`：CoupleQuestion 类型增加 `hint?: string`，7 道题全部补充 hint
+- `lib/domains/personal/defaultQuestions.ts`：7 道题全部补充 hint，使用「」替代内嵌双引号
+- `lib/domains/memorial/defaultQuestions.ts`：8 道题全部补充 hint，同上
+- `.skills/*/prompts/03_quality_rules.md`（4 个 mode 全部更新）：追加「记忆编辑师」写作人格、反模板规则、输入不足诚实处理
+- `docs/architecture/multimodal-memory-roadmap.md`（**新增**）：5 阶段路线图（图片说明→media ref→vision spike→图文结果→视频脚本），当前不实装
+- `docs/quality/input-comfort-and-skill-quality-check.md`（**新增**）：完整验收记录
+- `npm run lint` ✅ / `npm run build` ✅
+- **部署线暂停**；外部 Beta 未发布；多模态未实装；视频生成未实装；云端同步继续暂缓
+- **下一阶段建议**：
+  - Phase 16.0.1：用四个 mode 真实样例输入对比生成质量（验证 skill prompt 改动效果）
+  - 或 Phase 16.1：Photo Caption Local Preview（用户为图片写说明，进入 AI 上下文）
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

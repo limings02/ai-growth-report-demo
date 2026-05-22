@@ -13,6 +13,7 @@ import { useState } from "react";
 import type { MemoryArtifact } from "@/lib/memory-core/types";
 import { MEMORIAL_DEFAULT_QUESTIONS } from "@/lib/domains/memorial/defaultQuestions";
 import { MOCK_MEMORIAL_ARTIFACT } from "@/lib/domains/memorial/mockArtifact";
+import InputComfortNote from "@/components/memory/InputComfortNote";
 import MemoryArtifactPreview from "@/components/memory/MemoryArtifactPreview";
 import MemorialMemoryGraphPreview from "./MemorialMemoryGraphPreview";
 import ArchiveSaveButton from "@/components/archive/ArchiveSaveButton";
@@ -259,9 +260,11 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
         <h2 className="text-xl font-bold mb-1" style={{ color: "#2a2520" }}>
           告诉我关于 ta 的故事
         </h2>
-        <p className="text-sm mb-6" style={{ color: "#7a7065" }}>
+        <p className="text-sm mb-4" style={{ color: "#7a7065" }}>
           填写越具体，整理出来就越真实。
         </p>
+
+        <InputComfortNote mode="memorial" variant="hero" />
 
         {/* 基本信息 */}
         <div
@@ -356,9 +359,14 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
           <div className="space-y-5">
             {qaList.map((qa, idx) => (
               <div key={idx}>
-                <p className="text-xs font-medium mb-1.5" style={{ color: "#4a4038" }}>
+                <p className="text-xs font-medium mb-1" style={{ color: "#4a4038" }}>
                   {idx + 1}. {qa.question}
                 </p>
+                {MEMORIAL_DEFAULT_QUESTIONS[idx]?.hint && (
+                  <p className="text-xs mb-1.5 pl-1" style={{ color: "#9a908a" }}>
+                    ✦ {MEMORIAL_DEFAULT_QUESTIONS[idx].hint}
+                  </p>
+                )}
                 <textarea
                   value={qa.answer}
                   onChange={(e) => handleAnswerChange(idx, e.target.value)}
@@ -396,7 +404,7 @@ export default function MemorialMemoryApp({ onBackToLanding, onBackToHome }: Pro
           <p className="text-xs mb-3 text-center" style={{ color: "#9a908a" }}>
             {!deceasedName.trim() || !relation.trim() || !timeRange.trim()
               ? "请填写被纪念者称呼、你们的关系和时间跨度"
-              : "请至少回答一个问题，或在自由记录里写一些内容"}
+              : "慢慢来——回答 1 个问题或写一段自由记录，就能生成初版"}
           </p>
         )}
 
