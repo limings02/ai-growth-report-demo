@@ -1,9 +1,10 @@
 "use client";
 
 // components/memorial/MemorialLandingPage.tsx
-// memorial mode 的介绍落地页（Phase 15.0 情绪升级版）。
+// memorial mode 的介绍落地页（Phase 15.1A.1）。
 // 庄重、克制、有空间感；明确安全边界；删除 preview/mock 旧文案。
-// 绝不出现：复活 / 召回 / 和 ta 对话 / 数字生命 / 再见一面。
+// 避免使用高风险的拟人化、重逢式、人格化表达。
+// 页面只做纪念资料整理，不做对话模拟或人格替代。
 
 import EmotionalBackdrop from "@/components/visual/EmotionalBackdrop";
 

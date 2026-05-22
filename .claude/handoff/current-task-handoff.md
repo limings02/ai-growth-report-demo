@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.1A 已完成（Visual Layer Fix + Mobile Beta QA）  
+> 当前阶段：Phase 15.1A.1 已完成（Family z-index 补全 + Memorial 注释清理）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -219,6 +219,11 @@
 - `FamilyMemoryGraphPreview.tsx`：去掉 `graph.title` 展示（保留 subtitle）；节点截断 5 → 8 字
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
+
+### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
+- `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方
+- `MemorialLandingPage.tsx`：顶部注释改为抽象工程约束（不再直接列出高风险词），用户可见文案不变
+- lint/build ✅（零错误零 warning）
 
 ### Phase 15.1A（Visual Layer Fix + Mobile Beta QA）
 - `EmotionalBackdrop.tsx`：glow 改为外层定位 div + 内层动效 div，解决 translate 和 scale transform 冲突
@@ -469,6 +474,7 @@
 - [x] **Phase 14.3**：手动上传本地 archive 到云端（已完成）
 - [x] **Phase 15.0**：Emotional Motion Polish / 浪漫动态体验打磨（已完成）
 - [x] **Phase 15.1A**：Visual Layer Fix + Mobile Beta QA（已完成）
+- [x] **Phase 15.1A.1**：Family z-index 补全 + Memorial 注释清理（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -600,7 +606,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 15.1A 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 15.1A.1 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -635,6 +641,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 14.3：手动上传本地 archive（cloudArchiveSync / INSERT ONLY / blocked fields 防护 / AuthPanel 同步按钮）✅
 - Phase 15.0：Emotional Motion Polish（EmotionalBackdrop / CSS动效 / 文案升级 / preview/mock清理）✅
 - Phase 15.1A：Visual Layer Fix（transform 修复 / z-10 / memorial 敏感词 / couple 气泡 / AuthPanel sync 隐藏）✅
+- Phase 15.1A.1：Family z-index 补全 + Memorial 注释清理 ✅
 - 下一步：Phase 15.1B（真实浏览器移动端验收 + Beta 部署）；云端同步继续暂缓
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨

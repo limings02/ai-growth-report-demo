@@ -120,7 +120,14 @@
 
 ---
 
-## 10. 已知限制
+## 10. Phase 15.1A.1 修复备注
+
+- **FamilyLandingPage**：已将 LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `relative z-10` 容器，所有正文内容均应在 EmotionalBackdrop（fixed z-0）上方。
+- **MemorialLandingPage**：已清理源码注释中的高风险表达，改为抽象工程约束（"避免使用高风险的拟人化、重逢式、人格化表达"）；用户可见文案的克制边界声明保持不变。
+
+---
+
+## 11. 已知限制
 
 | 限制 | 说明 |
 |------|------|
