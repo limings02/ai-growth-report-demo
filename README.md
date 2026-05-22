@@ -111,6 +111,7 @@ npm run dev
 - **Phase 13.6 family archive 导入**：我的成长册支持从 Phase 13.5 导出的 JSON 文件恢复 family ArchiveItem；导入采用非破坏性合并，相同 id 默认跳过，不覆盖本地已有成长册
 - **Phase 13.7 其他 mode 保存入口**：couple / personal / memorial 结果页已接入"保存到本地"按钮，复用统一 ArchiveItem 数据层；当前仅保存 MemoryArtifact 和低敏来源摘要，不保存聊天全文、freeNote 原文或照片文件
 - **Phase 13.8 跨 mode 统一档案页**：首页新增"我的记忆档案"入口，可统一查看 family / couple / personal / memorial 保存到本地的 ArchiveItem，并按 mode 进入对应详情回看；当前统一页只读，不提供删除、导出或导入
+- **Phase 13.9 统一档案管理增强**：我的记忆档案支持按 mode 筛选、按标题/摘要/关键词本地搜索，并可在统一列表中删除单条 ArchiveItem；当前不支持统一批量清空、导出或导入
 
 ---
 

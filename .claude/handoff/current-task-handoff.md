@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
-> 生成时间：2026-05-21  
-> 当前阶段：Phase 13.8 已完成（跨 mode archive 统一列表 / 我的记忆档案）  
+> 生成时间：2026-05-22  
+> 当前阶段：Phase 13.9 已完成（统一 archive 筛选 / 搜索 / 单条删除）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,19 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 13.9（统一 archive 筛选 / 搜索 / 单条删除）
+- `AllArchivePage.tsx`：
+  - `items` state 改为可更新 + `refreshItems()`
+  - `isSupportedArchiveMode` 兜底：过滤未知 mode，防页面崩溃
+  - mode 筛选：ModeFilter 状态 + 5 个按钮（全部/家庭/情侣/个人/纪念）
+  - 搜索：`searchQuery` + `archiveItemMatchesQuery`（标题/摘要/关键词/source 摘要）
+  - `filteredItems` 计算值：筛选 + 搜索双重过滤
+  - 单条删除：`pendingDeleteId` 二次确认 → `deleteArchiveItem` → `refreshItems`
+  - 卡片重构为 `<article>` + 内嵌 `<button>`（无 button 嵌套）
+  - 操作反馈：`operationMessage` + `operationStatus`（success 绿 / error 红）
+  - 两种空状态：完全无 archive / 筛选搜索无结果
+- lint/build ✅；新增 `docs/quality/all-archive-management-check.md`
+
 ### Phase 13.8（跨 mode archive 统一列表 / 我的记忆档案）
 - `MemoryModeHome.tsx`：新增 `onOpenArchive?` prop + "📚 我的记忆档案"按钮（四卡片下方）
 - `app/page.tsx`：新增 `all-archive` screen + `handleCreateNewByMode` helper；默认首页传 `onOpenArchive`
@@ -363,6 +376,7 @@
 - [x] **Phase 13.6**：family archive JSON 导入 / 恢复（已完成）
 - [x] **Phase 13.7**：couple / personal / memorial archive 保存入口（已完成）
 - [x] **Phase 13.8**：跨 mode archive 统一列表 / 我的记忆档案（已完成）
+- [x] **Phase 13.9**：统一 archive 筛选 / 搜索 / 单条删除（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -463,14 +477,17 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 13.9 - 统一 archive 管理增强
+### 优先级 1：Phase 14 - 云端同步 / 账户系统规划
 
-AllArchivePage 当前只读，可以考虑：
-- 单条删除（从统一列表直接删除任意 mode 的 item）
-- 按 mode 筛选（tab 或 dropdown 切换）
-- 简单搜索（按标题/关键词）
+Life Archive 本地闭环（保存/列表/详情/删除/清空/导出/导入/筛选/搜索）已完成。
+下一步按需选择：
+- 账户系统（登录 / 注册）
+- 云端 archive 同步（Supabase / 其他后端）
+- 跨设备访问
 
-### 优先级 2：Phase 14 - 云端同步 / 账户系统（按需规划）
+### 优先级 2：其他模式管理增强（可选）
+- couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
+- couple/personal/memorial archive 导出/导入能力对齐 family
 
 ### 优先级 2：Phase 13.3 - 历史记录列表页（可选）
 
@@ -493,7 +510,7 @@ Phase 13.2 完成后：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 13.8 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 13.9 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -521,7 +538,8 @@ Phase 13.2 完成后：
 - Phase 13.6：family archive JSON 导入（importArchive / 非破坏性合并 / 重复 id 跳过 / blob 拒绝）✅
 - Phase 13.7：couple / personal / memorial 保存入口（ArchiveSaveButton / 低敏 source snapshot）✅
 - Phase 13.8：跨 mode 统一档案页（MemoryModeHome 入口 / AllArchivePage / 各 mode 详情回看）✅
-- 下一步：Phase 13.9（统一 archive 管理增强：删除/筛选/搜索）
+- Phase 13.9：统一 archive 筛选 / 搜索 / 单条删除（mode filter / contains search / pendingDeleteId）✅
+- Life Archive 本地闭环已完成，下一步：Phase 14（云端同步 / 账户系统）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -538,7 +556,7 @@ Phase 13.2 完成后：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 13.9：统一 archive 管理增强（删除/筛选/搜索）
+- 进入 Phase 14：云端同步 / 账户系统规划（或其他 mode 管理能力对齐）
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```
