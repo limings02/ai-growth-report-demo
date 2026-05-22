@@ -96,7 +96,9 @@
 |------|------|
 | Phase 15.1C 静态代码验收 | ✅ 完成 |
 | Phase 15.2A Beta 部署准备文档 | ✅ 完成 |
-| Phase 15.2B Preview/Staging 部署 | ⚙️ 待手动执行（见下方部署步骤）|
+| Phase 15.2B.1 Vercel CLI Setup | ✅ npx vercel v54.3.0 可用，.gitignore 已配置 |
+| Phase 15.2B.1 Vercel Login | ⛔ 阻塞：需人工执行 `npx vercel login`（浏览器授权）|
+| Phase 15.2B.1 Project Link + Preview Deploy | ⬜ 等待登录完成后执行（步骤见 Section 7）|
 | Phase 15.2B Hard Gate 人工验收 | ⬜ 待人工（需先完成部署）|
 | 外部公开 Beta | ⛔ 未开放（等待 Hard Gate 全部通过）|
 
@@ -126,19 +128,71 @@ DEEPSEEK_JSON_MODE      = true
 6. 点击 **Deploy** → 等待 build 完成 → 获得 preview URL（格式：`*.vercel.app`）
 7. 用该 URL 执行 Smoke Test 和 Hard Gate 验收
 
-### 方式 B：Vercel CLI
+### 方式 B：Vercel CLI（推荐，可复用）
+
+`npx vercel` 已确认可用（v54.3.0）。按以下顺序执行：
+
+**步骤 1：登录**
 
 ```bash
-# 安装（如未安装）
-npm i -g vercel
-
-# 在项目目录执行
-cd /Users/liming/ai-growth-report-demo
-vercel
-
-# 按提示授权、选择 scope、关联项目
-# 部署完成后终端会输出 preview URL
+npx vercel login
 ```
+
+按提示在浏览器完成 OAuth 授权（GitHub / GitLab / Email 均可）。
+登录成功后终端显示 `Logged in as <email>`。
+
+**步骤 2：关联项目**
+
+```bash
+cd /Users/liming/ai-growth-report-demo
+npx vercel link
+```
+
+交互提示参考：
+- `Set up and deploy?` → Y
+- `Which scope?` → 选择你的个人账号或 team
+- `Link to existing project?` → N（Dashboard 里还没有此项目时）
+- `Project name?` → `ai-growth-report-demo`（或自定）
+- `In which directory is your code located?` → `./`（当前目录，回车确认）
+- `Override settings?` → N（使用 Next.js 默认）
+
+完成后生成 `.vercel/project.json`（已在 `.gitignore` 中，不会提交）。
+
+**步骤 3：配置 env（Vercel Dashboard 操作）**
+
+访问 Vercel Dashboard → 找到此项目 → Settings → Environment Variables，添加：
+
+```
+DEEPSEEK_API_KEY        = <你的 DeepSeek API Key>
+DEEPSEEK_MODEL          = deepseek-v4-pro
+DEEPSEEK_BASE_URL       = https://api.deepseek.com
+DEEPSEEK_MAX_TOKENS     = 8192
+DEEPSEEK_THINKING       = disabled
+DEEPSEEK_JSON_MODE      = true
+```
+
+可选（Supabase，不配时功能正常降级）：
+```
+NEXT_PUBLIC_SUPABASE_URL               = <Supabase project URL>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY   = <publishable key>
+```
+
+**步骤 4：部署 Preview**
+
+```bash
+npx vercel
+```
+
+⚠️ **不要**运行 `npx vercel --prod`，这是 Preview 部署阶段。
+
+成功后终端输出类似：
+```
+✅  Preview: https://ai-growth-report-demo-xxxx.vercel.app
+```
+
+**步骤 5：记录 preview URL**
+
+把 preview URL 告诉 Claude Code，然后继续执行 Smoke Test 和 Hard Gate。
 
 ### 注意事项
 

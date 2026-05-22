@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.2B 已完成（部署步骤已记录，等待人工手动部署 + 验收）  
-> 下一阶段：Phase 15.2B.1 — 人工完成 Vercel Preview 部署 + Smoke Test + Hard Gate 验收  
+> 当前阶段：Phase 15.2B.1 阻塞中（Vercel CLI 可用，等待用户完成 npx vercel login）  
+> 下一阶段：完成登录后执行 npx vercel link → npx vercel → Smoke Test + Hard Gate  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -288,6 +288,23 @@
   3. 执行 Hard Gate #1-#7 真实浏览器验收（375/390/430px；DevTools 或真实设备）
   4. 执行 Hard Gate #10：四个 mode 各生成一次，确认无白屏
   5. 全部通过后进入公开 Beta 发布决策
+
+### Phase 15.2B.1（Vercel CLI Setup + Preview Deploy Guide）
+- 确认 `npx vercel` 可用（v54.3.0）✅
+- 确认 `.gitignore` 已忽略 `.env.local` + `.vercel` ✅
+- 确认 `npm run lint` ✅ / `npm run build` ✅
+- 确认 `.env.local` 不在 Git 中 ✅
+- `beta-release-gate.md` Section 7 更新为完整 5 步 CLI 部署指南
+- ⛔ **阻塞**：`npx vercel whoami` 检测到未登录，启动了 device flow 授权
+- 已终止等待进程，等待用户手动登录
+- **下一步（用户操作）**：
+  ```bash
+  npx vercel login          # 浏览器完成 OAuth
+  npx vercel link           # 关联项目（见 Section 7 交互选项）
+  # Vercel Dashboard 配置 DeepSeek env vars
+  npx vercel                # 创建 Preview deployment（不是 --prod）
+  ```
+- 登录 + 部署完成后，把 preview URL 告知 Claude Code，继续 Smoke Test + Hard Gate
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

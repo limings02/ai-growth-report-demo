@@ -161,7 +161,8 @@ http://192.168.1.23:3000
 - **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
 - **Phase 15.1A Visual Layer Fix + Mobile Beta QA**：修复情绪背景层级和 glow transform 问题，增强 couple 聊天气泡，移除 memorial 敏感表达，Beta 前弱化云端同步入口，并补充移动端验收清单
 - **Phase 15.1A.1 Hotfix**：补齐 Family landing 正文层级（LandingHero 等均包入 relative z-10），清理 memorial 源码注释里的高风险表达
-- **Phase 15.2B Preview/Staging Deploy + Manual Browser QA**：当前 CI 环境无 Vercel 部署权限，Smoke Test（10 步）和 Hard Gate（10 项）均待手动在 preview URL 上完成；手动部署步骤已记录在 `docs/deployment/beta-release-gate.md` Section 7；外部公开 Beta 未开放，等待 Hard Gate 全部通过
+- **Phase 15.2B.1 Vercel CLI Setup + Preview Deploy Guide**：`npx vercel` v54.3.0 可用；`.gitignore` 已正确忽略 `.env.local` / `.vercel`；lint/build ✅；阻塞于 Vercel 登录（需人工 `npx vercel login` → `npx vercel link` → 配置 env → `npx vercel`）；完整 5 步部署指南已记录在 `docs/deployment/beta-release-gate.md` Section 7；外部公开 Beta 未开放
+- **Phase 15.2B Preview/Staging Deploy + Manual Browser QA**：当前 CI 环境无 Vercel 部署权限，Smoke Test（10 步）和 Hard Gate（10 项）均待手动在 preview URL 上完成；手动部署步骤已记录在 `docs/deployment/beta-release-gate.md` Section 7
 - **Phase 15.2A Beta Deployment Prep with Manual QA Gate**：准备 Beta 部署所需文档（beta-release-gate.md / beta-deployment-checklist.md 更新）；明确 10 项 Hard Gate 人工验收条件；清理文档状态残留；当前不公开发布
 - **Phase 15.1C Static Mobile QA**：完成全量静态代码移动端验收（lint/build ✅、禁用词 ✅、grid 布局 ✅、z-index ✅、print:hidden ✅、AuthPanel ✅）；修正文档旧状态残留；375/390/430px 真实浏览器视觉验收仍需人工确认
 - **Phase 15.1B.1 Landing Copy Boundary + Mobile Readability Polish**：进一步克制 memorial 用户可见边界文案（移除"模拟离世者 / 数字形象 / 对话模拟"概念）；personal / memorial 情绪场景卡片改为移动端单列优先（`grid-cols-1 sm:grid-cols-2`）；拆分 `gentle-glow` 为 tone-specific 三变体（warm / blue / memorial），personal CTA 改用 `gentle-glow-blue`；lint/build 验收状态统一
