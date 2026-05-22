@@ -1,7 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.1B 已完成（静态移动端验收 + Beta 部署准备）  
+> 当前阶段：Phase 15.1B 已完成（落地页情绪叙事扩写 + 动效增强）  
+> 下一阶段：Phase 15.1C — 真实浏览器移动端验收（人工操作）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,13 +221,17 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
-### Phase 15.1B（静态移动端验收 + Beta 部署准备）
-- 执行 `npm run lint` + `npm run build`：✅ 零错误
-- 静态分析逐项核查：旧文案/memorial 高风险词/Auth sync/print:hidden/z-index 全部通过
-- 发现代码层面**无阻塞问题**，无需修复
-- 更新 `docs/quality/mobile-beta-qa-check.md`：静态结论填入，真实浏览器项标注"待人工确认"
-- 新增 `docs/deployment/beta-deployment-checklist.md`：env 配置/产品边界/Vercel 配置/发布前验收/监控建议
-- **待人工确认**：真实浏览器移动端各页面、打印预览、登录功能（需 Supabase env）
+### Phase 15.1B（落地页情绪叙事扩写 + 动效增强）
+- `PersonalLandingPage.tsx`：完整重写（约 165→280 行）；新增情绪场景卡片（6 张）/ Before-After / 它会整理什么（扩写）/ 示例预览（时间线+关键词+信片段）/ 未来打开场景（4 条）/ gentle-glow CTA 动效
+- `MemorialLandingPage.tsx`：完整重写（约 153→300 行）；新增为什么要整理（4 条）/ 记忆细节卡片（5 张）/ 它会整理什么（扩写）/ 示例预览（纪念文+时间线+细节片段）/ 边界说明温柔版（非警告框，内容完整）
+- `CoupleLandingPage.tsx`：新增"从聊天到纪念册"Before-After；新增 Relationship Galaxy 宇宙示意（深色背景 + constellation-pulse 星点 + flex-wrap 节点）
+- `FamilyLandingPage.tsx`：新增"从照片到成长册"Before-After（LandingHero 前）；新增"在这些时刻打开成长册"仪式感（HowItWorks 后）；4 条场景（18岁生日/毕业/离家/很久以后）
+- `MemoryModeHome.tsx`：四个 mode 卡片底部 CTA 改为双行（场景 + 关键词副标题），情绪差异更明显
+- `app/globals.css`：新增 5 个动效（slow-fade-in / memory-card-float / gentle-glow / soft-slide-up / constellation-pulse），已加入 prefers-reduced-motion + print 禁用列表
+- `docs/quality/landing-emotional-storytelling-check.md`：新增，四页完整验收记录
+- memorial 边界检查：用户可见区域无禁用词，边界声明保持完整 ✅
+- `npm run lint` ✅ / `npm run build` ✅（零错误）
+- **待人工确认（Phase 15.1C）**：真实浏览器 375px/390px/430px 各页面视觉验收；personal 情绪场景卡片可读性；couple Galaxy 在小屏布局；memorial 边界说明温柔度
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

@@ -101,6 +101,35 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
             </button>
           </div>
 
+          {/* ── 从聊天到纪念册：Before / After ──────────────── */}
+          <div className="mb-12">
+            <h2 className="text-lg font-bold text-center mb-2" style={{ color: "#2d1f1a" }}>
+              从聊天到纪念册
+            </h2>
+            <p className="text-center text-sm mb-7" style={{ color: "#9d7b72" }}>
+              不需要全部，只需要你们最想保留的那些。
+            </p>
+            <div className="rounded-2xl p-5 mb-3" style={{ background: "rgba(253,232,220,0.35)", border: "1px solid #f0ddd5" }}>
+              <p className="text-xs font-semibold mb-3" style={{ color: "#b08878" }}>整理前</p>
+              <ul className="text-sm space-y-2" style={{ color: "#9d7b72" }}>
+                <li>· 截图存了几百张，找不到那句话</li>
+                <li>· 聊天记录散在手机里，删了又怕后悔</li>
+                <li>· 很多细节只有你们知道，但慢慢开始忘</li>
+                <li>· 想送一份礼物，又不知道怎么开始</li>
+              </ul>
+            </div>
+            <div className="text-center py-2 text-lg" style={{ color: "#e07a5f" }}>↓ AI 整理之后</div>
+            <div className="rounded-2xl p-5" style={{ background: "rgba(232, 131, 106, 0.10)", border: "1px solid #f0ddd5" }}>
+              <p className="text-xs font-semibold mb-3" style={{ color: "#c0674a" }}>整理后</p>
+              <ul className="text-sm space-y-2" style={{ color: "#7a5a52" }}>
+                <li>· 一条属于你们的恋爱时间线</li>
+                <li>· 只属于你们两个人的关系关键词</li>
+                <li>· 一封可以在纪念日重新读起的周年信</li>
+                <li>· 一张把你们的关系变成星图的 Relationship Galaxy</li>
+              </ul>
+            </div>
+          </div>
+
           {/* ── 它会帮你整理什么 ─────────────────────────────── */}
           <div className="mb-12">
             <h2
@@ -150,6 +179,72 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* ── Relationship Galaxy 示意 ─────────────────────── */}
+          <div className="mb-12">
+            <h2 className="text-lg font-bold text-center mb-2" style={{ color: "#2d1f1a" }}>
+              你们的关系，有自己的形状
+            </h2>
+            <p className="text-center text-sm mb-7" style={{ color: "#9d7b72" }}>
+              Relationship Galaxy 把你们关系里的人、地点和时刻，连接成一张星图。
+            </p>
+            <div
+              className="rounded-2xl p-6 relative overflow-hidden"
+              style={{ background: "linear-gradient(160deg, #1a1218 0%, #2d1f1a 100%)", minHeight: "220px" }}
+            >
+              {/* 星点背景 */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[
+                  { top: "12%", left: "8%", size: 2, delay: "0s" },
+                  { top: "25%", left: "88%", size: 1.5, delay: "0.8s" },
+                  { top: "70%", left: "15%", size: 1, delay: "1.2s" },
+                  { top: "55%", left: "78%", size: 2, delay: "0.4s" },
+                  { top: "85%", left: "50%", size: 1, delay: "1.6s" },
+                ].map((star, i) => (
+                  <div
+                    key={i}
+                    className="absolute rounded-full constellation-pulse"
+                    style={{
+                      top: star.top, left: star.left,
+                      width: `${star.size}px`, height: `${star.size}px`,
+                      background: "rgba(255,255,255,0.5)",
+                      animationDelay: star.delay,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* 节点们 */}
+              <div className="relative flex flex-wrap gap-2 justify-center items-center h-full py-2">
+                {[
+                  { label: "你", color: "#e07a5f", size: "text-sm", ring: true },
+                  { label: "Ta", color: "#e8836a", size: "text-sm", ring: true },
+                  { label: "老地方", color: "#c0a090", size: "text-xs" },
+                  { label: "争吵", color: "#9d7b72", size: "text-xs" },
+                  { label: "和好", color: "#c0a090", size: "text-xs" },
+                  { label: "纪念日", color: "#e07a5f", size: "text-xs" },
+                  { label: "暗号", color: "#b08878", size: "text-xs" },
+                  { label: "第一次旅行", color: "#c0a090", size: "text-xs" },
+                  { label: "晚安", color: "#9d7b72", size: "text-xs" },
+                ].map((node) => (
+                  <span
+                    key={node.label}
+                    className={`px-3 py-1.5 rounded-full font-medium ${node.size}`}
+                    style={{
+                      background: node.ring ? `${node.color}22` : "rgba(255,255,255,0.08)",
+                      color: node.color,
+                      border: node.ring ? `1px solid ${node.color}66` : "1px solid rgba(255,255,255,0.12)",
+                    }}
+                  >
+                    {node.label}
+                  </span>
+                ))}
+              </div>
+              <p className="text-center text-xs mt-4 relative" style={{ color: "rgba(255,255,255,0.3)" }}>
+                示意效果，真实星图由你们的故事生成
+              </p>
             </div>
           </div>
 

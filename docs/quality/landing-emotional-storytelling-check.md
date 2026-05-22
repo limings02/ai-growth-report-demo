@@ -1,0 +1,183 @@
+# Landing Emotional Storytelling Check — Phase 15.1B
+
+> 创建时间：Phase 15.1B（2026-05-22）  
+> 用途：四个落地页情绪叙事扩写验收记录
+
+---
+
+## 本阶段目标
+
+把四个 mode landing page 从"功能介绍页"提升为"情绪叙事页"。
+重点扩写 PersonalLandingPage 和 MemorialLandingPage，补齐与 FamilyLandingPage 的内容深度差距。
+
+---
+
+## 各页面新增 Section 列表
+
+### PersonalLandingPage（完整重写）
+
+| Section | 内容 |
+|---------|------|
+| Hero 情绪区 | 扩写 hero 标题、情绪文案、浮动记忆 chips、Hero CTA |
+| 情绪场景卡片（6 张）| 毕业前后 / 搬去新城市 / 第一份工作 / 走出低谷 / 某段关系结束 / 三十岁前后 |
+| Before/After | "整理前" 散落碎片 → "AI 整理之后" 时间线/关键词/信件/图谱 |
+| 它会整理什么（4 张） | 时间线 / 关键词 / 写给未来自己的信 / 个人记忆图谱（加长情绪描述）|
+| 示例预览 | 时间线片段示例 + 关键词示例 + 写给未来自己的信片段 |
+| 未来重新打开场景（4 条）| 半年后 / 换工作前 / 30 岁生日 / 很久以后 |
+| 适合什么时候整理 | 场景标签（8 个）|
+| 隐私说明 | 本地保存，登录不自动上传 |
+| 底部 CTA | "开始整理这段人生 →" |
+
+**从约 165 行扩写至约 280 行，情绪层次显著提升。**
+
+---
+
+### MemorialLandingPage（完整重写）
+
+| Section | 内容 |
+|---------|------|
+| Hero 情绪区 | 扩写 hero 文案，主 CTA 提前出现 |
+| 为什么值得整理（4 条）| 细节模糊 / 旧照片需要文字 / 家族故事传承 / 整理即告别 |
+| 记忆细节卡片（5 张）| 常坐位置 / 爱做一道菜 / 总说一句话 / 旧照片背后故事 / 家里某个物件 |
+| 它会整理什么（4 张）| 人生片段时间线 / 家族记忆整理 / 重要人物关系 / 可保存纪念文（加长情绪描述）|
+| 示例预览 | 纪念文片段 + 时间线片段 + 记忆细节片段 |
+| 适合什么时候整理 | 场景标签（6 个）|
+| 中部 CTA | "开始整理这份记忆 →" |
+| 边界说明（温柔版）| 非警告框，逐条柔性呈现，保持完整边界内容 |
+| 隐私说明 | 照片不上传，本地保存 |
+| 底部 CTA | "开始整理这份记忆 →" |
+
+**从约 153 行扩写至约 300 行，仪式感和空间感显著提升。**
+
+---
+
+### CoupleLandingPage（增强）
+
+| 新增 Section | 内容 |
+|--------------|------|
+| 从聊天到纪念册（Before/After）| 整理前碎片化聊天截图 → 整理后时间线/关键词/周年信/Galaxy |
+| Relationship Galaxy 示意 | 深色宇宙背景，浮动节点（你 / Ta / 老地方 / 争吵 / 和好 / 纪念日 / 暗号 / 第一次旅行 / 晚安），星点 constellation-pulse 动效 |
+
+**原有：Hero 气泡 + 功能介绍 + 场景标签 + 样例预览 + 隐私 + CTA**  
+**新增两个 section，整体更有"关系叙事"深度。**
+
+---
+
+### FamilyLandingPage（增强）
+
+| 新增 Section | 内容 |
+|--------------|------|
+| 从照片到成长册（Before/After）| 置于 LandingHero 前，散落照片/视频 → 一本有封面/时间线/信件/星图的成长册 |
+| 在这些时刻打开成长册（4 条）| 置于 HowItWorks 后，18 岁生日 / 毕业 / 离家上大学前 / 很久以后孩子自己看 |
+
+**不修改 LandingHero / FutureScene / ValueCards / HowItWorks 核心逻辑。**
+
+---
+
+### MemoryModeHome（微调）
+
+| 改动 | 内容 |
+|------|------|
+| 四个 mode 卡片底部打开场景文字 | 添加副标题，每个 mode 情绪差异更明显 |
+| family | "给未来孩子的礼物，现在开始整理" |
+| couple | "聊天 · 关键词 · Relationship Galaxy" |
+| personal | "毕业 · 换城市 · 30 岁前后" |
+| memorial | "整理记忆 · 不做对话模拟" |
+
+---
+
+## 各页面情绪目标
+
+| 页面 | 情绪目标 | 关键词 |
+|------|---------|---------|
+| family | 温暖、礼物感、未来打开 | 18岁生日、毕业、离家、成长礼物 |
+| couple | 浪漫、聊天记录、关系星图、周年感 | 晚安、争吵、和好、两个人的宇宙 |
+| personal | 克制、回望、自我理解、阶段复盘 | 低谷、毕业、换城市、写给未来自己 |
+| memorial | 庄重、安静、家族记忆、留下故事 | 慢慢读起、旧照片、习惯、留给后来的人 |
+
+---
+
+## 动效使用情况
+
+| 动效类 | 使用位置 | 用途 |
+|--------|---------|------|
+| `reveal-up` | 所有 landing 页 Hero h1 | 首屏标题浮现 |
+| `slow-fade-in` | personal 浮动 chips | 关键词轻柔出现 |
+| `soft-slide-up` | personal/memorial 功能卡片 | 卡片渐入 |
+| `gentle-glow` | personal CTA 按钮（两处）| 呼吸感召唤 |
+| `constellation-pulse` | couple Relationship Galaxy 星点 | 宇宙感闪烁 |
+
+### 兼容性保证
+
+- `@media (prefers-reduced-motion: reduce)` 下所有动效 `animation: none !important`
+- `@media print` 下所有动效 `animation: none !important`
+- 所有新动效类均已加入两个 media query 的禁用列表
+
+---
+
+## 移动端风险点
+
+| 风险 | 级别 | 备注 |
+|------|------|------|
+| personal 情绪场景 2 列卡片文字密度 | ⚠️ 低 | grid-cols-2，文案较短，待人工确认 |
+| couple Relationship Galaxy 节点换行 | ⚠️ 低 | flex-wrap，可能在 375px 下有节点堆叠，待确认 |
+| memorial 记忆细节卡 5 张（4+1）布局 | ✅ | 4 张 grid-cols-2，第 5 张全宽 |
+| family 新增 Before/After + 仪式感 section 总页面长度 | ⚠️ 低 | 页面变长但无溢出风险 |
+| EmotionalBackdrop 遮挡主内容 | ✅ | 所有页面 relative z-10 已保证 |
+
+---
+
+## memorial 边界检查（Phase 15.1B）
+
+### 用户可见文案禁用词检查
+
+| 禁用词 | 检查结果 |
+|--------|---------|
+| 复活 | ✅ 未出现 |
+| 召回 | ✅ 未出现 |
+| 再见一面 | ✅ 未出现 |
+| 和 ta 对话 | ✅ 未出现 |
+| 数字生命 | ✅ 未出现 |
+| 模拟 ta | ✅ 未出现 |
+| 让 ta 回来 | ✅ 未出现 |
+
+### 边界声明新形式
+
+Phase 15.1B 把原"警告框"形式的边界声明改为温柔逐条呈现（非红色/橙色 warning box），但内容完整保留：
+- 不模拟离世者发言 ✅
+- 不制造仿佛重逢的体验 ✅
+- 不包装成数字人格 ✅
+- 不替代真实的怀念和悲伤 ✅
+- 只帮助整理你愿意留下的故事 ✅
+
+---
+
+## 待人工验收项（Phase 15.1C）
+
+| 检查项 | 状态 |
+|--------|------|
+| personal 情绪场景卡片 375px 下可读性 | ⬜ 待验收 |
+| memorial 记忆细节卡 2 列在小屏不挤压 | ⬜ 待验收 |
+| couple Relationship Galaxy 在 375px 下布局正常 | ⬜ 待验收 |
+| family before/after + 仪式感 section 不与原有 LandingHero 重复 | ⬜ 待验收 |
+| 所有 landing 页 EmotionalBackdrop 不遮挡新增 section | ⬜ 待验收 |
+| personal / memorial 底部 CTA 首屏附近可见 | ⬜ 待验收 |
+| memorial 边界说明版式在手机上温柔可读 | ⬜ 待验收 |
+| couple Galaxy 深色区域在系统深色模式下正常 | ⬜ 待验收 |
+| 所有动效轻柔不廉价（主观评估）| ⬜ 待验收 |
+
+---
+
+## Phase 15.1B 结论
+
+| 维度 | 结论 |
+|------|------|
+| PersonalLandingPage 扩写 | ✅ 从约 165 行扩至 280 行，新增 6 个 section |
+| MemorialLandingPage 扩写 | ✅ 从约 153 行扩至 300 行，新增 6 个 section |
+| CoupleLandingPage 增强 | ✅ 新增 Before/After + Relationship Galaxy |
+| FamilyLandingPage 增强 | ✅ 新增 Before/After + 仪式感打开场景 |
+| MemoryModeHome 微调 | ✅ 四个 mode 情绪差异更鲜明 |
+| memorial 边界检查 | ✅ 无禁用词，边界声明完整 |
+| 动效兼容性 | ✅ reduced-motion + print 均已禁用 |
+| 新增依赖 | ✅ 无 |
+| npm run lint / build | ⬜ 待验证（见最终报告）|

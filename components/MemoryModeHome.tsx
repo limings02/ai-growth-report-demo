@@ -143,37 +143,49 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth
                     </p>
                   </div>
 
-                  {/* 底部 CTA */}
+                  {/* 底部打开场景 */}
                   <div
-                    className="rounded-xl px-3 py-2 text-xs leading-relaxed"
+                    className="rounded-xl px-3 py-2.5 text-xs leading-relaxed space-y-1"
                     style={{
                       background: isAvailable ? "#fdf0e8" : isPreview ? "#fef5ef" : "#f5eee9",
                       color: "#9d7b72",
                     }}
                   >
                     {cfg.id === "family" && (
-                      <span>
-                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
-                        18 岁生日那天，打开这本成长册
-                      </span>
+                      <>
+                        <p>
+                          <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
+                          <span style={{ color: "#7a5a52" }}>18 岁生日那天，打开这本成长册</span>
+                        </p>
+                        <p style={{ color: "#b08878" }}>给未来孩子的礼物，现在开始整理</p>
+                      </>
                     )}
                     {cfg.id === "couple" && (
-                      <span>
-                        <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
-                        把你们的聊天变成一封周年信
-                      </span>
+                      <>
+                        <p>
+                          <span style={{ color: "#e8836a", fontWeight: 600 }}>→ </span>
+                          <span style={{ color: "#7a5a52" }}>周年纪念日，用你们的故事</span>
+                        </p>
+                        <p style={{ color: "#b08878" }}>聊天 · 关键词 · Relationship Galaxy</p>
+                      </>
                     )}
                     {cfg.id === "personal" && (
-                      <span>
-                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
-                        给未来的自己留下一份阶段总结
-                      </span>
+                      <>
+                        <p>
+                          <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
+                          <span style={{ color: "#7a5a52" }}>写给未来自己的阶段档案</span>
+                        </p>
+                        <p style={{ color: "#b08878" }}>毕业 · 换城市 · 30 岁前后</p>
+                      </>
                     )}
                     {cfg.id === "memorial" && (
-                      <span>
-                        <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
-                        把家族故事整理成可以留下来的文字
-                      </span>
+                      <>
+                        <p>
+                          <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
+                          <span style={{ color: "#7a5a52" }}>给家人留下可以慢慢读起的故事</span>
+                        </p>
+                        <p style={{ color: "#b08878" }}>整理记忆 · 不做对话模拟</p>
+                      </>
                     )}
                   </div>
                 </div>
