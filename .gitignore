@@ -44,3 +44,4 @@ next-env.d.ts
 
 # superpowers 视觉伴侣临时文件
 .superpowers/
+.gstack/
