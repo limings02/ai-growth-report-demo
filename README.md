@@ -112,6 +112,7 @@ npm run dev
 - **Phase 13.7 其他 mode 保存入口**：couple / personal / memorial 结果页已接入"保存到本地"按钮，复用统一 ArchiveItem 数据层；当前仅保存 MemoryArtifact 和低敏来源摘要，不保存聊天全文、freeNote 原文或照片文件
 - **Phase 13.8 跨 mode 统一档案页**：首页新增"我的记忆档案"入口，可统一查看 family / couple / personal / memorial 保存到本地的 ArchiveItem，并按 mode 进入对应详情回看；当前统一页只读，不提供删除、导出或导入
 - **Phase 13.9 统一档案管理增强**：我的记忆档案支持按 mode 筛选、按标题/摘要/关键词本地搜索，并可在统一列表中删除单条 ArchiveItem；当前不支持统一批量清空、导出或导入
+- **Phase 14.0 云端同步架构设计**：在本地 Life Archive 闭环完成后，新增云端同步 / 账户系统设计文档，明确 Supabase schema 草案、RLS 权限边界、本地到云端迁移策略、隐私边界和 Phase 14.1 最小实现计划；本阶段不接入真实云端服务
 
 ---
 
@@ -352,6 +353,7 @@ docs/
     family-memoryartifact-migration-plan.md  # family 旧链路迁移到 MemoryArtifact 的阶段计划
     family-legacy-cleanup-plan.md            # family 兼容层清理计划（Phase 12.6A）
     life-archive-data-model.md              # Life Archive 数据模型设计（Phase 13.1）
+    cloud-sync-plan.md                      # 云端同步 / 账户系统架构设计（Phase 14.0）
   quality/
     personal-generation-eval.md   # personal 生成质量评测（Phase 10.3）
     deepseek-v4-pro-compat.md     # DeepSeek V4 Pro thinking 模式兼容说明（Phase 10.3.1）

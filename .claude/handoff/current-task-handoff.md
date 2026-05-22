@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 13.9 已完成（统一 archive 筛选 / 搜索 / 单条删除）  
+> 当前阶段：Phase 14.0 已完成（云端同步 / 账户系统架构设计）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,20 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 14.0（云端同步 / 账户系统架构设计）
+- 新增 `docs/architecture/cloud-sync-plan.md`：
+  - 推荐技术路线：Supabase + Next.js；本阶段不接入
+  - 云端数据模型草案：profiles + archive_items（id 沿用本地，artifact 为 jsonb）
+  - RLS 权限边界：`user_id = auth.uid()` 隔离
+  - 本地→云端非破坏性迁移策略（不清空 localStorage，不强覆盖云端）
+  - 删除同步语义（soft delete 预留，Phase 14.5 启用）
+  - 导出/导入保留（JSON 导入 = 本地恢复，不直接等同云端恢复）
+  - 隐私与安全边界（10 条风险清单）
+  - 分阶段计划（Phase 14.1～14.6）
+  - Phase 14.1 最小验收标准
+- 新增 `docs/quality/cloud-sync-architecture-check.md`
+- lint/build ✅（纯文档，代码未改动）
+
 ### Phase 13.9（统一 archive 筛选 / 搜索 / 单条删除）
 - `AllArchivePage.tsx`：
   - `items` state 改为可更新 + `refreshItems()`
@@ -377,6 +391,7 @@
 - [x] **Phase 13.7**：couple / personal / memorial archive 保存入口（已完成）
 - [x] **Phase 13.8**：跨 mode archive 统一列表 / 我的记忆档案（已完成）
 - [x] **Phase 13.9**：统一 archive 筛选 / 搜索 / 单条删除（已完成）
+- [x] **Phase 14.0**：云端同步 / 账户系统架构设计（已完成，纯文档）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -477,23 +492,18 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 14 - 云端同步 / 账户系统规划
+### 优先级 1：Phase 14.1 - Supabase schema spike
 
-Life Archive 本地闭环（保存/列表/详情/删除/清空/导出/导入/筛选/搜索）已完成。
-下一步按需选择：
-- 账户系统（登录 / 注册）
-- 云端 archive 同步（Supabase / 其他后端）
-- 跨设备访问
+架构设计已完成（cloud-sync-plan.md）。下一步最小可执行：
+- 添加 `@supabase/supabase-js` 依赖
+- 新增 `lib/supabase/client.ts`（仅在 env 配置时初始化）
+- 新增 SQL migration（profiles + archive_items 表 + RLS）
+- 不改主 UI；不自动同步；未配置 env 时 app 仍可完全离线运行
+- 详见 `docs/architecture/cloud-sync-plan.md` §13
 
 ### 优先级 2：其他模式管理增强（可选）
 - couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
 - couple/personal/memorial archive 导出/导入能力对齐 family
-
-### 优先级 2：Phase 13.3 - 历史记录列表页（可选）
-
-Phase 13.2 完成后：
-- 所有 mode 已保存的 ArchiveItem 列表
-- 点击进入详情页回看（从 archive 加载 artifact）
 
 ### 优先级 3：其他 mode 体验对齐（可选）
 - couple / personal / memorial 结果页体验对齐 family 12.7 系列
@@ -510,7 +520,7 @@ Phase 13.2 完成后：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 13.9 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 14.0 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -539,7 +549,8 @@ Phase 13.2 完成后：
 - Phase 13.7：couple / personal / memorial 保存入口（ArchiveSaveButton / 低敏 source snapshot）✅
 - Phase 13.8：跨 mode 统一档案页（MemoryModeHome 入口 / AllArchivePage / 各 mode 详情回看）✅
 - Phase 13.9：统一 archive 筛选 / 搜索 / 单条删除（mode filter / contains search / pendingDeleteId）✅
-- Life Archive 本地闭环已完成，下一步：Phase 14（云端同步 / 账户系统）
+- Phase 14.0：云端同步架构设计文档（Supabase schema / RLS / 迁移策略 / 风险清单，纯文档不接真实服务）✅
+- 下一步：Phase 14.1（Supabase schema spike，详见 docs/architecture/cloud-sync-plan.md §13）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -556,7 +567,7 @@ Phase 13.2 完成后：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 14：云端同步 / 账户系统规划（或其他 mode 管理能力对齐）
+- 进入 Phase 14.1：Supabase schema spike（按 cloud-sync-plan.md §13 验收标准执行）
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```
