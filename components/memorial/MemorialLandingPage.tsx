@@ -127,7 +127,7 @@ export default function MemorialLandingPage({ onStart, onBackToModes }: Props) {
           <p className="text-sm mb-6" style={{ color: "#7a7065" }}>
             不需要宏大的故事，日常的细节才是记忆的质地。
           </p>
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             {[
               { emoji: "🪑", title: "ta 常坐的位置", desc: "那个角落或那把椅子，对你们来说有特别的意义。" },
               { emoji: "🍳", title: "ta 爱做的一道菜", desc: "味道、做法、和那顿饭有关的一个场景。" },
@@ -323,33 +323,29 @@ export default function MemorialLandingPage({ onStart, onBackToModes }: Props) {
           开始整理这份记忆 →
         </button>
 
-        {/* ── 7. 边界说明（温柔版，非警告框）────────────────────── */}
+        {/* ── 7. 边界说明（庄重温柔版）───────────────────────────── */}
         <div className="mb-6">
           <p className="text-xs font-semibold mb-4" style={{ color: "#7a7065" }}>
-            关于这本纪念册能做什么，不能做什么
+            关于这本纪念册的边界
           </p>
-          <div className="space-y-2">
+          <div
+            className="rounded-2xl px-5 py-4 space-y-2"
+            style={{ background: "rgba(255,255,255,0.55)", border: "1px solid #d4cfc8" }}
+          >
             {[
-              { ok: false, text: "不模拟离世者的语气或发言" },
-              { ok: false, text: "不制造仿佛重逢的体验" },
-              { ok: false, text: "不把 ta 包装成数字形象或人格" },
-              { ok: false, text: "不替代真实的怀念与悲伤" },
-              { ok: true,  text: "只帮你整理你愿意留下的故事，让它可以被家人慢慢读起" },
+              { positive: true,  text: "只整理你主动提供的照片、文字和故事" },
+              { positive: false, text: "不创造新的个人表达" },
+              { positive: false, text: "不包装成交互式人格" },
+              { positive: false, text: "不替代真实的怀念与悲伤" },
+              { positive: true,  text: "帮助这些记忆被家人慢慢读起" },
             ].map((item) => (
-              <div
-                key={item.text}
-                className="flex items-start gap-2.5 rounded-xl px-4 py-2.5"
-                style={{
-                  background: item.ok ? "rgba(255,255,255,0.65)" : "transparent",
-                  border: item.ok ? "1px solid #d4cfc8" : "none",
-                }}
-              >
-                <span className="text-sm flex-shrink-0" style={{ color: item.ok ? "#8c7d6e" : "#b8b0a8" }}>
-                  {item.ok ? "✓" : "·"}
+              <div key={item.text} className="flex items-start gap-2.5">
+                <span className="text-sm flex-shrink-0" style={{ color: item.positive ? "#8c7d6e" : "#b8b0a8" }}>
+                  {item.positive ? "✓" : "·"}
                 </span>
                 <p
                   className="text-xs leading-relaxed"
-                  style={{ color: item.ok ? "#5a5248" : "#9a908a" }}
+                  style={{ color: item.positive ? "#5a5248" : "#7a7065" }}
                 >
                   {item.text}
                 </p>

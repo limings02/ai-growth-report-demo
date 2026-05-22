@@ -184,7 +184,7 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth
                           <span style={{ color: "#e07a5f", fontWeight: 600 }}>→ </span>
                           <span style={{ color: "#7a5a52" }}>给家人留下可以慢慢读起的故事</span>
                         </p>
-                        <p style={{ color: "#b08878" }}>整理记忆 · 不做对话模拟</p>
+                        <p style={{ color: "#b08878" }}>整理故事 · 保留家族记忆</p>
                       </>
                     )}
                   </div>

@@ -119,6 +119,7 @@ npm run dev
 - **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
 - **Phase 15.1A Visual Layer Fix + Mobile Beta QA**：修复情绪背景层级和 glow transform 问题，增强 couple 聊天气泡，移除 memorial 敏感表达，Beta 前弱化云端同步入口，并补充移动端验收清单
 - **Phase 15.1A.1 Hotfix**：补齐 Family landing 正文层级（LandingHero 等均包入 relative z-10），清理 memorial 源码注释里的高风险表达
+- **Phase 15.1B.1 Landing Copy Boundary + Mobile Readability Polish**：进一步克制 memorial 用户可见边界文案（移除"模拟离世者 / 数字形象 / 对话模拟"概念）；personal / memorial 情绪场景卡片改为移动端单列优先（`grid-cols-1 sm:grid-cols-2`）；拆分 `gentle-glow` 为 tone-specific 三变体（warm / blue / memorial），personal CTA 改用 `gentle-glow-blue`；lint/build 验收状态统一
 - **Phase 15.1B Landing Emotional Storytelling Expansion**：四个落地页情绪叙事全面扩写——PersonalLandingPage 新增情绪场景卡片 / Before-After / 示例预览 / 未来打开场景（约 165→280 行）；MemorialLandingPage 新增为什么整理 / 记忆细节卡片 / 示例预览 / 温柔边界声明（约 153→300 行）；CoupleLandingPage 新增"从聊天到纪念册"Before-After 和 Relationship Galaxy 宇宙示意；FamilyLandingPage 新增"从照片到成长册"Before-After 和 18 岁/毕业/离家仪式感场景；MemoryModeHome 四个 mode 情绪差异更鲜明；新增 5 个 CSS 动效（slow-fade-in / memory-card-float / gentle-glow / soft-slide-up / constellation-pulse），已配置 prefers-reduced-motion + print 禁用
 
 ---

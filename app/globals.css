@@ -68,9 +68,20 @@ body {
   50%       { transform: translateY(-6px); }
 }
 
-@keyframes gentleGlow {
+/* tone-specific glow variants (Phase 15.1B.1) */
+@keyframes gentleGlowWarm {
   0%, 100% { box-shadow: 0 4px 20px rgba(224, 122, 95, 0.18); }
   50%       { box-shadow: 0 4px 32px rgba(224, 122, 95, 0.40); }
+}
+
+@keyframes gentleGlowBlue {
+  0%, 100% { box-shadow: 0 4px 20px rgba(107, 138, 220, 0.18); }
+  50%       { box-shadow: 0 4px 32px rgba(107, 138, 220, 0.36); }
+}
+
+@keyframes gentleGlowMemorial {
+  0%, 100% { box-shadow: 0 4px 20px rgba(140, 125, 110, 0.16); }
+  50%       { box-shadow: 0 4px 30px rgba(140, 125, 110, 0.32); }
 }
 
 @keyframes softSlideUp {
@@ -88,22 +99,26 @@ body {
 .soft-pulse            { animation: softPulse            4s ease-in-out infinite; }
 .reveal-up             { animation: revealUp           0.7s ease-out both; }
 .shimmer-text          { background-size: 200% auto; animation: shimmerLine 4s linear infinite; }
-.slow-fade-in          { animation: slowFadeIn         1.2s ease-out both; }
-.memory-card-float     { animation: memoryCardFloat      5s ease-in-out infinite; }
-.gentle-glow           { animation: gentleGlow           3s ease-in-out infinite; }
-.soft-slide-up         { animation: softSlideUp         0.9s ease-out both; }
-.constellation-pulse   { animation: constellationPulse  2.5s ease-in-out infinite; }
+.slow-fade-in          { animation: slowFadeIn          1.2s ease-out both; }
+.memory-card-float     { animation: memoryCardFloat       5s ease-in-out infinite; }
+.gentle-glow-warm      { animation: gentleGlowWarm        3s ease-in-out infinite; }
+.gentle-glow-blue      { animation: gentleGlowBlue        3s ease-in-out infinite; }
+.gentle-glow-memorial  { animation: gentleGlowMemorial    3s ease-in-out infinite; }
+.soft-slide-up         { animation: softSlideUp           0.9s ease-out both; }
+.constellation-pulse   { animation: constellationPulse    2.5s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .memory-float, .memory-drift, .soft-pulse, .reveal-up, .shimmer-text,
-  .slow-fade-in, .memory-card-float, .gentle-glow, .soft-slide-up, .constellation-pulse {
+  .slow-fade-in, .memory-card-float, .soft-slide-up, .constellation-pulse,
+  .gentle-glow-warm, .gentle-glow-blue, .gentle-glow-memorial {
     animation: none !important;
   }
 }
 
 @media print {
   .memory-float, .memory-drift, .soft-pulse, .reveal-up, .shimmer-text,
-  .slow-fade-in, .memory-card-float, .gentle-glow, .soft-slide-up, .constellation-pulse {
+  .slow-fade-in, .memory-card-float, .soft-slide-up, .constellation-pulse,
+  .gentle-glow-warm, .gentle-glow-blue, .gentle-glow-memorial {
     animation: none !important;
   }
 }

@@ -131,15 +131,18 @@
 
 ### 用户可见文案禁用词检查
 
-| 禁用词 | 检查结果 |
-|--------|---------|
-| 复活 | ✅ 未出现 |
-| 召回 | ✅ 未出现 |
-| 再见一面 | ✅ 未出现 |
-| 和 ta 对话 | ✅ 未出现 |
-| 数字生命 | ✅ 未出现 |
-| 模拟 ta | ✅ 未出现 |
-| 让 ta 回来 | ✅ 未出现 |
+| 禁用词 | Phase 15.1B | Phase 15.1B.1 |
+|--------|------------|---------------|
+| 复活 | ✅ | ✅ |
+| 召回 | ✅ | ✅ |
+| 再见一面 | ✅ | ✅ |
+| 和 ta 对话 | ✅ | ✅ |
+| 数字生命 | ✅ | ✅ |
+| 模拟 ta | ✅ | ✅ |
+| 让 ta 回来 | ✅ | ✅ |
+| 对话模拟 | ⚠️ 首页出现 | ✅ 已移除 |
+| 模拟离世者 | ⚠️ 边界声明出现 | ✅ 已移除 |
+| 数字形象 | ⚠️ 边界声明出现 | ✅ 已移除 |
 
 ### 边界声明新形式
 
@@ -168,6 +171,19 @@ Phase 15.1B 把原"警告框"形式的边界声明改为温柔逐条呈现（非
 
 ---
 
+## Phase 15.1B.1 修复记录（2026-05-22）
+
+| 修复项 | 改动内容 |
+|--------|---------|
+| memorial 用户可见边界文案 | MemoryModeHome "不做对话模拟" → "整理故事 · 保留家族记忆"；MemorialLandingPage 边界声明改用正向措辞，移除"模拟离世者 / 数字形象"等概念 |
+| personal 情绪场景卡片移动端 | `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`，移动端单列阅读 |
+| memorial 记忆细节卡片移动端 | `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`，移动端单列阅读 |
+| gentle-glow 动效拆分 | 删除通用 `gentleGlow`，新增 `gentleGlowWarm` / `gentleGlowBlue` / `gentleGlowMemorial` 三种 tone；personal CTA 改用 `gentle-glow-blue` |
+| 新动效类 reduced-motion/print | 三个新 glow 类均已加入 `prefers-reduced-motion` 和 `@media print` 禁用列表 |
+| lint/build 验证 | npm run lint ✅，npm run build ✅ |
+
+---
+
 ## Phase 15.1B 结论
 
 | 维度 | 结论 |
@@ -180,4 +196,4 @@ Phase 15.1B 把原"警告框"形式的边界声明改为温柔逐条呈现（非
 | memorial 边界检查 | ✅ 无禁用词，边界声明完整 |
 | 动效兼容性 | ✅ reduced-motion + print 均已禁用 |
 | 新增依赖 | ✅ 无 |
-| npm run lint / build | ⬜ 待验证（见最终报告）|
+| npm run lint / build | ✅ 零错误零 warning |

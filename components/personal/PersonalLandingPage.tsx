@@ -89,7 +89,7 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
           {/* Hero CTA */}
           <button
             onClick={onStart}
-            className="w-full py-4 rounded-2xl text-white font-semibold text-base cursor-pointer transition-all shadow-md hover:shadow-lg gentle-glow"
+            className="w-full py-4 rounded-2xl text-white font-semibold text-base cursor-pointer transition-all shadow-md hover:shadow-lg gentle-glow-blue"
             style={{ background: "linear-gradient(135deg, #6b8adc, #5568a0)" }}
           >
             开始整理这段人生 →
@@ -104,7 +104,7 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
           <p className="text-sm mb-6" style={{ color: "#6b7db3" }}>
             选一段、选一年，或者选你最想整理的那个阶段。
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {LIFE_STAGE_SCENES.map((scene) => (
               <div
                 key={scene.title}
@@ -353,7 +353,7 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
         {/* ── 底部 CTA ──────────────────────────────────────────── */}
         <button
           onClick={onStart}
-          className="w-full py-4 rounded-2xl text-white font-semibold text-base cursor-pointer transition-all shadow-md hover:shadow-lg gentle-glow"
+          className="w-full py-4 rounded-2xl text-white font-semibold text-base cursor-pointer transition-all shadow-md hover:shadow-lg gentle-glow-blue"
           style={{ background: "linear-gradient(135deg, #6b8adc, #5568a0)" }}
         >
           开始整理这段人生 →

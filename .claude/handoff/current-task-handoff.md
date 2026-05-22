@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.1B 已完成（落地页情绪叙事扩写 + 动效增强）  
+> 当前阶段：Phase 15.1B.1 已完成（文案边界克制化 + 移动端可读性 + glow 动效拆分）  
 > 下一阶段：Phase 15.1C — 真实浏览器移动端验收（人工操作）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
@@ -232,6 +232,15 @@
 - memorial 边界检查：用户可见区域无禁用词，边界声明保持完整 ✅
 - `npm run lint` ✅ / `npm run build` ✅（零错误）
 - **待人工确认（Phase 15.1C）**：真实浏览器 375px/390px/430px 各页面视觉验收；personal 情绪场景卡片可读性；couple Galaxy 在小屏布局；memorial 边界说明温柔度
+
+### Phase 15.1B.1（文案边界克制化 + 移动端可读性 + glow 动效拆分）
+- `MemoryModeHome.tsx`：memorial 卡片底部 "整理记忆 · 不做对话模拟" → "整理故事 · 保留家族记忆"
+- `MemorialLandingPage.tsx`：边界声明重写，移除"模拟离世者 / 数字形象 / 对话模拟"概念，改为"只整理你主动提供的... / 不创造新的个人表达 / 不包装成交互式人格 / 帮助这些记忆被家人慢慢读起"；记忆细节卡片 `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`
+- `PersonalLandingPage.tsx`：情绪场景卡片 `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`；CTA `gentle-glow` → `gentle-glow-blue`
+- `app/globals.css`：删除通用 `gentleGlow` keyframe，新增 `gentleGlowWarm / gentleGlowBlue / gentleGlowMemorial` 三种 tone；三个新类加入 prefers-reduced-motion + print 禁用列表
+- `docs/quality/landing-emotional-storytelling-check.md`：新增 Phase 15.1B.1 修复记录，memorial 边界检查表更新，lint/build ✅ 已统一
+- `npm run lint` ✅ / `npm run build` ✅（零错误）
+- **待人工确认（Phase 15.1C）**：真实浏览器验收仍未完成；Phase 14.x 云端同步继续暂缓；不进入部署
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方
