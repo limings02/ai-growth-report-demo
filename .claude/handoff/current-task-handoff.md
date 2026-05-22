@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.0 已完成（Emotional Motion Polish / 浪漫动态体验打磨）  
+> 当前阶段：Phase 15.1A 已完成（Visual Layer Fix + Mobile Beta QA）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -219,6 +219,16 @@
 - `FamilyMemoryGraphPreview.tsx`：去掉 `graph.title` 展示（保留 subtitle）；节点截断 5 → 8 字
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
+
+### Phase 15.1A（Visual Layer Fix + Mobile Beta QA）
+- `EmotionalBackdrop.tsx`：glow 改为外层定位 div + 内层动效 div，解决 translate 和 scale transform 冲突
+- `CoupleLandingPage.tsx` / `PersonalLandingPage.tsx` / `MemorialLandingPage.tsx` / `FamilyLandingPage.tsx`：主内容容器加 `relative z-10`，确保不被 fixed z-0 backdrop 遮挡
+- `MemorialLandingPage.tsx`：边界声明删除敏感词，改为"不制造仿佛重逢的体验""不包装成数字人格"；memorial chips 移除"最后一次通话"
+- `CoupleLandingPage.tsx`：hero 区新增静态聊天气泡视觉（左右错位，4 条示例）
+- `AuthPanel.tsx`：Beta 前隐藏"同步到云端"按钮和 sync 状态；替换为"云端同步仍在内测中"说明；sync 能力代码保留注释
+- 新增 `docs/quality/mobile-beta-qa-check.md`：移动端 Beta 验收清单（9 个维度）
+- lint/build ✅（零错误零 warning）
+- **Phase 14.x 云端同步继续暂缓**
 
 ### Phase 15.0（Emotional Motion Polish / 浪漫动态体验打磨）
 - `app/globals.css`：5 个 CSS 动效（memoryFloat/Drift/softPulse/revealUp/shimmerLine）+ prefers-reduced-motion + print 禁用
@@ -458,6 +468,7 @@
 - [x] **Phase 14.2**：Auth shell / 登录登出 UI（已完成）
 - [x] **Phase 14.3**：手动上传本地 archive 到云端（已完成）
 - [x] **Phase 15.0**：Emotional Motion Polish / 浪漫动态体验打磨（已完成）
+- [x] **Phase 15.1A**：Visual Layer Fix + Mobile Beta QA（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -558,17 +569,17 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 15.1 - 移动端验收 / Beta 部署准备
+### 优先级 1：Phase 15.1B - 真实浏览器移动端手动验收 + Beta 部署
 
-情绪升级已完成。下一步：
-- 移动端真实浏览器 E2E（各 landing 页 + 结果页动效验收）
-- 核查所有 landing 页移动端布局不溢出
-- 考虑 Beta 发布部署（Vercel 或同类平台）
-- 云端同步（Phase 14.4）暂缓，待用户测试后再决定
+视觉层修复完成。下一步：
+- 人工完成 `docs/quality/mobile-beta-qa-check.md` 所有待验收项
+- 真实移动设备 / DevTools 逐页验收
+- 验收通过后考虑 Beta 部署（Vercel 或同类平台）
+- 云端同步继续暂缓，等用户测试反馈
 
 ### 优先级 2：Phase 14.4（暂缓，可选）
 
-云端 archive 读取 / 本地合并预览；优先级低于移动端验收和 Beta 部署。
+云端 archive 读取 / 本地合并预览；优先级低于 Beta 部署。
 
 ### 优先级 3：其他模式管理增强（可选）
 - couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
@@ -589,7 +600,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 15.0 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 15.1A 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -623,7 +634,8 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - Phase 14.2：Auth shell（@supabase/ssr / env.ts / browserClient / AuthPanel / 登录登出 / session）✅
 - Phase 14.3：手动上传本地 archive（cloudArchiveSync / INSERT ONLY / blocked fields 防护 / AuthPanel 同步按钮）✅
 - Phase 15.0：Emotional Motion Polish（EmotionalBackdrop / CSS动效 / 文案升级 / preview/mock清理）✅
-- 下一步：Phase 15.1（移动端验收 / Beta 部署准备）；云端同步暂缓
+- Phase 15.1A：Visual Layer Fix（transform 修复 / z-10 / memorial 敏感词 / couple 气泡 / AuthPanel sync 隐藏）✅
+- 下一步：Phase 15.1B（真实浏览器移动端验收 + Beta 部署）；云端同步继续暂缓
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -640,7 +652,7 @@ Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 15.1：移动端验收 / Beta 部署准备
+- 进入 Phase 15.1B：真实浏览器移动端手动验收 + Beta 部署准备
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

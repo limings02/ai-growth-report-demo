@@ -36,7 +36,7 @@ export default function PersonalLandingPage({ onStart, onBackToModes }: Props) {
         </button>
       </div>
 
-      <div className="flex-1 max-w-xl mx-auto w-full px-5 py-10">
+      <div className="flex-1 max-w-xl mx-auto w-full px-5 py-10 relative z-10">
 
         {/* Hero 区 */}
         <div className="mb-10">

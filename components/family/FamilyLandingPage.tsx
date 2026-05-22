@@ -18,7 +18,7 @@ type Props = {
 
 export default function FamilyLandingPage({ onStart, onBackToModes, onOpenArchive }: Props) {
   return (
-    <main className="flex-1 flex flex-col relative">
+    <main className="flex-1 flex flex-col relative z-10">
       {/* 顶部导航：左-返回主题，右-我的成长册 */}
       <div
         className="sticky top-0 z-20 px-5 py-3 flex items-center justify-between gap-3"

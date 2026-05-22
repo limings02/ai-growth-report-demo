@@ -37,7 +37,7 @@ export default function MemorialLandingPage({ onStart, onBackToModes }: Props) {
         </button>
       </div>
 
-      <div className="flex-1 max-w-xl mx-auto w-full px-5 py-10">
+      <div className="flex-1 max-w-xl mx-auto w-full px-5 py-10 relative z-10">
 
         {/* Hero 区 */}
         <div className="mb-10">
@@ -127,8 +127,9 @@ export default function MemorialLandingPage({ onStart, onBackToModes }: Props) {
           style={{ background: "rgba(255,255,255,0.55)", color: "#7a7065", border: "1px solid #d4cfc8" }}
         >
           <p className="font-semibold text-sm mb-2" style={{ color: "#5a5248" }}>我们不会做什么</p>
-          <p>· 不模拟 ta 说话，不制造对话</p>
-          <p>· 不使用「复活」「再见一面」等表达</p>
+          <p>· 不模拟离世者发言</p>
+          <p>· 不制造仿佛重逢的体验</p>
+          <p>· 不包装成数字人格</p>
           <p>· 不替代真实的怀念和悲伤</p>
           <p>· 只帮助整理你愿意留下的故事</p>
         </div>

@@ -117,6 +117,7 @@ npm run dev
 - **Phase 14.2 Auth shell**：新增 `@supabase/ssr`、登录/注册/登出 UI（email/password），首页增加"账户 / 登录"入口；登录后只显示 session 状态，不同步 archive；未配置 env 时显示"云端同步未配置"，本地功能不受影响
 - **Phase 14.3 手动上传本地 archive**：登录后账户页出现"同步到云端"按钮，用户主动点击将 localStorage ArchiveItem 上传到 Supabase；INSERT ONLY（同 id 跳过，不覆盖），不上传照片 blob，不读取云端数据
 - **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
+- **Phase 15.1A Visual Layer Fix + Mobile Beta QA**：修复情绪背景层级和 glow transform 问题，增强 couple 聊天气泡，移除 memorial 敏感表达，Beta 前弱化云端同步入口，并补充移动端验收清单
 
 ---
 

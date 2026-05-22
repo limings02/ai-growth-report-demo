@@ -1,8 +1,12 @@
 // components/visual/EmotionalBackdrop.tsx
-// 轻量情绪动效背景层（Phase 15.0）。
+// 轻量情绪动效背景层（Phase 15.1A 修复版）。
 // 纯 CSS，不引入动画库；pointer-events-none，不影响交互。
 // aria-hidden，不影响可访问性。
 // @media print 下隐藏。
+//
+// 修复（Phase 15.1A）：
+// - glow 使用外层定位 div + 内层动效 div，避免 translate 被 scale 覆盖
+// - 使用 fixed z-0；调用方需确保主内容容器有 relative z-10
 
 type EmotionalTone = "home" | "family" | "couple" | "personal" | "memorial";
 
@@ -57,7 +61,7 @@ const TONE_CONFIG: Record<EmotionalTone, {
       { cx: "80%", cy: "15%", r: "160px", color: "#d4cfc8", opacity: 0.12 },
       { cx: "50%", cy: "80%", r: "170px", color: "#c8b99a", opacity: 0.10 },
     ],
-    chips: ["ta 总爱坐在窗边", "最后一次通话", "旧照片里的笑容", "ta 说过的话", "家里的老味道"],
+    chips: ["ta 总爱坐在窗边", "旧照片里的笑容", "ta 说过的话", "家里的老味道", "那些小习惯"],
     chipColors: { bg: "rgba(255,255,250,0.75)", text: "#7a7065" },
   },
 };
@@ -73,22 +77,32 @@ export default function EmotionalBackdrop({ tone }: Props) {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden"
     >
-      {/* Radial glow orbs */}
+      {/* Radial glow orbs
+          外层 div 负责定位（translate -50% -50%），
+          内层 div 负责 soft-pulse scale 动画，
+          两层分离避免 transform 覆盖 */}
       {config.glows.map((glow, i) => (
         <div
           key={i}
-          className="absolute rounded-full soft-pulse"
+          className="absolute"
           style={{
             left: glow.cx,
             top: glow.cy,
-            width: glow.r,
-            height: glow.r,
-            background: `radial-gradient(circle, ${glow.color} 0%, transparent 70%)`,
-            opacity: glow.opacity,
             transform: "translate(-50%, -50%)",
             animationDelay: FLOAT_DELAYS[i % FLOAT_DELAYS.length],
           }}
-        />
+        >
+          <div
+            className="rounded-full soft-pulse"
+            style={{
+              width: glow.r,
+              height: glow.r,
+              background: `radial-gradient(circle, ${glow.color} 0%, transparent 70%)`,
+              opacity: glow.opacity,
+              animationDelay: FLOAT_DELAYS[i % FLOAT_DELAYS.length],
+            }}
+          />
+        </div>
       ))}
 
       {/* Floating memory chips */}

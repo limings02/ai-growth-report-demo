@@ -36,7 +36,7 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
         </button>
       </div>
 
-      <main className="flex-1 flex flex-col items-center px-5 py-14">
+      <main className="flex-1 flex flex-col items-center px-5 py-14 relative z-10">
         <div className="w-full max-w-2xl">
 
           {/* ── Hero 情绪区 ─────────────────────────────────── */}
@@ -64,6 +64,32 @@ export default function CoupleLandingPage({ onStart, onBackToModes }: Props) {
               恋爱时间线、关系关键词、周年信和 Relationship Galaxy，
               用你们真实的故事生成，不是模板，不是套词。
             </p>
+
+            {/* 聊天气泡示例（静态，不读取用户数据）*/}
+            <div className="max-w-xs mx-auto mb-8 space-y-2 text-left">
+              {[
+                { side: "left",  text: "到家了吗" },
+                { side: "right", text: "到啦，今天也很想你" },
+                { side: "left",  text: "我们那天真的笑了很久" },
+                { side: "right", text: "下次还去那个地方" },
+              ].map(({ side, text }) => (
+                <div key={text} className={`flex ${side === "right" ? "justify-end" : "justify-start"} reveal-up`}>
+                  <span
+                    className="inline-block text-sm px-4 py-2 rounded-2xl max-w-[70%] leading-relaxed"
+                    style={
+                      side === "right"
+                        ? { background: "linear-gradient(135deg, #e8836a, #e07a5f)", color: "white", borderBottomRightRadius: "4px" }
+                        : { background: "rgba(255,255,255,0.85)", color: "#3d2c2c", borderBottomLeftRadius: "4px", border: "1px solid #f0ddd5" }
+                    }
+                  >
+                    {text}
+                  </span>
+                </div>
+              ))}
+              <p className="text-center text-xs mt-3" style={{ color: "#c0a090" }}>
+                这些可以变成你们的恋爱纪念册
+              </p>
+            </div>
 
             {/* Hero CTA */}
             <button
