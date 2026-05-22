@@ -1,7 +1,7 @@
-# Mobile Beta QA Check - Phase 15.1B
+# Mobile Beta QA Check
 
 > 文档创建：Phase 15.1A（2026-05-22）  
-> 更新：Phase 15.1B（2026-05-22）  
+> 更新：Phase 15.1C（2026-05-22）  
 > 用途：移动端验收清单，Beta 部署前人工逐项验证
 
 ---
@@ -175,5 +175,80 @@
 | EmotionalBackdrop chips 固定文案 | 非个性化，仅增强氛围 |
 | FamilyLandingPage 子组件未重写 | LandingHero 等原样保留，已被 relative z-10 容器保护 |
 | 云端同步 Beta 前暂停 | cloudArchiveSync.ts 能力保留，UI 不展示 |
-| 真实浏览器测试未完成 | 结论基于静态代码分析 |
-| personal 功能卡片 grid-cols-2 在 375px 下待确认 | 文字可能偏小，待人工评估 |
+| 真实浏览器测试未完成（Phase 15.1B）| 结论基于静态代码分析 |
+| personal 情绪场景卡片（已修）| Phase 15.1B.1 改为 grid-cols-1 sm:grid-cols-2 |
+
+---
+
+## Phase 15.1C 验收记录（2026-05-22）
+
+### 验收方式
+
+- 无 Playwright / Puppeteer / Cypress（未安装）
+- 开发服务器运行中（http://localhost:3000，HTTP 200 ✅）
+- 本阶段验收方式：**全量静态代码分析**（grep / 代码审查）
+- 真实浏览器 375/390/430px 视觉验收：仍为人工待确认
+
+### 静态分析汇总
+
+| 检查维度 | 结果 | 说明 |
+|---------|------|------|
+| npm run lint | ✅ 通过 | 零错误 |
+| npm run build | ✅ 通过 | 零 TypeScript 错误，6 个 route |
+| memorial 用户可见禁用词（复活/召回/再见一面等）| ✅ 无 | grep 逐项确认 |
+| memorial 用户可见"对话模拟 / 模拟离世者 / 数字形象" | ✅ 已移除 | Phase 15.1B.1 修复 |
+| AuthPanel "同步到云端"按钮 | ✅ 已隐藏 | grep 返回空 |
+| 所有 mode 状态均为 available | ✅ | modes.ts 确认无 coming_soon |
+| mock 按钮生产不显示 | ✅ | NODE_ENV=development 守卫 |
+| print:hidden 覆盖（backdrop / nav / quality / sourceTrace）| ✅ | MemoryArtifactPreview + EmotionalBackdrop 逐行确认 |
+| EmotionalBackdrop z-index 层级 | ✅ | fixed z-0，所有页面正文 relative z-10 |
+| personal 情绪场景卡片 grid | ✅ | grid-cols-1 sm:grid-cols-2 |
+| memorial 记忆细节卡片 grid | ✅ | grid-cols-1 sm:grid-cols-2 |
+| MemoryModeHome 首页 grid | ✅ | grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 |
+| couple Galaxy overflow 保护 | ✅ | overflow-hidden + flex-wrap |
+| couple Galaxy 星点 absolute 溢出 | ✅ | 在 overflow-hidden 容器内 |
+| family Before/After 宽度保护 | ✅ | max-w-lg mx-auto + px-5 |
+| personal Hero CTA 位置 | ✅ | 约 412px 处，在 667px 首屏内 |
+| memorial Hero CTA 位置 | ✅ | 约 480px 处，在 667px 首屏内 |
+| couple Hero CTA 位置 | ✅ | Hero 区末尾，接近首屏 |
+| gentle-glow personal 色彩一致性 | ✅ | Phase 15.1B.1 改为 gentle-glow-blue（蓝色系）|
+
+### 375 / 390 / 430px 验收状态
+
+| 页面 | 375px | 390px | 430px | 备注 |
+|------|-------|-------|-------|------|
+| MemoryModeHome | ✅ 静态 | ✅ 静态 | ✅ 静态 | grid-cols-1 保证单列；待真实确认卡片高度 |
+| FamilyLandingPage | ✅ 静态 | ✅ 静态 | ✅ 静态 | Before/After max-w-lg；待确认与 LandingHero 视觉节奏 |
+| CoupleLandingPage | ✅ 静态 | ✅ 静态 | ✅ 静态 | w-full max-w-2xl + overflow-hidden Galaxy；待人工确认节点排列 |
+| PersonalLandingPage | ✅ 静态 | ✅ 静态 | ✅ 静态 | grid-cols-1 sm:grid-cols-2；待真实确认阅读节奏 |
+| MemorialLandingPage | ✅ 静态 | ✅ 静态 | ✅ 静态 | grid-cols-1 sm:grid-cols-2；边界说明温柔版；待视觉确认 |
+| MemoryArtifactPreview 结果页 | ⬜ 待确认 | ⬜ 待确认 | ⬜ 待确认 | max-w-2xl px-4；whitespace-pre-line 需人工确认不溢出 |
+| AuthPanel（未配置 env）| ✅ 静态 | ✅ 静态 | ✅ 静态 | 显示"云端同步未配置"，无同步按钮 |
+| 打印预览 | ⬜ 待确认 | — | — | print:hidden 静态验证通过；实际打印对话框待人工 |
+
+### Phase 15.1C 代码修复记录
+
+**本阶段（Phase 15.1C）无代码修复**——静态分析未发现代码层面阻塞问题。  
+所有代码修复均已在 Phase 15.1B.1 完成。
+
+### 仍需人工确认项（Phase 15.2 前）
+
+| 项目 | 优先级 | 说明 |
+|------|--------|------|
+| couple Relationship Galaxy 在 375px 下节点排列可读 | 高 | flex-wrap 节点可能堆叠，需视觉确认 |
+| family Before/After → LandingHero 视觉节奏不重复 | 中 | 两个区域都传递"整理成礼物"信息，需人工判断 |
+| MemoryArtifactPreview 结果页 375px 无横向滚动 | 高 | whitespace-pre-line 长行边缘情况 |
+| 打印预览实际内容完整性 | 高 | 需真实触发浏览器打印 |
+| 动效在真实设备上轻柔不廉价 | 中 | 主观评估，需真实设备 |
+| couple Galaxy 在深色系统模式下可读 | 低 | 浅色/深色系统切换 |
+| 所有 CTA 在 375px 下可点击（触摸区域足够）| 高 | py-4 = 16px，触摸区域约 56px，应足够 |
+
+### Phase 15.1C 整体结论
+
+| 维度 | 结论 |
+|------|------|
+| 静态分析 | ✅ 全部通过 |
+| 代码层阻塞问题 | ✅ 无 |
+| 真实浏览器验收 | ⬜ 未完成（无浏览器工具，需人工）|
+| 人工确认项 | 7 项，其中高优先 4 项 |
+| 是否可进入 Phase 15.2 | ✅ **代码层面准备就绪，建议进入 Beta Deployment Prep** |

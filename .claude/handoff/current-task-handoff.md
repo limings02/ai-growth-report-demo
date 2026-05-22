@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.1B.1 已完成（文案边界克制化 + 移动端可读性 + glow 动效拆分）  
-> 下一阶段：Phase 15.1C — 真实浏览器移动端验收（人工操作）  
+> 当前阶段：Phase 15.1C 已完成（全量静态移动端验收 + 文档修正）  
+> 下一阶段：Phase 15.2 — Beta Deployment Prep（代码层面准备就绪）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -241,6 +241,23 @@
 - `docs/quality/landing-emotional-storytelling-check.md`：新增 Phase 15.1B.1 修复记录，memorial 边界检查表更新，lint/build ✅ 已统一
 - `npm run lint` ✅ / `npm run build` ✅（零错误）
 - **待人工确认（Phase 15.1C）**：真实浏览器验收仍未完成；Phase 14.x 云端同步继续暂缓；不进入部署
+
+### Phase 15.1C（全量静态移动端验收 + 文档修正）
+- 验收方式：全量静态代码分析（无浏览器工具；dev server HTTP 200 ✅）
+- `npm run lint` ✅ / `npm run build` ✅（零错误）
+- **静态检查全部通过**：memorial 禁用词 / AuthPanel 同步按钮 / print:hidden / z-index / grid 布局 / 所有 mode available / mock 按钮 dev-only
+- `docs/quality/landing-emotional-storytelling-check.md`：修正旧 memorial 边界声明残留（移除"不模拟离世者发言 / 不包装成数字人格"旧表述）；更新动效类名（gentle-glow → gentle-glow-blue）；更新移动端风险表
+- `docs/quality/mobile-beta-qa-check.md`：新增 Phase 15.1C 完整验收节（静态汇总表 / 375/390/430px 状态表 / 7 项人工待确认清单 / 整体结论）
+- **无代码修复**：静态分析未发现代码层阻塞问题
+- **7 项待人工确认**（高优先 4 项）：
+  1. ⚠️ couple Galaxy 375px 节点排列可读性
+  2. ⚠️ MemoryArtifactPreview 结果页 375px 无横向滚动（whitespace-pre-line 边缘情况）
+  3. ⚠️ 打印预览实际内容完整性
+  4. ⚠️ 所有 CTA 触摸区域可点击
+  5. 中：family Before/After 与 LandingHero 视觉节奏不重复
+  6. 中：动效在真实设备上轻柔不廉价
+  7. 低：couple Galaxy 在深色系统模式下可读
+- **建议进入 Phase 15.2 Beta Deployment Prep**：代码层面无阻塞；高优先待确认项属视觉/交互验收，不属于代码 bug
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

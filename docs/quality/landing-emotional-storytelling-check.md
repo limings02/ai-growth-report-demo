@@ -104,7 +104,7 @@
 | `reveal-up` | 所有 landing 页 Hero h1 | 首屏标题浮现 |
 | `slow-fade-in` | personal 浮动 chips | 关键词轻柔出现 |
 | `soft-slide-up` | personal/memorial 功能卡片 | 卡片渐入 |
-| `gentle-glow` | personal CTA 按钮（两处）| 呼吸感召唤 |
+| `gentle-glow-blue` | personal CTA 按钮（两处）| 蓝色系呼吸感召唤（Phase 15.1B.1 改名）|
 | `constellation-pulse` | couple Relationship Galaxy 星点 | 宇宙感闪烁 |
 
 ### 兼容性保证
@@ -119,10 +119,10 @@
 
 | 风险 | 级别 | 备注 |
 |------|------|------|
-| personal 情绪场景 2 列卡片文字密度 | ⚠️ 低 | grid-cols-2，文案较短，待人工确认 |
-| couple Relationship Galaxy 节点换行 | ⚠️ 低 | flex-wrap，可能在 375px 下有节点堆叠，待确认 |
-| memorial 记忆细节卡 5 张（4+1）布局 | ✅ | 4 张 grid-cols-2，第 5 张全宽 |
-| family 新增 Before/After + 仪式感 section 总页面长度 | ⚠️ 低 | 页面变长但无溢出风险 |
+| personal 情绪场景卡片移动端密度 | ✅ 已修 | Phase 15.1B.1 改为 grid-cols-1 sm:grid-cols-2 |
+| couple Relationship Galaxy 节点换行 | ⚠️ 待确认 | flex-wrap + overflow-hidden，静态分析正常，待人工 375px 确认 |
+| memorial 记忆细节卡 5 张（4+1）布局 | ✅ 已修 | Phase 15.1B.1 改为 grid-cols-1 sm:grid-cols-2 + 第 5 张全宽 |
+| family 新增 Before/After + 仪式感 section 总页面长度 | ⚠️ 待确认 | 页面变长无溢出风险，与 LandingHero 视觉节奏待人工确认 |
 | EmotionalBackdrop 遮挡主内容 | ✅ | 所有页面 relative z-10 已保证 |
 
 ---
@@ -144,18 +144,39 @@
 | 模拟离世者 | ⚠️ 边界声明出现 | ✅ 已移除 |
 | 数字形象 | ⚠️ 边界声明出现 | ✅ 已移除 |
 
-### 边界声明新形式
+### 边界声明当前形式（Phase 15.1B.1 更新）
 
-Phase 15.1B 把原"警告框"形式的边界声明改为温柔逐条呈现（非红色/橙色 warning box），但内容完整保留：
-- 不模拟离世者发言 ✅
-- 不制造仿佛重逢的体验 ✅
-- 不包装成数字人格 ✅
-- 不替代真实的怀念和悲伤 ✅
-- 只帮助整理你愿意留下的故事 ✅
+Phase 15.1B.1 进一步克制化边界声明（移除"模拟离世者 / 数字形象"等高风险概念），当前用户可见版本：
+
+- ✓ 只整理你主动提供的照片、文字和故事
+- · 不创造新的个人表达
+- · 不包装成交互式人格
+- · 不替代真实的怀念与悲伤
+- ✓ 帮助这些记忆被家人慢慢读起
+
+> 旧版本（Phase 15.1B）曾包含"不模拟离世者发言 / 不包装成数字人格"等表述已于 Phase 15.1B.1 中移除。
 
 ---
 
-## 待人工验收项（Phase 15.1C）
+## Phase 15.1C 验收记录（2026-05-22）
+
+验收方式：全量静态代码分析（无浏览器工具）。真实浏览器 375/390/430px 仍为人工待确认。
+
+| 检查项 | 状态 |
+|--------|------|
+| landing-emotional-storytelling-check.md 旧边界声明残留 | ✅ 已修正（本阶段 Task 0）|
+| 动效类名文档一致性（gentle-glow → gentle-glow-blue）| ✅ 已修正 |
+| 移动端风险表更新（grid-cols-2 修复状态）| ✅ 已更新 |
+| personal 情绪场景卡片 375px 下单列可读 | ✅ 静态（grid-cols-1 sm:grid-cols-2）|
+| memorial 记忆细节卡 375px 下单列可读 | ✅ 静态（grid-cols-1 sm:grid-cols-2）|
+| couple Galaxy 375px 不溢出 | ✅ 静态（overflow-hidden + flex-wrap）|
+| memorial 边界说明温柔可读 | ⬜ 待人工真实视觉确认 |
+| couple Galaxy 主观视觉感受 | ⬜ 待人工真实确认 |
+| 动效轻柔不廉价 | ⬜ 待人工真实确认 |
+
+---
+
+## 待人工验收项（Phase 15.1C → Phase 15.2 前）
 
 | 检查项 | 状态 |
 |--------|------|
