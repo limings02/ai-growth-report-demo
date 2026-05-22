@@ -23,9 +23,11 @@ import MemorialLandingPage from "@/components/memorial/MemorialLandingPage";
 import MemorialMemoryApp from "@/components/memorial/MemorialMemoryApp";
 import FamilyArchivePage from "@/components/archive/FamilyArchivePage";
 import AllArchivePage from "@/components/archive/AllArchivePage";
+import AuthPanel from "@/components/auth/AuthPanel";
 
 type HomeScreen =
   | "mode-select"
+  | "auth"
   | "family-landing"
   | "family-app"
   | "family-archive"
@@ -72,6 +74,18 @@ export default function Home() {
       <FamilyArchivePage
         onBackToLanding={() => setScreen("family-landing")}
         onCreateNew={() => setScreen("family-app")}
+        onBackToHome={() => {
+          setSelectedMode(null);
+          setScreen("mode-select");
+        }}
+      />
+    );
+  }
+
+  // auth 账户 / 登录登出页（Phase 14.2，不同步 archive）
+  if (screen === "auth") {
+    return (
+      <AuthPanel
         onBackToHome={() => {
           setSelectedMode(null);
           setScreen("mode-select");
@@ -212,6 +226,7 @@ export default function Home() {
     <MemoryModeHome
       onSelectMode={handleSelectMode}
       onOpenArchive={() => setScreen("all-archive")}
+      onOpenAuth={() => setScreen("auth")}
     />
   );
 }

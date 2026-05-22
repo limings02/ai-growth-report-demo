@@ -1,7 +1,7 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 14.1 已完成（Supabase schema spike / 最小云端数据层）  
+> 当前阶段：Phase 14.2 已完成（Auth shell / 登录登出 UI）  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -220,6 +220,22 @@
 - couple / personal / memorial 不传 `afterCoverSections`，不受影响
 - lint/build ✅
 
+### Phase 14.2（Auth shell / 登录登出 UI）
+- `npm install @supabase/ssr`（已安装 `^0.10.3`）
+- `lib/supabase/env.ts`（新增）：统一 env 读取，`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `lib/supabase/browserClient.ts`（新增）：`getSupabaseBrowserClient()`，env 未配置返回 null
+- `lib/supabase/serverClient.ts`（新增）：`getSupabaseServerClient()`，备用，本阶段不接主流程
+- `lib/supabase/client.ts`（更新）：兼容 re-export，向下兼容 `getSupabaseClient()`
+- `components/auth/AuthPanel.tsx`（新增）：
+  - env 未配置 → "🔌 云端同步未配置"卡片
+  - email/password 登录 / 注册 / 登出
+  - 已登录展示用户 email + 明确提示不自动同步
+  - status 反馈（成功绿/失败红）
+- `app/page.tsx`：新增 `auth` screen
+- `components/MemoryModeHome.tsx`：新增 `onOpenAuth?` + "👤 账户 / 登录"按钮
+- lint/build ✅；新增 `docs/quality/auth-shell-check.md`
+- **本阶段：不同步 archive / 不上传 localStorage / 不读取 cloud archive_items**
+
 ### Phase 14.1（Supabase schema spike / 最小云端数据层）
 - `npm install @supabase/supabase-js`（已安装，package.json 中 `^2.106.1`）
 - `lib/supabase/client.ts`（新增）：
@@ -412,6 +428,7 @@
 - [x] **Phase 13.9**：统一 archive 筛选 / 搜索 / 单条删除（已完成）
 - [x] **Phase 14.0**：云端同步 / 账户系统架构设计（已完成，纯文档）
 - [x] **Phase 14.1**：Supabase schema spike / 最小云端数据层（已完成）
+- [x] **Phase 14.2**：Auth shell / 登录登出 UI（已完成）
 
 ### 中期（优先级 2）
 - [x] **family 真实浏览器 E2E 验收**（已完成，Phase 12.7C.2）
@@ -512,17 +529,17 @@ DEEPSEEK_MAX_TOKENS=8192
 
 Phase 10.3.1 已在 `lib/server/deepseekClient.ts` 中适配 v4-pro：对 v4-pro/v4-flash 默认注入 thinking disabled，让最终 JSON 回到 `message.content`，不再出现空响应问题。
 
-### 优先级 1：Phase 14.2 - Auth shell / 登录登出 UI
+### 优先级 1：Phase 14.3 - 手动上传本地 archive 到云端
 
-Phase 14.1 已完成（依赖/client helper/schema/mapper）。下一步：
-- 安装 `@supabase/ssr`（Next.js cookie-based auth）
-- 新增登录 / 登出 UI（email+password 或 Magic Link）
-- 获取 user session，但**不同步 archive**
-- 不改本地 archive 主链路
+Auth shell 已完成。下一步：
+- 在 AuthPanel 或 AllArchivePage 增加"同步到云端"按钮（仅登录后显示）
+- 调用 `mapArchiveItemToCloudInsert` + Supabase upsert
+- 不自动后台同步；用户主动点击触发
+- 详见 `docs/architecture/cloud-sync-plan.md` §11
 
-### 优先级 2：Phase 14.3 - 手动上传本地 archive（Phase 14.2 完成后）
+### 优先级 2：Phase 14.2B - SSR token refresh middleware（可选）
 
-用户点击"同步到云端" → `mapArchiveItemToCloudInsert` → `upsert` 到 Supabase
+完整 cookie session 刷新可通过 Next.js middleware 实现；当前 Auth shell 已可用，middleware 可后移。
 
 ### 优先级 2：其他模式管理增强（可选）
 - couple/personal/memorial landing 各自加"我的纪念册/回忆录"专属入口
@@ -543,7 +560,7 @@ Phase 14.1 已完成（依赖/client helper/schema/mapper）。下一步：
 你是这个项目的高级架构助手，正在接力一个 multi-mode Memory Product 的重构工作。
 
 仓库：https://github.com/limings02/ai-growth-report-demo
-当前分支：main，Phase 14.1 已完成，工作区干净，lint + build 零错误。
+当前分支：main，Phase 14.2 已完成，工作区干净，lint + build 零错误。
 
 已完成：
 - family / couple / personal / memorial 四个 mode 均可真实 AI 生成
@@ -573,8 +590,9 @@ Phase 14.1 已完成（依赖/client helper/schema/mapper）。下一步：
 - Phase 13.8：跨 mode 统一档案页（MemoryModeHome 入口 / AllArchivePage / 各 mode 详情回看）✅
 - Phase 13.9：统一 archive 筛选 / 搜索 / 单条删除（mode filter / contains search / pendingDeleteId）✅
 - Phase 14.0：云端同步架构设计文档（Supabase schema / RLS / 迁移策略 / 风险清单，纯文档）✅
-- Phase 14.1：Supabase schema spike（@supabase/supabase-js / client helper / SQL migration + RLS / cloudArchiveMapper，无登录无同步）✅
-- 下一步：Phase 14.2（Auth shell：安装 @supabase/ssr / 登录登出 UI / 获取 session，不同步 archive）
+- Phase 14.1：Supabase schema spike（@supabase/supabase-js / client helper / SQL migration + RLS / cloudArchiveMapper）✅
+- Phase 14.2：Auth shell（@supabase/ssr / env.ts / browserClient / AuthPanel / 登录登出 / session，不同步 archive）✅
+- 下一步：Phase 14.3（手动上传本地 archive 到云端，用户主动触发）
 - components/memory/ 完整通用展示体系（MemoryArtifactPreview 容器 + 10 个子组件）
 - personal-memory skill pack 已升级为真实 prompt + Phase 10.3 质量打磨
 - Phase 10.3.1：deepseekClient 适配 deepseek-v4-pro（DEEPSEEK_THINKING=disabled）
@@ -591,7 +609,7 @@ Phase 14.1 已完成（依赖/client helper/schema/mapper）。下一步：
 - components/family/FamilyLandingPage.tsx / package.json / .env.local
 
 待办：
-- 进入 Phase 14.2：Auth shell（@supabase/ssr / 登录登出 UI / session，不同步 archive）
+- 进入 Phase 14.3：手动上传本地 archive 到云端（登录后"同步到云端"按钮，用户主动触发）
 
 建议从 .claude/handoff/current-task-handoff.md 第 7 节开始执行。
 ```

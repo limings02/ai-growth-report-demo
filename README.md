@@ -114,6 +114,7 @@ npm run dev
 - **Phase 13.9 统一档案管理增强**：我的记忆档案支持按 mode 筛选、按标题/摘要/关键词本地搜索，并可在统一列表中删除单条 ArchiveItem；当前不支持统一批量清空、导出或导入
 - **Phase 14.0 云端同步架构设计**：在本地 Life Archive 闭环完成后，新增云端同步 / 账户系统设计文档，明确 Supabase schema 草案、RLS 权限边界、本地到云端迁移策略、隐私边界和 Phase 14.1 最小实现计划；本阶段不接入真实云端服务
 - **Phase 14.1 Supabase schema spike**：新增 `@supabase/supabase-js` 依赖、Supabase client helper（env 缺失时返回 null）、云端 row mapper（纯函数）和 SQL migration（profiles + archive_items + RLS）；本阶段无登录 UI、无真实同步、未配置 env 时 app 仍可完全离线运行
+- **Phase 14.2 Auth shell**：新增 `@supabase/ssr`、登录/注册/登出 UI（email/password），首页增加"账户 / 登录"入口；登录后只显示 session 状态，不同步 archive；未配置 env 时显示"云端同步未配置"，本地功能不受影响
 
 ---
 
@@ -178,6 +179,15 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 - No local archive data is uploaded automatically.
 - Do not expose Supabase secret keys in the frontend.
 - SQL migration is at `supabase/migrations/0001_life_archive_schema.sql` — apply manually.
+
+### Auth shell status
+
+Phase 14.2 adds a lightweight account panel.
+
+- Email/password sign in and sign up are supported when Supabase env vars are configured.
+- Signing in does **not** upload local archive data.
+- Cloud sync is still inactive — sync will be manually triggered in a future phase.
+- Local archive features continue to work without Supabase env vars.
 
 ---
 

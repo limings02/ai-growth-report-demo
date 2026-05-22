@@ -9,9 +9,10 @@ import { MEMORY_MODES, type MemoryMode } from "@/lib/memory-core/modes";
 type Props = {
   onSelectMode: (mode: MemoryMode) => void;
   onOpenArchive?: () => void;
+  onOpenAuth?: () => void;
 };
 
-export default function MemoryModeHome({ onSelectMode, onOpenArchive }: Props) {
+export default function MemoryModeHome({ onSelectMode, onOpenArchive, onOpenAuth }: Props) {
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -180,20 +181,37 @@ export default function MemoryModeHome({ onSelectMode, onOpenArchive }: Props) {
             })}
           </div>
 
-          {/* ── 我的记忆档案入口 ──────────────────────── */}
-          {onOpenArchive && (
+          {/* ── 我的记忆档案 + 账户入口 ──────────────────────── */}
+          {(onOpenArchive || onOpenAuth) && (
             <div className="text-center mt-10">
-              <button
-                type="button"
-                onClick={onOpenArchive}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm cursor-pointer transition-all hover:shadow-md"
-                style={{ background: "#fffaf7", border: "1px solid #f0ddd5", color: "#9d7b72" }}
-              >
-                <span>📚</span>
-                <span>我的记忆档案</span>
-              </button>
+              <div className="inline-flex flex-wrap items-center justify-center gap-3">
+                {onOpenArchive && (
+                  <button
+                    type="button"
+                    onClick={onOpenArchive}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm cursor-pointer transition-all hover:shadow-md"
+                    style={{ background: "#fffaf7", border: "1px solid #f0ddd5", color: "#9d7b72" }}
+                  >
+                    <span>📚</span>
+                    <span>我的记忆档案</span>
+                  </button>
+                )}
+                {onOpenAuth && (
+                  <button
+                    type="button"
+                    onClick={onOpenAuth}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm cursor-pointer transition-all hover:shadow-md"
+                    style={{ background: "#fffaf7", border: "1px solid #f0ddd5", color: "#9d7b72" }}
+                  >
+                    <span>👤</span>
+                    <span>账户 / 登录</span>
+                  </button>
+                )}
+              </div>
               <p className="text-xs mt-2" style={{ color: "#c0a090" }}>
-                查看保存在当前浏览器中的记忆册
+                {onOpenArchive && "查看保存在当前浏览器中的记忆册"}
+                {onOpenArchive && onOpenAuth && " · "}
+                {onOpenAuth && "登录后可在后续阶段开启云端同步"}
               </p>
             </div>
           )}
