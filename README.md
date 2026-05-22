@@ -31,6 +31,48 @@ npm run dev
 
 ---
 
+## 手机真实设备预览
+
+手机上 `localhost` 指手机自身，无法访问电脑上的 dev server。需使用局域网 IP 地址。
+
+### 第一步：启动局域网 dev server
+
+```bash
+npm run dev:lan
+```
+
+这会让 Next.js 监听 `0.0.0.0`，局域网内其他设备可访问。
+
+### 第二步：另开一个终端，查看手机访问地址
+
+```bash
+npm run mobile:url
+```
+
+脚本会自动检测电脑的局域网 IP 并打印可访问地址，例如：
+
+```
+http://192.168.1.23:3000
+```
+
+### 第三步：手机浏览器打开该地址
+
+手机和电脑需连接**同一个 Wi-Fi**。
+
+### 常见问题
+
+- **手机不要打开 `localhost:3000`**——`localhost` 在手机上指手机自己
+- 如果打不开，检查：
+  - 手机和电脑是否在同一个 Wi-Fi
+  - 终端是否正在运行 `npm run dev:lan`（而非 `npm run dev`）
+  - Mac 防火墙是否允许 Node.js 入站连接
+- 公司/学校 Wi-Fi 可能禁止局域网互访，这时需要 localtunnel / ngrok（本阶段不配置）
+- 手动查询电脑局域网 IP：
+  - Mac：`ipconfig getifaddr en0`
+  - Windows：`ipconfig`
+
+---
+
 ## 如何使用
 
 1. **打开首页** — 进入「记忆主题选择页」（MemoryModeHome）
