@@ -1,8 +1,8 @@
 # Claude Code 会话交接文档
 
 > 生成时间：2026-05-22  
-> 当前阶段：Phase 15.2A 已完成（Beta Deployment Prep with Manual QA Gate）  
-> 下一阶段：Phase 15.2B — Preview/Staging Deploy + Manual Browser QA  
+> 当前阶段：Phase 15.2B 已完成（部署步骤已记录，等待人工手动部署 + 验收）  
+> 下一阶段：Phase 15.2B.1 — 人工完成 Vercel Preview 部署 + Smoke Test + Hard Gate 验收  
 > 仓库：`limings02/ai-growth-report-demo`，分支 `main`
 
 ---
@@ -271,6 +271,23 @@
   - Phase 14.x 云端同步继续暂缓
   - AuthPanel 仍不展示"同步到云端"按钮
 - **下一阶段 Phase 15.2B**：部署到 Vercel Preview URL → 执行 Smoke Test → 执行 Hard Gate 10 项真实浏览器验收 → 通过后才可对外公开 Beta
+
+### Phase 15.2B（Preview/Staging Deploy + Manual Browser QA）
+- **修正** `docs/deployment/beta-release-gate.md`：memorial"不允许承诺"中高风险场景改为抽象工程边界描述"交互式人格化体验"；新增 Section 7 手动部署步骤（Vercel Dashboard + CLI 两种方式）；更新阶段边界表
+- **更新** `docs/deployment/beta-deployment-checklist.md`：Smoke Test 改为表格形式，标注每项状态（#8 静态通过，其余待人工）
+- **更新** `docs/quality/mobile-beta-qa-check.md`：新增 Phase 15.2B 验收记录节（部署状态 / Smoke Test 表 / Hard Gate 表 / 整体结论）
+- `npm run lint` ✅ / `npm run build` ✅
+- **部署状态**：⛔ CI 环境无 Vercel CLI / 无 `.vercel` 配置，无法在当前环境执行部署
+- **Preview URL**：⬜ 待手动获取（人工完成 Vercel Dashboard 部署后填入）
+- **Smoke Test**：⬜ 9 项待人工，#8（memorial 文案）静态已通过
+- **Hard Gate**：⬜ 8 项待人工，#8（AuthPanel）#9（memorial 文案）静态已通过
+- **外部公开 Beta**：⛔ **不允许**，等待 Smoke Test + Hard Gate 全部通过
+- **待人工操作（按优先级）**：
+  1. 在 Vercel Dashboard 创建 Project，配置 DeepSeek env vars，部署 main 分支
+  2. 获得 preview URL 后执行 10 步 Smoke Test
+  3. 执行 Hard Gate #1-#7 真实浏览器验收（375/390/430px；DevTools 或真实设备）
+  4. 执行 Hard Gate #10：四个 mode 各生成一次，确认无白屏
+  5. 全部通过后进入公开 Beta 发布决策
 
 ### Phase 15.1A.1（Family z-index 补全 + Memorial 注释清理）
 - `FamilyLandingPage.tsx`：main 改为纯 `relative`，EmotionalBackdrop 移到 sticky nav 之前；LandingHero / FutureScene / ValueCards / HowItWorks 全部包入 `<div className="relative z-10">`，确保所有正文内容在 backdrop 上方

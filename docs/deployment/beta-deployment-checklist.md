@@ -3,7 +3,8 @@
 > 创建时间：Phase 15.1B（2026-05-22）  
 > 更新：Phase 15.2A（2026-05-22）  
 > 适用范围：首次 Beta 部署（Vercel 或同类平台）  
-> 注意：本 checklist 描述部署配置；公开 Beta 前还需完成 beta-release-gate.md 中的 10 项 Hard Gate 人工验收
+> 注意：本 checklist 描述部署配置；公开 Beta 前还需完成 beta-release-gate.md 中的 10 项 Hard Gate 人工验收  
+> Phase 15.2B 状态：待手动部署（无 CI 环境 Vercel 权限）；Smoke Test 和 Hard Gate 验收均待手动执行
 
 ---
 
@@ -86,18 +87,22 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY   = <publishable key>
 
 ### 首次部署后 Smoke Test
 
-按顺序执行，全部通过才视为部署成功：
+按顺序执行，全部通过才视为部署成功。
 
-- [ ] 1. 首页可访问，四个 mode 卡片正常显示，无白屏
-- [ ] 2. 四个 mode landing page 均可进入
-- [ ] 3. 四个 mode 输入页均可进入并显示表单
-- [ ] 4. 至少一个 mode（建议 family）完整生成结果，无 API 报错
-- [ ] 5. 结果页可执行：返回首页 / 再做一本 / 保存 PDF
-- [ ] 6. archive 本地保存 / 列表 / 删除 可用
-- [ ] 7. AuthPanel 未配置 Supabase env 时降级正常（显示"云端同步未配置"）
-- [ ] 8. memorial 页面无高风险表达（边界说明文案正确）
-- [ ] 9. 移动端 375px 首页不横向滚动（DevTools 或真实设备）
-- [ ] 10. 控制台无明显 runtime error
+> **Phase 15.2B 状态**：待手动执行。当前 CI 环境无 Vercel 部署权限，需人工在 preview URL 上逐项完成。
+
+| # | 检查项 | 状态 |
+|---|--------|------|
+| 1 | 首页可访问，四个 mode 卡片正常显示，无白屏 | ⬜ 待人工 |
+| 2 | 四个 mode landing page 均可进入 | ⬜ 待人工 |
+| 3 | 四个 mode 输入页均可进入并显示表单 | ⬜ 待人工 |
+| 4 | 至少一个 mode（建议 family）完整生成结果，无 API 报错 | ⬜ 待人工 |
+| 5 | 结果页可执行：返回首页 / 再做一本 / 保存 PDF | ⬜ 待人工 |
+| 6 | archive 本地保存 / 列表 / 删除 可用 | ⬜ 待人工 |
+| 7 | AuthPanel 未配置 Supabase env 时降级正常 | ⬜ 待人工 |
+| 8 | memorial 页面边界说明文案正确，无高风险表达 | ✅ 静态确认 |
+| 9 | 移动端 375px 首页不横向滚动 | ⬜ 待人工 |
+| 10 | 控制台无明显 runtime error | ⬜ 待人工 |
 
 ---
 

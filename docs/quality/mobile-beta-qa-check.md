@@ -251,4 +251,57 @@
 | 代码层阻塞问题 | ✅ 无 |
 | 真实浏览器验收 | ⬜ 未完成（无浏览器工具，需人工）|
 | 人工确认项 | 7 项，其中高优先 4 项 |
-| 是否可进入 Phase 15.2 | ✅ **代码层面准备就绪，建议进入 Beta Deployment Prep** |
+| 是否可进入 Phase 15.2 | ✅ **代码层面准备就绪，进入 Phase 15.2A Beta Deployment Prep** |
+
+---
+
+## Phase 15.2B 验收记录（2026-05-22）
+
+### 部署状态
+
+| 项目 | 状态 | 说明 |
+|------|------|------|
+| CI 环境 Vercel 部署 | ⛔ 不可执行 | 无 Vercel CLI / 无 `.vercel` 配置 |
+| 手动部署步骤 | ✅ 已记录 | 见 `docs/deployment/beta-release-gate.md` Section 7 |
+| Preview URL | ⬜ 待手动获取 | 人工完成 Vercel Dashboard 部署后填入 |
+
+### Smoke Test 状态
+
+待人工在 preview URL 上执行。见 `docs/deployment/beta-deployment-checklist.md` Smoke Test 表。
+
+| # | 检查项 | 状态 |
+|---|--------|------|
+| 1 | 首页可访问，四个 mode 卡片正常，无白屏 | ⬜ 待人工 |
+| 2 | 四个 mode landing page 均可进入 | ⬜ 待人工 |
+| 3 | 四个 mode 输入页均可进入 | ⬜ 待人工 |
+| 4 | 至少一个 mode 完整生成结果 | ⬜ 待人工 |
+| 5 | 结果页返回 / 再做一本 / 保存 PDF | ⬜ 待人工 |
+| 6 | archive 本地保存 / 列表 / 删除 | ⬜ 待人工 |
+| 7 | AuthPanel 未配置时降级正常 | ⬜ 待人工 |
+| 8 | memorial 边界说明文案正确 | ✅ 静态确认 |
+| 9 | 移动端 375px 首页不横向滚动 | ⬜ 待人工 |
+| 10 | 控制台无明显 runtime error | ⬜ 待人工 |
+
+### Hard Gate 状态
+
+| # | 验收项 | 状态 |
+|---|--------|------|
+| 1 | 375/390/430px 首页无横向滚动 | ⬜ 待人工 |
+| 2 | 四个 landing 在 375px 下 CTA 可点击 | ⬜ 待人工 |
+| 3 | couple Galaxy 在 375px 节点可读不拥挤 | ⬜ 待人工 |
+| 4 | personal/memorial 长页面阅读节奏可接受 | ⬜ 待人工 |
+| 5 | family Before/After 与 LandingHero 不重复 | ⬜ 待人工 |
+| 6 | 结果页 375px 无横向滚动 | ⬜ 待人工 |
+| 7 | 打印预览完整，操作栏/backdrop/hint 不打印 | ⬜ 待人工 |
+| 8 | AuthPanel 无"同步到云端"按钮 | ✅ 静态确认 |
+| 9 | memorial 用户可见无高风险概念 | ✅ 静态确认 |
+| 10 | 四个 mode 各至少生成成功一次 | ⬜ 待人工 |
+
+### Phase 15.2B 整体结论
+
+| 维度 | 结论 |
+|------|------|
+| Preview 部署 | ⛔ 无 CI 权限，需手动执行（步骤已记录）|
+| Smoke Test | ⬜ 待手动执行（9 项待人工，1 项静态通过）|
+| Hard Gate | ⬜ 待人工（8 项待人工，2 项静态通过）|
+| 外部公开 Beta | ⛔ **不允许**，等待 Smoke Test + Hard Gate 全部通过 |

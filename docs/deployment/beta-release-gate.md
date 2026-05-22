@@ -61,7 +61,7 @@
 - 多设备同步 / 云端永久保存
 - 自动读取聊天记录（微信 / iMessage 等）
 - 自动读取相册
-- memorial 对话化体验（与逝者对话、人格重建等任何形式）
+- memorial 交互式人格化体验
 - 公开分享页
 - 支付 / 会员体系
 
@@ -96,6 +96,52 @@
 |------|------|
 | Phase 15.1C 静态代码验收 | ✅ 完成 |
 | Phase 15.2A Beta 部署准备文档 | ✅ 完成 |
-| Phase 15.2B Preview/Staging 部署 | ⬜ 待执行 |
-| Phase 15.2C 真实浏览器 Hard Gate 验收 | ⬜ 待执行 |
-| 外部公开 Beta | ⛔ 未开放（等待 15.2C 完成）|
+| Phase 15.2B Preview/Staging 部署 | ⚙️ 待手动执行（见下方部署步骤）|
+| Phase 15.2B Hard Gate 人工验收 | ⬜ 待人工（需先完成部署）|
+| 外部公开 Beta | ⛔ 未开放（等待 Hard Gate 全部通过）|
+
+---
+
+## 7. Phase 15.2B 手动部署步骤
+
+> 当前 CI 环境无 Vercel CLI / 无 `.vercel` 配置。以下为手动执行步骤。
+
+### 方式 A：Vercel Dashboard（推荐）
+
+1. 访问 [vercel.com](https://vercel.com) → New Project → Import Git Repository
+2. 选择 `limings02/ai-growth-report-demo`，分支 `main`
+3. Framework Preset 选 **Next.js**
+4. Build/Install/Output 使用默认值
+5. 在 **Environment Variables** 中配置（只填 key 名，值从本地 `.env.local` 获取）：
+
+```
+DEEPSEEK_API_KEY        = <本地 .env.local 中的值>
+DEEPSEEK_MODEL          = deepseek-v4-pro
+DEEPSEEK_BASE_URL       = https://api.deepseek.com
+DEEPSEEK_MAX_TOKENS     = 8192
+DEEPSEEK_THINKING       = disabled
+DEEPSEEK_JSON_MODE      = true
+```
+
+6. 点击 **Deploy** → 等待 build 完成 → 获得 preview URL（格式：`*.vercel.app`）
+7. 用该 URL 执行 Smoke Test 和 Hard Gate 验收
+
+### 方式 B：Vercel CLI
+
+```bash
+# 安装（如未安装）
+npm i -g vercel
+
+# 在项目目录执行
+cd /Users/liming/ai-growth-report-demo
+vercel
+
+# 按提示授权、选择 scope、关联项目
+# 部署完成后终端会输出 preview URL
+```
+
+### 注意事项
+
+- 不要把 `.env.local` 提交到 Git
+- Supabase env 可以不配，不配时 AuthPanel 降级为"云端同步未配置"
+- Node 版本使用 Vercel 默认（Node 20），与本项目 Next.js 16 兼容
