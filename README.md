@@ -119,6 +119,7 @@ npm run dev
 - **Phase 15.0 Emotional Motion Polish**：首页、四个 mode 落地页和结果页第一屏完成情绪化与轻量动效升级；清理所有 preview/mock 旧文案；四种主题均标注可体验；memorial 新增明确边界声明；不新增任何依赖
 - **Phase 15.1A Visual Layer Fix + Mobile Beta QA**：修复情绪背景层级和 glow transform 问题，增强 couple 聊天气泡，移除 memorial 敏感表达，Beta 前弱化云端同步入口，并补充移动端验收清单
 - **Phase 15.1A.1 Hotfix**：补齐 Family landing 正文层级（LandingHero 等均包入 relative z-10），清理 memorial 源码注释里的高风险表达
+- **Phase 15.1B Mobile Browser QA + Beta Deployment Prep**：完成静态移动端验收（所有关键属性逐项核查通过），补充 Beta 部署 checklist（`docs/deployment/beta-deployment-checklist.md`），真实浏览器验收待人工完成
 
 ---
 
